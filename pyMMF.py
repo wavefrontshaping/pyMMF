@@ -67,23 +67,6 @@ class TransmissionMatrix(np.ndarray):
         self.view()[:,N/2:N] = Pola2*np.cos(angle)-Pola1*np.sin(angle)
         return self
 
-#a = np.random.rand(*[10]*2)
-#a[:,5:]=0
-#A = TransmissionMatrix(a,npola=2)
-#
-#plt.figure();
-#plt.subplot(121)
-#plt.imshow(A)
-#plt.colorbar()
-#plt.subplot(122)
-#plt.figure();plt.imshow(A.rotation(np.pi))
-#plt.colorbar()
-#    def __init__(self,*args, **kwargs):
-#        super(TransmissionMatrix,self).__init__(*args, **kwargs)
-
-#%%
-        
-	
 
 class propagationModes():
     
@@ -103,7 +86,7 @@ class propagationModes():
         
     def getModeMatrix(self,npola = 1):
         '''
-    	Return matrix containing the mode profiles. 
+    	Returns the matrix containing the mode profiles. 
         Note that while you can set two polarizations, the modes profiles are obtained under a scalar apporoximation.
     	
     	Parameters
@@ -180,12 +163,28 @@ class propagationModes():
         
     
     def getPropagationMatrix(self,distance,npola = 1,curvature = None):
-        
-        
-        
-        
-#        BetaMatrix = np.zeros((npola*self.number,npola*self.number),dtype = np.complex128)
-        
+        '''
+        Returns the transmission matrix for a given fiber length. 
+        Note that while you can set two polarizations, the modes profiles are obtained under a scalar apporoximation.
+    	
+    	Parameters
+    	----------
+    	
+    	distance : float
+    		size of the fiber segment (in meters)
+
+        npola : int (1 or 2)
+    		number of polarizations considered. For npola = 2, the mode matrix will be a block diagonal matrix.
+    		
+        curvature: float
+            curvature of the fiber segment (in meters)
+
+    	Returns
+    	-------
+    	
+    	B : numpy array
+    		the transmission matrix of the fiber.
+        '''
         B = self.getEvolutionOperator(npola,curvature)
         
 
