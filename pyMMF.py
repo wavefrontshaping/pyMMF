@@ -15,7 +15,6 @@ from scipy.special import jv,kv,iv
 import logging, sys, time
 
 
-#%%
 def _get_logger():
         loglevel = logging.DEBUG
         logger = logging.getLogger(__name__)
@@ -101,9 +100,6 @@ class propagationModes():
     	M : numpy array
     		the matrix representing the basis of the propagating modes.
         '''
-        
-        
-        
         assert(self.profiles)
     
         N = self.profiles[0].shape[0]
@@ -285,27 +281,6 @@ class propagationModeSolver():
         self.wl = None
         self.last_res = None
         
-#        logging.basicConfig(
-#                            #filename='modesolver.log',
-#                            level=logging.DEBUG,\
-#                            format='%(asctime)s -- %(name)s -- %(levelname)s -- %(message)s')
-
-        
-#        logger = self._get_logger()
-#        logger= logging.getLogger("MMFmodeSolver")
-#        
-#        logger.setLevel('INFO')
-#        
-#        fileHandler = logging.FileHandler("{0}/{1}.log".format('./', 'mmfmodesolver'))
-#        fileHandler.setFormatter(logFormatter)
-#        logger.addHandler(fileHandler)
-#        
-#        consoleHandler = logging.StreamHandler()
-#        consoleHandler.setFormatter(logFormatter)
-#        logger.addHandler(consoleHandler)
-#        
-#        logger.setLevel('INFO')
-
         logger.debug('Debug mode ON.')
         
     
@@ -319,6 +294,34 @@ class propagationModeSolver():
 
         
     def solve(self,nmodesMax=6,boundary = 'close',storeData = True,curvature = None):
+        '''
+	    Return the angular and radial matrices (polar coordinates) correspondng to the input cartesian matrices X and Y.
+	    
+	    Parameters
+	    ----------
+	    
+	    nmodesMax : int 
+		    Maximum number of modes the solver will try to find. 
+            This value should be higher than the estimated maximum number of modes if one want to be sure 
+            to find all the modes.
+            defaults to 6
+	    boundary : string
+		    boundary type, 'close' or 'periodic'
+            EXPERIMENTAL.
+            It should not make any difference for propagating modes.
+        storeData: bool
+            Stores data in the propagationModeSolver object is set to True
+            defaults to True
+        curvature: float
+            Curvature of the finer in meters
+            defaults to None
+		    
+	    Returns
+	    -------
+	    
+	    modes : propagationModes
+		    propagationModes object containing all the mode information.
+        '''
         assert(self.indexProfile)
         assert(self.wl)
         
@@ -331,9 +334,6 @@ class propagationModeSolver():
         
        
         diags.append(-4./dh**2+k0**2*self.indexProfile.n.flatten()**2)
-        
-
-#            diags[0] = diags[0]/curv_term
         
         if boundary == 'periodic':
             logger.info('Use periodic boundary condition.')
@@ -380,21 +380,16 @@ class propagationModeSolver():
         # Find the eigenvalues of the operator with the greatest real part
         res = eigs(H,k=nmodesMax,which = 'LR')
         
-#        print('--> %g modes' % len(res[0]))
-        
         modes = propagationModes()
         modes.wl = self.wl
         modes.indexProfile = self.indexProfile
         # select only the propagating modes
         for i,betasq in enumerate(res[0]):
-#            print('%g - beta_min = %0.3f, beta = %0.3f, beta_max = %0.3f'% (i,beta_min,np.sqrt(betasq),beta_max))
             if curvature is not None or (betasq > beta_min**2 and betasq < beta_max**2):
                 modes.betas.append(np.sqrt(betasq))
                 modes.number+=1
                 modes.profiles.append(res[1][:,i])
                 modes.profiles[-1] = modes.profiles[-1]/np.sqrt(np.sum(np.abs(modes.profiles[-1])**2))
-#                res[0].delete(res,)
-#                res[1].remove(i)
                 
         logger.info("Solver found %g modes is %0.2f seconds." % (modes.number,time.time()-t0))
         
@@ -444,7 +439,7 @@ class IndexProfile():
         self.n = np.zeros([npoints]*2)
         self.areaSize = areaSize
         x = np.linspace(-areaSize/2,areaSize/2,npoints)
-#        x = np.arange(-npoints/2,npoints/2,1)*areaSize/npoints+1e-9
+        #x = np.arange(-npoints/2,npoints/2,1)*areaSize/npoints+1e-9
         self.X,self.Y = np.meshgrid(x,x)
         self.TH, self.R = cart2pol(self.X, self.Y)
         self.dh = 1.*self.areaSize/self.npoints
