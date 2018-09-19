@@ -7,8 +7,8 @@ of multimode fibers of arbitrary index profiles.
 ## What is it?
 
 **pyMMF** is a simple module that allows finding the propagating modes of multimode fibers with arbitrary index profiles and simulates the transmission matrix for a given length.
-The solver can also take into account the curvature of the fiber. 
-This code is not designed to compete with commercially available software in term of accuracy of the mode profiles/propagation constants, it aims at quickly simulating realistic transmission matrices of short sections of fiber.
+The solver can also take into account the curvature of the fiber (experimental). 
+This code is not designed to compete with commercially available software in term of accuracy of the mode profiles/propagation constants or speed, it aims at quickly simulating realistic transmission matrices of short sections of fiber.
 
 ## Citing the code
 
@@ -25,4 +25,45 @@ Download the file and execute the following command.
 python setup.py install
 ```
 
-## Tutorial to come.
+## How does it work
+
+The sovler solve, for a given index profile, the **scalar**  
+
+## Examples
+
+### Example 1: Finding the modes of a graded index fiber (GRIN)
+
+#### Parameters
+
+We first set the parameters of the fiber we want to simulate.
+
+```python
+NA = 0.275
+radius = 7 # in microns
+areaSize = 2.5*radius # calculate the field on an area larger than the diameter of the fiber
+npoints = 2**7 # resolution of the window
+n1 = 1.45
+wl = 0.6328 # wavelength in microns
+```
+
+### Index profile
+
+We first create the fiber object
+
+```python
+profile = pyMMF.IndexProfile(npoints = npoints, areaSize = areaSize)
+```
+We use the helper function that generates a parabolic index profile:
+
+```python
+profile.initParabolicGRIN(n1=n1,a=radius,NA=NA)
+```
+
+We then give the profile and the wavelength to the solver
+
+```python
+solver.setIndexProfile(profile)
+solver.setWL(wl)
+```
+
+The solver needs to know how far
