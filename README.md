@@ -25,13 +25,24 @@ Download the file and execute the following command.
 python setup.py install
 ```
 
-## How does it work
+## How does it work?
 
-The sovler solve, for a given index profile, the **scalar**  
+The sovler solve, for a given index profile, the transverse part of the **scalar** propagation equation.
+It finds the modes by numerically finding the eigenvalues of the transverse operator represented as a large but sparse matrix on a square mesh.
+The eigenvectors represent the mode profiles and the eigenvalues give the corresponding propagation constants.
+The solver needs to know how many modes you want to compute, if the number set is higher than the number of propagationg modes, it will only returns the propagating modes (this works if the curvature is set to None, i.e. for a straight fiber).
 
 ## Examples
 
 ### Example 1: Finding the modes of a graded index fiber (GRIN)
+
+#### Preambule
+
+```python
+import pyMMF
+import numpy as np
+import matplotlib as pyplot
+```
 
 #### Parameters
 
@@ -44,9 +55,10 @@ areaSize = 2.5*radius # calculate the field on an area larger than the diameter 
 npoints = 2**7 # resolution of the window
 n1 = 1.45
 wl = 0.6328 # wavelength in microns
+curvature = None
 ```
 
-### Index profile
+#### Index profile
 
 We first create the fiber object
 
@@ -66,4 +78,39 @@ solver.setIndexProfile(profile)
 solver.setWL(wl)
 ```
 
-The solver needs to know how far
+#### Run the solver
+
+The solver needs to know how many modes you want to compute. 
+We estimate the number of modes of a GRIN multimode fiber.
+
+
+```python
+NmodesMax = pyMMF.estimateNumModesGRIN(wl,radius,NA)
+```
+
+To be safe, we ask for a bit more than the estimated number of modes previously calculated.
+
+
+```python
+modes = solver.solve(nmodesMax=NmodesMax+10,boundary = 'close',curvature = curvature)
+```
+
+#### Results
+
+
+Ask for the number of propagatin modes found by the solver.
+
+```python
+Nmodes = modes.number
+```
+Display the profile of a mode
+
+```python
+m = 10
+
+plt.figure()
+plt.subplot(121)
+plt.imshow(np.real(modes.profiles[m]).reshape([npoints]*2))
+plt.subplot(122)
+plt.imshow(np.imag(modes.profiles[m]).reshape([npoints]*2))
+```
