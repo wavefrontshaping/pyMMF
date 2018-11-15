@@ -98,7 +98,7 @@ modes = solver.solve(nmodesMax=NmodesMax+10,boundary = 'close',curvature = curva
 #### Results
 
 
-Ask for the number of propagatin modes found by the solver.
+Ask for the number of propagating modes found by the solver (other modes are discarded).
 
 ```python
 Nmodes = modes.number
