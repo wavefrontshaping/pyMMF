@@ -56,7 +56,7 @@ class TransmissionMatrix(np.ndarray):
         if obj is None: return
         self.npola = getattr(obj, 'npola', 1)
         
-    def rotation(self,angle):
+    def polarization_rotation(self,angle):
         if self.npola == 1: return self
         N=self.shape[0]
         Pola1 = self.view()[:,:N/2]
@@ -67,7 +67,7 @@ class TransmissionMatrix(np.ndarray):
         return self
 
 
-class propagationModes():
+class Modes():
     
     def __init__(self):
         self.betas = []
@@ -205,6 +205,26 @@ def randomGroupCoupling(groups):
     return H
 
 def estimateNumModesGRIN(wl,a,NA):
+    '''
+	Returns a rough estimation of the number of propagating modes of a GRIN fiber.
+    See https://www.rp-photonics.com/v_number.html for more details.
+	
+	Parameters
+	----------
+	
+	wl : float
+		Wavelength (in microns)
+	a :  float
+		Radius of the fiber (in microns)
+    NA : float
+		Numerical aperture of the fiber
+		
+	Returns
+	-------
+	
+	N : integer
+		Estimation of the number of propagating modes
+    '''
     k0 = 2.*np.pi/wl
     V = k0*a*NA
     return np.ceil(V**2/4.).astype(int)
@@ -242,7 +262,7 @@ def LPModeProfile(m,psi,u,w,a,npoints,areasize,coordtype='cart',forFFT = 0,inf_p
     
 def cart2pol(X, Y):
     '''
-	Return the angular and radial matrices (polar coordinates) correspondng to the input cartesian matrices X and Y.
+	Returns the angular and radial matrices (polar coordinates) correspondng to the input cartesian matrices X and Y.
 	
 	Parameters
 	----------
@@ -295,7 +315,8 @@ class propagationModeSolver():
         
     def solve(self,nmodesMax=6,boundary = 'close',storeData = True,curvature = None):
         '''
-	    Return the angular and radial matrices (polar coordinates) correspondng to the input cartesian matrices X and Y.
+	    Find the first modes of a multimode fiber. The index profile has to be set.
+        Returns a Modes structure containing the mode information.
 	    
 	    Parameters
 	    ----------
@@ -319,8 +340,8 @@ class propagationModeSolver():
 	    Returns
 	    -------
 	    
-	    modes : propagationModes
-		    propagationModes object containing all the mode information.
+	    modes : Modes
+		    Modes object containing all the mode information.
         '''
         assert(self.indexProfile)
         assert(self.wl)
@@ -376,16 +397,18 @@ class propagationModeSolver():
         
         beta_min = k0*np.min(self.indexProfile.n)
         beta_max =  k0*np.max(self.indexProfile.n)
+        print(beta_min)
+        print(beta_max)
 
-        # Find the eigenvalues of the operator with the greatest real part
+        # Finds the eigenvalues of the operator with the greatest real part
         res = eigs(H,k=nmodesMax,which = 'LR')
         
-        modes = propagationModes()
+        modes = Modes()
         modes.wl = self.wl
         modes.indexProfile = self.indexProfile
         # select only the propagating modes
         for i,betasq in enumerate(res[0]):
-            if curvature is not None or (betasq > beta_min**2 and betasq < beta_max**2):
+            #if curvature is not None or (betasq > beta_min**2 and betasq < beta_max**2):
                 modes.betas.append(np.sqrt(betasq))
                 modes.number+=1
                 modes.profiles.append(res[1][:,i])
