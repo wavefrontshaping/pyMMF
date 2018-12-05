@@ -12,6 +12,8 @@ import scipy.sparse as sparse
 from scipy.sparse.linalg import eigsh, eigs
 from scipy.linalg import expm
 from scipy.special import jv,kv,iv
+from scipy.ndimage.interpolation import shift as scipy_shift
+from scipy.ndimage.interpolation import rotate as scipy_rotate
 import logging, sys, time
 
 
@@ -83,7 +85,7 @@ class Modes():
         self.wl = None
         
         
-    def getModeMatrix(self,npola = 1):
+    def getModeMatrix(self,npola = 1, shift = None, angle = None):
         '''
     	Returns the matrix containing the mode profiles. 
         Note that while you can set two polarizations, the modes profiles are obtained under a scalar apporoximation.
@@ -94,6 +96,17 @@ class Modes():
     	npola : int (1 or 2)
     		number of polarizations considered. For npola = 2, the mode matrix will be a block diagonal matrix.
     		
+        shift : list or None
+            (slow) value of a coordinate offset, allows to return the mode matrix for a fiber with the center shited with regard
+            to the center of the observation window.
+            defaults to None
+            
+        rotation: float or None
+            (slow) angle in radians, allows to rotate the mode matrix with an arbitrary angle.
+            Note that the rotation is applied BEFORE the transverse shift.
+            defaults to None
+            
+            
     	Returns
     	-------
     	
@@ -101,16 +114,36 @@ class Modes():
     		the matrix representing the basis of the propagating modes.
         '''
         assert(self.profiles)
+        if shift is not None:
+            assert(len(shift)==2)
     
         N = self.profiles[0].shape[0]
         M = np.zeros((N*npola, npola*self.number), dtype = np.complex128)
+        angle = angle/np.pi*180. if (angle is not None) else None
   
         
         for pol in range(npola):
         
             for ind,modeProfile in enumerate(self.profiles):
                 
-                M[pol*N:(pol+1)*N,pol*self.number+ind] = modeProfile#.reshape(1,self._npoints**2)
+                if (shift is None and angle is None):
+                    M[pol*N:(pol+1)*N,pol*self.number+ind] = modeProfile#.reshape(1,self._npoints**2)
+                else:
+                    mode2D = modeProfile.real.reshape([self.indexProfile.npoints]*2)
+                
+                    if angle is not None:
+                        mode2D = \
+                            scipy_rotate(mode2D.real,angle,reshape=False) + \
+                            complex(0,1)*scipy_rotate(mode2D.imag,angle,reshape=False)
+                
+                    if shift is not None:
+                
+                        mode2D = \
+                            scipy_shift(input=mode2D.real,shift=shift) \
+                            + complex(0,1)*scipy_shift(input=mode2D.imag,shift=shift)
+
+                    M[pol*N:(pol+1)*N,pol*self.number+ind] = mode2D.flatten()
+
 
         self.modeMatrix = M
 
@@ -502,7 +535,4 @@ class IndexProfile():
         self.n = self.n + ((self.R > r)*((np.exp(1e-3*np.abs(self.R - r))-1.)*complex(0,1))).flatten()
         
         
-
-		
-
 
