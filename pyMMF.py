@@ -430,8 +430,7 @@ class propagationModeSolver():
         
         beta_min = k0*np.min(self.indexProfile.n)
         beta_max =  k0*np.max(self.indexProfile.n)
-        print(beta_min)
-        print(beta_max)
+
 
         # Finds the eigenvalues of the operator with the greatest real part
         res = eigs(H,k=nmodesMax,which = 'LR')
@@ -441,7 +440,7 @@ class propagationModeSolver():
         modes.indexProfile = self.indexProfile
         # select only the propagating modes
         for i,betasq in enumerate(res[0]):
-            #if curvature is not None or (betasq > beta_min**2 and betasq < beta_max**2):
+            if curvature is not None or (betasq > beta_min**2 and betasq < beta_max**2):
                 modes.betas.append(np.sqrt(betasq))
                 modes.number+=1
                 modes.profiles.append(res[1][:,i])
