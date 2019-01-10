@@ -3,6 +3,12 @@
 Simple module to find numerically the propagation modes and their corresponding propagation constants
 of multimode fibers of arbitrary index profiles.
 
+Based on 
+- http://wavefrontshaping.net/index.php/tutorials
+and
+- M. Plöschner, T. Tyc, and T. Čižmár, Nature Photonics Seeing through chaos in multimode fibres 9, 529–535 (2015).
+https://doi.org/10.1038/nphoton.2015.112
+
 written by Sebastien M. Popoff
 """
 
@@ -87,30 +93,30 @@ class Modes():
         
     def getModeMatrix(self,npola = 1, shift = None, angle = None):
         '''
-    	Returns the matrix containing the mode profiles. 
-        Note that while you can set two polarizations, the modes profiles are obtained under a scalar apporoximation.
-    	
-    	Parameters
-    	----------
-    	
-    	npola : int (1 or 2)
-    		number of polarizations considered. For npola = 2, the mode matrix will be a block diagonal matrix.
-    		
-        shift : list or None
-            (slow) value of a coordinate offset, allows to return the mode matrix for a fiber with the center shited with regard
-            to the center of the observation window.
-            defaults to None
-            
-        rotation: float or None
-            (slow) angle in radians, allows to rotate the mode matrix with an arbitrary angle.
-            Note that the rotation is applied BEFORE the transverse shift.
-            defaults to None
-            
-            
-    	Returns
-    	-------
-    	
-    	M : numpy array
+        	Returns the matrix containing the mode profiles. 
+            Note that while you can set two polarizations, the modes profiles are obtained under a scalar apporoximation.
+        	
+        	Parameters
+        	----------
+        	
+        	npola : int (1 or 2)
+        		number of polarizations considered. For npola = 2, the mode matrix will be a block diagonal matrix.
+        		
+            shift : list or None
+                (slow) value of a coordinate offset, allows to return the mode matrix for a fiber with the center shited with regard
+                to the center of the observation window.
+                defaults to None
+                
+            rotation: float or None
+                (slow) angle in radians, allows to rotate the mode matrix with an arbitrary angle.
+                Note that the rotation is applied BEFORE the transverse shift.
+                defaults to None
+                
+                
+        	Returns
+        	-------
+        	
+        	M : numpy array
     		the matrix representing the basis of the propagating modes.
         '''
         assert(self.profiles)
@@ -195,23 +201,23 @@ class Modes():
         '''
         Returns the transmission matrix for a given fiber length. 
         Note that while you can set two polarizations, the modes profiles are obtained under a scalar apporoximation.
-    	
-    	Parameters
-    	----------
-    	
-    	distance : float
-    		size of the fiber segment (in meters)
-
-        npola : int (1 or 2)
-    		number of polarizations considered. For npola = 2, the mode matrix will be a block diagonal matrix.
-    		
-        curvature: float
-            curvature of the fiber segment (in meters)
-
-    	Returns
-    	-------
-    	
-    	B : numpy array
+        	
+        	Parameters
+        	----------
+        	
+        	distance : float
+        		size of the fiber segment (in meters)
+    
+            npola : int (1 or 2)
+        		number of polarizations considered. For npola = 2, the mode matrix will be a block diagonal matrix.
+        		
+            curvature: float
+                curvature of the fiber segment (in meters)
+    
+        	Returns
+        	-------
+        	
+        	B : numpy array
     		the transmission matrix of the fiber.
         '''
         B = self.getEvolutionOperator(npola,curvature)
@@ -261,6 +267,31 @@ def estimateNumModesGRIN(wl,a,NA):
     k0 = 2.*np.pi/wl
     V = k0*a*NA
     return np.ceil(V**2/4.).astype(int)
+
+def estimateNumModesSI(wl,a,NA):
+    '''
+	Returns a rough estimation of the number of propagating modes of a step index fiber.
+    See https://www.rp-photonics.com/v_number.html for more details.
+	
+	Parameters
+	----------
+	
+	wl : float
+		Wavelength (in microns)
+	a :  float
+		Radius of the fiber (in microns)
+    NA : float
+		Numerical aperture of the fiber
+		
+	Returns
+	-------
+	
+	N : integer
+		Estimation of the number of propagating modes
+    '''
+    k0 = 2.*np.pi/wl
+    V = k0*a*NA
+    return np.ceil(V**2/2.).astype(int)
 
 def LPModeProfile(m,psi,u,w,a,npoints,areasize,coordtype='cart',forFFT = 0,inf_profile = False):
     '''
@@ -333,6 +364,7 @@ class propagationModeSolver():
         self.indexProfile = None
         self.wl = None
         self.last_res = None
+        self.poisson = 0.5
         
         logger.debug('Debug mode ON.')
         
@@ -342,7 +374,28 @@ class propagationModeSolver():
         self.indexProfile = indexProfile
         
     def setWL(self,wl):
+        '''
+        Set the wavelength (in microns).
+        
+        Parameters
+	    ----------
+	    
+	    wl : float
+            Wavelength in microns.
+        '''
         self.wl = wl
+        
+    def setPoisson(self,poisson):
+        self.poisson = poisson
+        '''
+        Set the poisson coefficient. The default value is 0.5 (no effect of compression/dilatation)
+        
+        Parameters
+	    ----------
+	    
+	    poisosn : float
+            Poisson coefficient of the fiber material.
+        '''
         
 
         
@@ -367,7 +420,7 @@ class propagationModeSolver():
             Stores data in the propagationModeSolver object is set to True
             defaults to True
         curvature: float
-            Curvature of the finer in meters
+            Curvature of the fiber in meters
             defaults to None
 		    
 	    Returns
@@ -386,7 +439,8 @@ class propagationModeSolver():
         npoints = self.indexProfile.npoints
         diags = []
         
-       
+        ## Construction of the operator
+        
         diags.append(-4./dh**2+k0**2*self.indexProfile.n.flatten()**2)
         
         if boundary == 'periodic':
@@ -413,7 +467,13 @@ class propagationModeSolver():
             
             
         if curvature is not None:
-            curv_term = (1.+self.indexProfile.X.flatten()/curvature)**2
+            # xi term, 
+            # - the 1. term represent the geometrical effect
+            # - the term in (1-2*poisson_coeff) represent the effect of compression/dilatation
+            # see http://wavefrontshaping.net/index.php/68-community/tutorials/multimode-fibers/149-multimode-fiber-modes-part-2
+            #xi = 1.-(self.indexProfile.n.flatten()-1.)/self.indexProfile.n.flatten()*(1.-2.*self.poisson)
+            xi = 1.
+            curv_term = (1.+2*xi*self.indexProfile.X.flatten()/curvature)
             diags[0] = diags[0]/curv_term
             diags[1] = diags[1]/curv_term[1:]
             diags[2] = diags[2]/curv_term[:-1]
@@ -494,7 +554,6 @@ class IndexProfile():
         self.n = np.zeros([npoints]*2)
         self.areaSize = areaSize
         x = np.linspace(-areaSize/2,areaSize/2,npoints)
-        #x = np.arange(-npoints/2,npoints/2,1)*areaSize/npoints+1e-9
         self.X,self.Y = np.meshgrid(x,x)
         self.TH, self.R = cart2pol(self.X, self.Y)
         self.dh = 1.*self.areaSize/self.npoints
