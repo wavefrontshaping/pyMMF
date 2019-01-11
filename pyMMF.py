@@ -484,7 +484,7 @@ class propagationModeSolver():
 
             
         
-        H = sparse.diags(diags,[0,-1,1,-npoints,npoints])
+        H = sparse.diags(diags,[0,-1,1,-npoints,npoints], dtype = np.complex128)
         self.H = H
         
         
