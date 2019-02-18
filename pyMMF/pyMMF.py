@@ -21,6 +21,8 @@ from scipy.special import jv,kv,iv
 from scipy.ndimage.interpolation import shift as scipy_shift
 from scipy.ndimage.interpolation import rotate as scipy_rotate
 import logging, sys, time
+from . import SI
+from .index_profile import IndexProfile 
 
 
 def _get_logger():
@@ -103,7 +105,7 @@ class Modes():
         		number of polarizations considered. For npola = 2, the mode matrix will be a block diagonal matrix.
         		
             shift : list or None
-                (slow) value of a coordinate offset, allows to return the mode matrix for a fiber with the center shited with regard
+                (slow) value of a coordinate offset, allows to return the mode matrix for a fiber with the center shifted with regard
                 to the center of the observation window.
                 defaults to None
                 
@@ -135,7 +137,7 @@ class Modes():
                 if (shift is None and angle is None):
                     M[pol*N:(pol+1)*N,pol*self.number+ind] = modeProfile#.reshape(1,self._npoints**2)
                 else:
-                    mode2D = modeProfile.real.reshape([self.indexProfile.npoints]*2)
+                    mode2D = modeProfile.reshape([self.indexProfile.npoints]*2)
                 
                     if angle is not None:
                         mode2D = \
@@ -178,13 +180,60 @@ class Modes():
             
     
     def getEvolutionOperator(self,npola = 1,curvature = None):
+        '''
+        Returns the evolution operator B of the fiber. 
+        The diagonal of the evolution operator correspond to the propagation constants.
+        The off-diagonal terms account for the mode coupling.
+        The transmission matrix of the fiber reads exp(iBL) with L the propagation distance.
+        For a straight fiber, B is a diagonal matrix.
         
+        One can add the effect of curvature to a system solved for a straight fiber.
+        It returns then the evolution operator in the basis of the straight fiber modes.
+        The calculation is different from directly solving the system for a bent fiber [1]_ [2]_.
+
+        
+        
+        Parameters
+        ----------
+        npola : int (1 or 2)
+        		number of polarizations considered. 
+            defaults to 1
+            
+        curvature: float (optional)
+            curvature (in microns)
+            defaults to None
+            
+        Returns
+        -------
+        B : numpy array
+            The propagation operator
+        
+        See Also
+        --------
+            getPropagationMatrix()
+        
+        Notes
+        -----
+             
+        .. [1]  M. Plöschner, T. Tyc and T. Čižmár, "Seeing through chaos in multimode fibres" 
+                Nature Photonics, vol. 9,
+                pp. 529–535, 2015.
+                
+        .. [2]  S. M. Popoff, "Numerical Estimation of Multimode Fiber Modes and Propagation Constants: Part 2, Bent Fibers" 
+                http://wavefrontshaping.net/index.php/component/content/article/68-community/tutorials/multimode-fibers/149-multimode-fiber-modes-part-2
+                
+        '''
         betas_vec = self.betas*npola
         B = np.diag(betas_vec).astype(np.complex128)
         
         if curvature is not None:
             assert(self.wl)
             assert(self.indexProfile)
+            try:
+                assert(self.curvature == None)
+            except:
+                logger.error("Adding curvature to the propagation operator requires the system to be solved for a straight fiber!")
+                return
             if self.modeMatrix is None:
                 self.getModeMatrix(npola = npola)
             M = self.getModeMatrix()
@@ -192,35 +241,51 @@ class Modes():
             A = M.transpose().conjugate().dot(x).dot(M)
             k0 = 2*np.pi/self.wl
 
-            B = B - np.mean(self.indexProfile.n)*k0/curvature*A
+            B = B - np.min(self.indexProfile.n)*k0/curvature*A
             
         return B
         
     
     def getPropagationMatrix(self,distance,npola = 1,curvature = None):
         '''
-        Returns the transmission matrix for a given fiber length. 
+        Returns the transmission matrix T for a given fiber length in the basis of the fiber modes. 
         Note that while you can set two polarizations, the modes profiles are obtained under a scalar apporoximation.
+        For a straight fiber, T is a diagonal matrix.
+        
+        One can add the effect of curvature to a system solved for a straight fiber.
+        It returns then the evolution operator in the basis of the straight fiber modes.
+        The calculation is different from directly solving the system for a bent fiber [1]_.
         	
-        	Parameters
-        	----------
+        Parameters
+        ----------
         	
-        	distance : float
+        distance : float
         		size of the fiber segment (in meters)
     
-            npola : int (1 or 2)
+        npola : int (1 or 2)
         		number of polarizations considered. For npola = 2, the mode matrix will be a block diagonal matrix.
         		
-            curvature: float
-                curvature of the fiber segment (in meters)
+        curvature : float
+            curvature of the fiber segment (in microns)
     
-        	Returns
-        	-------
+        Returns
+        -------
         	
-        	B : numpy array
-    		the transmission matrix of the fiber.
+        	T : numpy array
+        		The transmission matrix of the fiber.
+                
+        See Also
+        --------
+            getEvolutionOperator()
+        
+        Notes
+        -----
+             
+        .. [1]  M. Plöschner, T. Tyc and T. Čižmár, "Seeing through chaos in multimode fibres" 
+                Nature Photonics, vol. 9,
+                pp. 529–535, 2015.
         '''
-        B = self.getEvolutionOperator(npola,curvature)
+        T = self.getEvolutionOperator(npola,curvature)
         
 
       
@@ -386,20 +451,20 @@ class propagationModeSolver():
         self.wl = wl
         
     def setPoisson(self,poisson):
-        self.poisson = poisson
         '''
         Set the poisson coefficient. The default value is 0.5 (no effect of compression/dilatation)
         
         Parameters
 	    ----------
 	    
-	    poisosn : float
+	    poisson : float
             Poisson coefficient of the fiber material.
         '''
+        self.poisson = poisson
         
 
         
-    def solve(self,nmodesMax=6,boundary = 'close',storeData = True,curvature = None):
+    def solve(self,nmodesMax=6,boundary = 'close',storeData = True,curvature = None, mode = 'default'):
         '''
 	    Find the first modes of a multimode fiber. The index profile has to be set.
         Returns a Modes structure containing the mode information.
@@ -422,6 +487,9 @@ class propagationModeSolver():
         curvature: float
             Curvature of the fiber in meters
             defaults to None
+        mode: string
+            
+            detauls to 'default'
 		    
 	    Returns
 	    -------
@@ -538,59 +606,7 @@ class propagationModeSolver():
         logger.info('Data saved to %s.' % outfile)
         
 
-class IndexProfile():
-    def __init__(self,npoints,areaSize):
-        '''
-		Parameters
-		----------
-		
-		npoints : int
-			size in pixels of the area
-			
-		areaSize : float
-			 size in um of the area (let it be larger that the core size!)
-        '''
-        self.npoints = npoints
-        self.n = np.zeros([npoints]*2)
-        self.areaSize = areaSize
-        x = np.linspace(-areaSize/2,areaSize/2,npoints)
-        self.X,self.Y = np.meshgrid(x,x)
-        self.TH, self.R = cart2pol(self.X, self.Y)
-        self.dh = 1.*self.areaSize/self.npoints
-	
-    def initFromArray(self,n_array):
-        assert(n_array.shape == self.n.shape)
-        self.n = n_array
-        self.NA = None
-        self.radialFunc = None
-		
-    def initFromRadialFunction(self, nr):
-        self.radialFunc = nr
-        self.n = np.fromiter((nr(i) for i in self.R.reshape([-1])), np.float32)
-        
-    def initParabolicGRIN(self,n1,a,NA):
-        self.NA = NA
-        self.a = a
-        n2 = np.sqrt(n1**2-NA**2)
-        Delta = NA**2/(2.*n1**2)
-		
-        radialFunc = lambda r: np.sqrt(n1**2.*(1.-2.*(r/a)**2*Delta)) if r<a else n2
-        
-        self.initFromRadialFunction(radialFunc)
-        
-    def initStepIndex(self,n1,a,NA):
-        self.NA = NA
-        self.a = a
-        n2 = np.sqrt(n1**2-NA**2)
-        #Delta = NA**2/(2.*n1**2)
-        
-        radialFunc = lambda r: n1 if r<a else n2
-		
-        self.initFromRadialFunction(radialFunc)
-        
-    def addAbsLayer(self,r):
-#        assert(self.n)
-        self.n = self.n + ((self.R > r)*((np.exp(1e-3*np.abs(self.R - r))-1.)*complex(0,1))).flatten()
+
         
         
 
