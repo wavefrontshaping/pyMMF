@@ -11,7 +11,7 @@ if os.path.exists('README.txt'):
 
 
 setup(name='pyMMF',
-    version='0.1',
+    version='0.3.0',
     description='Multimode optical fiber simulation package.',
     author='Sebastien M. Popoff',
     author_email='sebastien.popoff@espci.psl.eu',
