@@ -30,7 +30,10 @@ python setup.py install
 The sovler solve, for a given index profile, the transverse part of the **scalar** propagation equation.
 It finds the modes by numerically finding the eigenvalues of the transverse operator represented as a large but sparse matrix on a square mesh.
 The eigenvectors represent the mode profiles and the eigenvalues give the corresponding propagation constants.
-The solver needs to know how many modes you want to compute, if the number set is higher than the number of propagationg modes, it will only returns the propagating modes (this works if the curvature is set to None, i.e. for a straight fiber).
+The solver needs to know how many modes you want to compute, if the number set is higher than the number of propagationg modes, it will only returns the propagating modes.
+More detailed explanations can be found is this two-part tutorial:
+[Finding modes of straight fibers](http://wavefrontshaping.net/index.php/68-community/tutorials/multimode-fibers/149-multimode-fiber-modes-part-2)
+[Finding modes of bent fibers](http://wavefrontshaping.net/index.php/component/content/article/68-community/tutorials/multimode-fibers/148-multimode-fiber-modes-part-1)
 
 ## Examples
 
