@@ -120,8 +120,8 @@ def findPropagationConstants(wl,indexProfile, tol=1e-9):
            
             degeneracy = 1 if m == 0 else 2
             modes.betas = np.concatenate((modes.betas, [np.sqrt((2*np.pi/lbda*n1)**2-(r/a)**2) for r in roots]*degeneracy))
-            modes.u = np.concatenate((modes.u,roots*degeneracy))
-            modes.w = np.concatenate((modes.w,[np.sqrt(v**2-r**2) for r in roots]*degeneracy))
+            modes.u = np.concatenate((modes.u,roots*degeneracy)).tolist()
+            modes.w = np.concatenate((modes.w,[np.sqrt(v**2-r**2) for r in roots]*degeneracy)).tolist()
             modes.number += len(roots)*degeneracy
             modes.m.extend([m]*len(roots)*degeneracy)
 #            if degeneracy == 2:

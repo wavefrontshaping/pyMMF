@@ -94,6 +94,22 @@ class Modes():
 
         return M     
     
+    def sort(self):
+        idx = np.flip(np.argsort(self.betas), axis=0)
+        self.betas = [self.betas[i] for i in idx]
+        if self.u:
+            self.u = [self.u[i] for i in idx]
+        if self.w:
+            self.w = [self.w[i] for i in idx]
+        if self.m:
+            self.m = [self.m[i] for i in idx]
+        if self.l:
+            self.l = [self.l[i] for i in idx]
+        if self.profiles:
+            self.profiles = [self.profiles[i] for i in idx]
+        if self.modesList:
+            self.modesList = [self.modesList[i] for i in idx]
+        
     def getNearDegenerate(self,tol=1e-2,sort=False):
         '''
         Find the groups of near degenerate modes with a given tolerence.
