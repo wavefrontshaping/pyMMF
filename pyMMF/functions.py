@@ -55,11 +55,15 @@ def associateLPModeProfiles(modes,indexProfile):
   
     for idx in range(modes.number):
         m = modes.m[idx]
+        l = modes.l[idx]
         u = modes.u[idx]
         w = modes.w[idx]
         
         # two pi/2 rotated degenerate modes for m > 0
-        psi = 0
+        if idx > 0 and (m,l) in zip(modes.m[:idx-1],modes.l[:idx-1]):
+            psi = np.pi/2
+        else:
+            psi = 0
         # Non-zero transverse component
         Et = ( jv(m,u/a*R)/jv(m,u)*np.cos(m*TH+psi)*(R <= a) + \
              kv(m,w/a*R)/kv(m,w)*np.cos(m*TH+psi)*(R > a))

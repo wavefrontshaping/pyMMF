@@ -184,11 +184,38 @@ class propagationModeSolver():
         '''
         Find the propagation constants and mode profile of a multimode fiber.
         For an arbitrary index profile, it finds the solution of the eigenvalue problem of the scalar wave equation in a discretized space [1].
+        
+        Parameters
+        ----------
+        storeData: bool
+            Stores data in the propagationModeSolver object is set to True
+            defaults to True
+        curvature: float
+            Curvature of the fiber in meters
+            defaults to None
+        mode: string ('default','eig' or 'SI')
+            solver to be used. 
+            'eig' solves the eigenvalue problem in the discretized space.
+            'SI' solves numerically the analytical dispersion relation and approximate modes to LP modes.
+            'default' use the best appropriate solver.
+            detauls to 'default'
+        **options: dict
+            specific options for the solver
+		    
+        Returns
+        -------
+        modes : Modes
+		    Modes object containing all the mode information.
+                     
+        See Also
+        --------
+            solve_eig()
+        
         '''
         assert(self.indexProfile)
         assert(self.wl)
         
-        if (mode == 'default' or mode == 'SI') and self.indexProfile.type == 'SI':
+        if self.indexProfile.type == 'SI' and (mode == 'SI'  or (mode == 'default' and not curvature)):
             if curvature is not None:
                 logger.info('Semi-analytical solution of step-index fiber is not compatible with curvature.')
                 return
@@ -198,6 +225,9 @@ class propagationModeSolver():
             
         elif mode == 'default' or mode == 'eig':
             modes = self.solve_eig(curvature=curvature,**options)
+        
+        else:
+            raise ValueError('Invalid mode')
             
         if storeData:
             self.modes = modes
@@ -209,7 +239,7 @@ class propagationModeSolver():
         modes.curvature = curvature
         return modes
         
-    def solve_eig(self,curvature,nmodesMax=6,boundary = 'close', propag_only = True):#,storeData = True,curvature = None):
+    def solve_eig(self,curvature,nmodesMax=6,boundary = 'close', propag_only = True):
         '''
 	    Find the first modes of a multimode fiber. The index profile has to be set.
         Returns a Modes structure containing the mode information.
@@ -232,13 +262,16 @@ class propagationModeSolver():
             Curvature of the fiber in meters
             defaults to None
         mode: string
-            
             detauls to 'default'
 		    
         Returns
         -------
 	    modes : Modes
 		    Modes object containing all the mode information.
+            
+        See Also
+        --------
+            solve()
         '''
 
         

@@ -6,8 +6,7 @@ Created on Mon Feb  4 12:02:57 2019
 @author: Sébastien M. Popoff
 """
 
-from scipy.special import jv,kv,iv
-import matplotlib.pyplot as plt
+from scipy.special import jv,kv
 
 #from scipy.signal import find_peaks_cwt
 #import peakutils
@@ -26,6 +25,7 @@ import numpy as np
 from .modes import Modes
 from .logger import get_logger
 from scipy.optimize import root
+from itertools import chain
 
 logger = get_logger(__name__)
 
@@ -124,9 +124,12 @@ def findPropagationConstants(wl,indexProfile, tol=1e-9):
             modes.w = np.concatenate((modes.w,[np.sqrt(v**2-r**2) for r in roots]*degeneracy))
             modes.number += len(roots)*degeneracy
             modes.m.extend([m]*len(roots)*degeneracy)
+#            if degeneracy == 2:
+#                modes.l.extend(list(chain.from_iterable((x+1,x+1) for x in range(len(roots)))))
+#            else:    
             modes.l.extend([x+1 for x in range(len(roots))]*degeneracy)
-            for l in range(len(roots)*degeneracy):
-                modes.modesList.append(str(m)+','+str(l+1))
+#            for l in range(len(roots)*degeneracy):
+#                modes.modesList.append(str(m)+','+str(l+1))
             
         
         m+=1
