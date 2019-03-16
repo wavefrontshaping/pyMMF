@@ -60,15 +60,7 @@ def associateLPModeProfiles(modes,indexProfile):
         w = modes.w[idx]
         
         # two pi/2 rotated degenerate modes for m > 0
-        print('++'*10)
-        print(f"m={m},l={l}")
-        print('--'*10)
-        print(modes.m[:idx])
-        print(modes.l[:idx])
-        print('--'*10)
-#        print(zip(modes.m[:idx-1],modes.l[:idx-1]))
         if  (m,l) in zip(modes.m[:idx],modes.l[:idx]):
-            print('switch!')
             psi = np.pi/2
         else:
             psi = 0
