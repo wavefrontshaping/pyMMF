@@ -77,6 +77,7 @@ profile.initParabolicGRIN(n1=n1,a=radius,NA=NA)
 We then give the profile and the wavelength to the solver
 
 ```python
+solver = pyMMF.propagationModeSolver()
 solver.setIndexProfile(profile)
 solver.setWL(wl)
 ```
