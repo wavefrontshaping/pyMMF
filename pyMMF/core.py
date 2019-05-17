@@ -214,6 +214,24 @@ class propagationModeSolver():
         '''
         assert(self.indexProfile)
         assert(self.wl)
+
+        # check if cuvature is a list or array of length 2 or None
+        if hasattr(curvature, "__len__") and len(curvature) == 2:
+            if 0 in curvature:
+                logger.error('curvature = 0 not allowed!')
+                raise(ValueError('curvature = 0 not allowed!'))
+        elif curvature == None:
+            pass
+        elif isinstance(curvature, float) or isinstance(curvature, int):
+            # if only one value for curvature, use the curvatrue for the X axis and add curvature = None for the Y axis
+            curvature = [curvature,None]
+        else:
+            logger.error('Wrong type of data for curvature.')
+            raise(ValueError('Wrong type of data for curvature.'))
+            
+        
+            
+        
         
         if self.indexProfile.type == 'SI' and (mode == 'SI'  or (mode == 'default' and not curvature)):
             if curvature is not None:
@@ -237,6 +255,7 @@ class propagationModeSolver():
         modes.indexProfile = self.indexProfile
         modes.wl = self.wl
         modes.curvature = curvature
+
         return modes
         
     def solve_eig(self,curvature,nmodesMax=6,boundary = 'close', propag_only = True):
@@ -326,7 +345,12 @@ class propagationModeSolver():
            
             
 #            curv_mat = sparse.diags(1.-2*xi*self.indexProfile.X.flatten()/curvature, dtype = np.complex128)
-            curv_mat = sparse.diags(1./(1.+2*xi*self.indexProfile.X.flatten()/curvature), dtype = np.complex128)
+            curv_inv_diag = 1.
+            if curvature[0] is not None:
+                curv_inv_diag+=2*xi*self.indexProfile.X.flatten()/curvature[0]
+            if curvature[1] is not None:
+                curv_inv_diag+=2*xi*self.indexProfile.Y.flatten()/curvature[1]   
+            curv_mat = sparse.diags(1./curv_inv_diag, dtype = np.complex128)
 #            curv_mat = sparse.diags(1./(1.+2*xi*self.indexProfile.X.flatten()/curvature), dtype = np.complex128)
 
 

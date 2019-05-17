@@ -251,7 +251,7 @@ class Modes():
         ----------
         	
         distance : float
-        		size of the fiber segment (in meters)
+        		size of the fiber segment (in microns)
     
         npola : int (1 or 2)
         		number of polarizations considered. For npola = 2, the mode matrix will be a block diagonal matrix.
