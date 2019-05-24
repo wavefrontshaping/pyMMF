@@ -381,6 +381,8 @@ class propagationModeSolver():
                 modes.number+=1
                 modes.profiles.append(res[1][:,i])
                 modes.profiles[-1] = modes.profiles[-1]/np.sqrt(np.sum(np.abs(modes.profiles[-1])**2))
+                # is the mode a propagative one?
+                modes.propag.append((betasq > beta_min**2 and betasq < beta_max**2))
                 
         logger.info("Solver found %g modes is %0.2f seconds." % (modes.number,time.time()-t0))
         

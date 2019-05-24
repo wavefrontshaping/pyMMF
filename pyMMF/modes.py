@@ -16,6 +16,7 @@ class Modes():
     
     def __init__(self):
         self.betas = []
+        self.propag = []
         self.u = []
         self.w = []
         self.modesList = []
@@ -178,6 +179,20 @@ class Modes():
         '''
         betas_vec = self.betas*npola
         B = np.diag(betas_vec).astype(np.complex128)
+
+        # check if cuvature is a list or array of length 2 or None
+        if hasattr(curvature, "__len__") and len(curvature) == 2:
+            if 0 in curvature:
+                logger.error('curvature = 0 not allowed!')
+                raise(ValueError('curvature = 0 not allowed!'))
+        elif curvature == None:
+            pass
+        elif isinstance(curvature, float) or isinstance(curvature, int):
+            # if only one value for curvature, use the curvatrue for the X axis and add curvature = None for the Y axis
+            curvature = [curvature,None]
+        else:
+            logger.error('Wrong type of data for curvature.')
+            raise(ValueError('Wrong type of data for curvature.'))
         
         if curvature is not None:
             assert(self.wl)
@@ -193,11 +208,12 @@ class Modes():
                 self.getModeMatrix(npola = npola)
             M = self.getModeMatrix()
             x = np.diag(self.indexProfile.X.flatten())
-            
-            Gamma = M.transpose().conjugate().dot(x).dot(M)
+            Gamma_x = M.transpose().conjugate().dot(x).dot(M)
+            y = np.diag(self.indexProfile.Y.flatten())
+            Gamma_y = M.transpose().conjugate().dot(y).dot(M)
             k0 = 2*np.pi/self.wl
             n_min = np.min(self.indexProfile.n)
-            B = B - n_min*k0/curvature*Gamma
+            B = B - n_min*k0*(1./curvature[0]*Gamma_x+1./curvature[1]*Gamma_y)
             
         return B
     
@@ -205,9 +221,6 @@ class Modes():
         '''
         
         '''
-        betas_vec = self.betas*npola
-        Op = np.diag(1./np.array(betas_vec)**2).astype(np.complex128)
-        
 
         assert(self.wl)
         assert(self.indexProfile)
@@ -219,22 +232,21 @@ class Modes():
         if self.modeMatrix is None:
             self.getModeMatrix(npola = npola)
         M = self.getModeMatrix()
-        x = np.diag(self.indexProfile.X.flatten())
-        
-        Gamma = M.transpose().conjugate().dot(x).dot(M)
-        import matplotlib.pyplot as plt
-        plt.figure()
-        
-#        k0 = 2*np.pi/self.wl
 
-        Op +=  2./curvature*Op.dot(Gamma.astype(np.complex128))
-        plt.imshow(np.abs((1. - 2./curvature*Gamma)))
+
+        B = self.getEvolutionOperator(npola = npola,curvature = curvature)
+
         
-        S,U = np.linalg.eig(Op)
-        new_betas = 1./np.sqrt(S)
+        new_betas,U = np.linalg.eig(B)
+
         new_modes = U.transpose().conjugate().dot(M.transpose().conjugate())
+
+        # sort the modes
+        new_modes = np.stack([m for _,m in sorted(zip(new_betas,new_modes), key=lambda pair: pair[0].real, reverse = True)])
+        new_betas = sorted(new_betas, key=lambda val: val.real, reverse = True)
+
             
-        return new_betas, new_modes
+        return new_betas, new_modes.transpose()
         
     
     def getPropagationMatrix(self,distance,npola = 1,curvature = None):
