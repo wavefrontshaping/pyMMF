@@ -20,28 +20,12 @@ from scipy.linalg import expm
 from scipy.special import jv,kv,iv
 from scipy.ndimage.interpolation import shift as scipy_shift
 from scipy.ndimage.interpolation import rotate as scipy_rotate
-import logging, sys, time
+import sys, time
 from . import SI
 from .index_profile import IndexProfile 
+from .logger import get_logger
 
-
-def _get_logger():
-        loglevel = logging.DEBUG
-        logger = logging.getLogger(__name__)
-        if not getattr(logger, 'handler_set', None):
-            logger.setLevel(logging.INFO)
-            logFormatter = logging.Formatter("%(asctime)s [%(levelname)-7.7s]  %(message)s") #[%(threadName)-12.12s] 
-            fileHandler = logging.FileHandler("{0}/{1}.log".format('./', 'mmfmodesolver'))
-            fileHandler.setFormatter(logFormatter)
-            logger.addHandler(fileHandler)
-            consoleHandler = logging.StreamHandler()
-            consoleHandler.setFormatter(logFormatter)
-            logger.addHandler(consoleHandler)
-            logger.setLevel(loglevel)
-            logger.handler_set = True
-        return logger
-    
-logger = _get_logger()
+logger = get_logger()
 
 def handleException(excType, excValue, traceback, logger=logger):
     logger.error("Uncaught exception", exc_info=(excType, excValue, traceback))
