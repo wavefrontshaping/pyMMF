@@ -64,8 +64,10 @@ def associateLPModeProfiles(modes,indexProfile):
             psi = np.pi/2
         else:
             psi = 0
+        # Avoid division bt zero in the Bessel function
+        R[R<np.finfo(np.float32).eps] = np.finfo(np.float32).eps
         # Non-zero transverse component
-        Et = ( jv(m,u/a*R)/jv(m,u)*np.cos(m*TH+psi)*(R <= a) + \
+        Et = ( jv(m,u/a*R)/jv(m,u)*np.cos(m*TH+psi)*(R <= a)+ \
              kv(m,w/a*R)/kv(m,w)*np.cos(m*TH+psi)*(R > a))
         modes.profiles.append(Et.ravel().astype(np.complex64))
         modes.profiles[-1] = modes.profiles[-1]/np.sqrt(np.sum(np.abs(modes.profiles[-1])**2))
