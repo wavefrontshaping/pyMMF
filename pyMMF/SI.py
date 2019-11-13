@@ -29,6 +29,18 @@ from itertools import chain
 
 logger = get_logger(__name__)
 
+def _root_guesses(f,a,b,dx):
+    x1 = a; f1 = f(a)
+    x2 = a + dx; f2 = f(x2)
+    roots = []
+    while x1 < b:
+        if f1*f2 < 0 and f1*f2 > -1.:
+            roots.append(.5*(x1+x2))
+        x1 = x2; f1 = f2
+        x2 = x1 + dx; f2 = f(x2)
+    return roots
+
+
 
 def findPropagationConstants(wl,indexProfile, tol=1e-9):
     '''
@@ -86,17 +98,18 @@ def findPropagationConstants(wl,indexProfile, tol=1e-9):
     
     
     
+    
     interval = np.arange(np.spacing(10),v-np.spacing(10),v*1e-4)
-
     while(len(roots)>0):
         
         def root_func(u):
             w=np.sqrt(v**2-u**2)
             return jv(m,u)/(u*jv(m-1,u))+kv(m,w)/(w*kv(m-1,w))
                
+        # guesses = _root_guesses(root_func,np.spacing(10),v-np.spacing(10),v*1e-4)
         guesses = np.argwhere(np.abs(np.diff(np.sign(root_func(interval)))))
         froot = lambda x0: root(root_func,x0,tol = tol)
-        sols = list(map(froot,guesses))
+        sols = list(map(froot,interval[guesses]))
         roots = [s.x for s in sols if s.success]
       
         # remove solution outside the valid interval, round the solutions and remove duplicates
