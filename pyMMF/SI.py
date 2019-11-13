@@ -86,7 +86,7 @@ def findPropagationConstants(wl,indexProfile, tol=1e-9):
     
     
     
-    
+    interval = np.arange(np.spacing(10),v-np.spacing(10),v*1e-4)
 
     while(len(roots)>0):
         
