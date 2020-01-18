@@ -238,7 +238,8 @@ class propagationModeSolver():
                 logger.info('Semi-analytical solution of step-index fiber is not compatible with curvature.')
                 return
             modes = SI.findPropagationConstants(self.wl,self.indexProfile)
-            modes = associateLPModeProfiles(modes,self.indexProfile)
+            degenerate_mode = options.get('degenerate_mode','sin')
+            modes = associateLPModeProfiles(modes,self.indexProfile,degenerate_mode=degenerate_mode)
             
             
         elif mode == 'default' or mode == 'eig':
