@@ -118,18 +118,20 @@ class Modes():
         '''
         copy_betas = {i:b for i,b in enumerate(self.betas)}
         groups = []
-        
-        
+
+
         while not (len(copy_betas) == 0):
-            next_ind = np.min(copy_betas.keys())
+            next_ind = np.min(list(copy_betas.keys()))
             beta0 = copy_betas.pop(next_ind)
             current_group = [next_ind]
+            to_remove = []
             for ind in copy_betas.keys():
                 if np.abs(copy_betas[ind]-beta0) <= tol:
-                    copy_betas.pop(ind)
+                    to_remove.append(ind)
                     current_group.append(ind)
+            [copy_betas.pop(x) for x in to_remove];
             groups.append(current_group)
-        
+
         return groups
             
     
