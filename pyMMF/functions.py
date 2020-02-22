@@ -7,7 +7,7 @@ Created on Mon Feb  4 12:02:57 2019
 """
 
 import numpy as np
-from scipy.special import jv,kv
+from scipy.special import jv, kn
 from scipy.ndimage.interpolation import geometric_transform
 import logging
 
@@ -72,14 +72,14 @@ def associateLPModeProfiles(modes, indexProfile, degenerate_mode = 'sin'):
             if  (m,l) in zip(modes.m[:idx],modes.l[:idx]):
                 psi = np.pi/2
             Et = ( jv(m,u/a*R)/jv(m,u)*np.cos(m*TH+psi)*(R <= a)+ \
-                   kv(m,w/a*R)/kv(m,w)*np.cos(m*TH+psi)*(R > a))
+                   kn(m,w/a*R)/kn(m,w)*np.cos(m*TH+psi)*(R > a))
                 
         elif degenerate_mode == 'exp':
             if  (m,l) in zip(modes.m[:idx],modes.l[:idx]):
                 modes.m[idx] = -m
                 m = modes.m[idx]
             Et = ( jv(m,u/a*R)/jv(m,u)*np.exp(1j*m*TH)*(R <= a)+ \
-                   kv(m,w/a*R)/kv(m,w)*np.exp(1j*m*TH)*(R > a))
+                   kn(m,w/a*R)/kn(m,w)*np.exp(1j*m*TH)*(R > a))
                 
       
         

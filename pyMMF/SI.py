@@ -6,7 +6,7 @@ Created on Mon Feb  4 12:02:57 2019
 @author: Sébastien M. Popoff
 """
 
-from scipy.special import jv,kv
+from scipy.special import jv, kn
 
 #from scipy.signal import find_peaks_cwt
 #import peakutils
@@ -104,9 +104,8 @@ def findPropagationConstants(wl,indexProfile, tol=1e-9):
         
         def root_func(u):
             w=np.sqrt(v**2-u**2)
-            return jv(m,u)/(u*jv(m-1,u))+kv(m,w)/(w*kv(m-1,w))
+            return jv(m,u)/(u*jv(m-1,u))+kn(m,w)/(w*kn(m-1,w))
                
-        # guesses = _root_guesses(root_func,np.spacing(10),v-np.spacing(10),v*1e-4)
         guesses = np.argwhere(np.abs(np.diff(np.sign(root_func(interval)))))
         froot = lambda x0: root(root_func,x0,tol = tol)
         sols = list(map(froot,interval[guesses]))
@@ -124,15 +123,8 @@ def findPropagationConstants(wl,indexProfile, tol=1e-9):
             modes.u = np.concatenate((modes.u,roots*degeneracy)).tolist()
             modes.w = np.concatenate((modes.w,[np.sqrt(v**2-r**2) for r in roots]*degeneracy)).tolist()
             modes.number += len(roots)*degeneracy
-            modes.m.extend([m]*len(roots)*degeneracy)
-#            if degeneracy == 2:
-#                modes.l.extend(list(chain.from_iterable((x+1,x+1) for x in range(len(roots)))))
-#            else:    
+            modes.m.extend([m]*len(roots)*degeneracy)  
             modes.l.extend([x+1 for x in range(len(roots))]*degeneracy)
-#            for l in range(len(roots)*degeneracy):
-#                modes.modesList.append(str(m)+','+str(l+1))
-            
-        
         m+=1
     
     logger.info("Found %g modes is %0.2f seconds." % (modes.number,time.time()-t0))

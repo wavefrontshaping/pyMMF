@@ -15,13 +15,8 @@ written by Sebastien M. Popoff
 import numpy as np
 import scipy.sparse as sparse
 from scipy.sparse.linalg import eigs
-#from scipy.linalg import expm
-#from scipy.special import jv,kv,iv
-#from scipy.ndimage.interpolation import shift as scipy_shift
-#from scipy.ndimage.interpolation import rotate as scipy_rotate
 import sys, time
 from . import SI
-#from .index_profile import IndexProfile 
 from .modes import Modes
 from .functions import associateLPModeProfiles
 from .logger import get_logger, handleException 
@@ -139,8 +134,6 @@ class propagationModeSolver():
     
     def __init__(self):
         self.betas = []
-        #self.u = []
-        #self.w = []
         self.modes = None
         self.modesList = []
         self.number = 0
