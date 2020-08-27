@@ -13,9 +13,9 @@ from ..modes import Modes
 from ..logger import get_logger
 logger = get_logger(__name__)
 
-MIN_RADIUS_BC = 1.5
-CHANGE_BC_RADIUS_STEP = 0.9
-N_BETA_COARSE = 1e3
+MIN_RADIUS_BC_DEFAULT = 1.5
+CHANGE_BC_RADIUS_STEP_DEFAULT = 0.9
+N_BETA_COARSE_DEFAULT = 1e3
 
 class PrecisionError(Exception):
     pass
@@ -133,6 +133,9 @@ def solve_radial(
     **options
 ):
 
+    min_radius_bc = options.get('min_radius_bc',MIN_RADIUS_BC_DEFAULT)
+    change_bc_radius_step = options.get('change_bc_radius_step',CHANGE_BC_RADIUS_STEP_DEFAULT)
+    N_beta_coarse = options.get('N_beta_coarse',N_BETA_COARSE_DEFAULT)
     r_max = options.get('r_max',indexProfile.areaSize)
     dh = options.get('dh',indexProfile.areaSize/indexProfile.npoints)
     k0 = 2.*np.pi/wl
@@ -145,7 +148,7 @@ def solve_radial(
 
     beta_min = k0*np.min(nr)
     beta_max =  k0*np.max(nr)
-    betas = np.linspace(beta_min,beta_max,N_BETA_COARSE)
+    betas = np.linspace(beta_min,beta_max,N_beta_coarse)
     tol = 1e-6
 
     modes = Modes()
@@ -189,8 +192,8 @@ def solve_radial(
 
             while True:
 
-                if r_max < MIN_RADIUS_BC*radius:
-                    logger.error(f'Error: Boundary condition could not be met for r_max < {MIN_RADIUS_BC}a')
+                if r_max < min_radius_bc*radius:
+                    logger.error(f'Error: Boundary condition could not be met for r_max < {min_radius_bc}a')
                     logger.error('Try lower your tolerence or change the resolution.')
                     raise Exception
 
@@ -222,7 +225,7 @@ def solve_radial(
                 except (RecursionError,PrecisionError) as e:
                     logger.warning(e)
                     logger.warning('Boundary condition could not be met.')
-                    r_max *= CHANGE_BC_RADIUS_STEP
+                    r_max *= change_bc_radius_step
                     logger.warning(f'Retrying by changing r_max to {r_max/radius:.2f}a')
 
             # add mode
