@@ -205,7 +205,6 @@ class Modes():
                 logger.error("Adding curvature to the propagation operator requires the system to be solved for a straight fiber!")
                 return
             
-#            xi = 1- self.
             if self.modeMatrix is None:
                 self.getModeMatrix(npola = npola)
             M = self.getModeMatrix()

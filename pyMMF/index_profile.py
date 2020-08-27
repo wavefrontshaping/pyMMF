@@ -26,6 +26,7 @@ class IndexProfile():
         self.X,self.Y = np.meshgrid(x,x)
         self.TH, self.R = cart2pol(self.X, self.Y)
         self.dh = 1.*self.areaSize/(self.npoints-1.)
+        self.radialFunc = None
 
            
         self.type =  None
