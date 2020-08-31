@@ -207,12 +207,12 @@ class propagationModeSolver():
         assert(self.wl)
 
         # check if cuvature is a list or array of length 2 or None
-        if hasattr(curvature, "__len__") and len(curvature) == 2:
+        if curvature == None:
+            pass
+        elif hasattr(curvature, "__len__") and len(curvature) == 2:
             if 0 in curvature:
                 logger.error('curvature = 0 not allowed!')
                 raise(ValueError('curvature = 0 not allowed!'))
-        elif curvature == None:
-            pass
         elif isinstance(curvature, float) or isinstance(curvature, int):
             # if only one value for curvature, use the curvatrue for the X axis and add curvature = None for the Y axis
             curvature = [curvature,None]

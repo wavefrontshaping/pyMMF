@@ -18,7 +18,7 @@ setup(name='pyMMF',
     url='https://www.wavefrontshaping.net',
     license = 'MIT',
     #py_modules = ['pyMMF'],
-    packages = ['pyMMF'],
+    packages = ['pyMMF','pyMMF.solvers'],
     long_description=long_description,
     classifiers=[
 		"Programming Language :: Python :: 2",
