@@ -17,6 +17,10 @@ MIN_RADIUS_BC_DEFAULT = 1.5
 CHANGE_BC_RADIUS_STEP_DEFAULT = 0.9
 N_BETA_COARSE_DEFAULT = 1e3
 
+# choice for degenerate subspaces
+EXP_PHASE_FUNCS = [lambda x: np.exp(1j*x), lambda x: np.exp(-1j*x)]
+SIN_PHASE_FUNCS = [np.sin, np.cos]
+
 class PrecisionError(Exception):
     pass
 
@@ -132,7 +136,8 @@ def solve_radial(
     wl,
     **options
 ):
-
+    degenerate_mode = options.get('degenerate_mode','sin')
+    phi_funcs = EXP_PHASE_FUNCS if degenerate_mode == 'exp' else SIN_PHASE_FUNCS
     min_radius_bc = options.get('min_radius_bc',MIN_RADIUS_BC_DEFAULT)
     change_bc_radius_step = options.get('change_bc_radius_step',CHANGE_BC_RADIUS_STEP_DEFAULT)
     N_beta_coarse = options.get('N_beta_coarse',N_BETA_COARSE_DEFAULT)
@@ -231,16 +236,20 @@ def solve_radial(
             # add mode
             if m == 0:
                 modes.betas.append(beta)
+                modes.m.append(m)
+                modes.l.append(l)
                 modes.number+=1
                 modes.profiles.append(f(indexProfile.R).ravel())
                 modes.profiles[-1] = modes.profiles[-1]/np.sqrt(np.sum(np.abs(modes.profiles[-1])**2))
                 # is the mode a propagative one?
                 modes.propag.append(True)
             else:
-                for s in [-1,1]:
+                for s, phi_func in zip([-1,1],phi_funcs):
                     modes.betas.append(beta)
+                    modes.m.append(s*m if degenerate_mode == 'exp' else m)
+                    modes.l.append(l)
                     modes.number+=1
-                    modes.profiles.append(f(indexProfile.R).ravel()*np.exp(1j*s*m*indexProfile.TH.ravel()))
+                    modes.profiles.append(f(indexProfile.R).ravel()*phi_func(m*indexProfile.TH.ravel()))
                     modes.profiles[-1] = modes.profiles[-1]/np.sqrt(np.sum(np.abs(modes.profiles[-1])**2))
                     # is the mode a propagative one?
                     modes.propag.append(True)
