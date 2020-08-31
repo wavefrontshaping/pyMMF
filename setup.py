@@ -28,4 +28,10 @@ setup(name='pyMMF',
         "Topic :: Scientific/Engineering",
         "License :: OSI Approved :: MIT License",
     ],
+    install_requires=[
+          'numpy',
+          'matplotlib',
+          'scipy',
+          'numba',
+      ],
     )
