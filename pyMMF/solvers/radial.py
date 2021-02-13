@@ -116,7 +116,7 @@ def scan_betas(m,dh,r,nr,betas,k0):
 
 def binary_search(func, min_val, max_val, sign, prev, tol = 1e-3):
     
-    mid_val = (np.float128(min_val)+np.float128(max_val))/2
+    mid_val = (np.longdouble(min_val)+np.longdouble(max_val))/2
     res = func(mid_val)
     
     if min_val == max_val:

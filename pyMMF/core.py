@@ -46,11 +46,11 @@ class TransmissionMatrix(np.ndarray):
     def polarization_rotation(self,angle):
         if self.npola == 1: return self
         N=self.shape[0]
-        Pola1 = self.view()[:,:N/2]
-        Pola2 = self.view()[:,N/2:N]
+        Pola1 = self.view()[:,:N//2]
+        Pola2 = self.view()[:,N//2:N]
         
-        self.view()[:,:N/2] = Pola1*np.cos(angle)+Pola2*np.sin(angle)
-        self.view()[:,N/2:N] = Pola2*np.cos(angle)-Pola1*np.sin(angle)
+        self.view()[:,:N//2] = Pola1*np.cos(angle)+Pola2*np.sin(angle)
+        self.view()[:,N//2:N] = Pola2*np.cos(angle)-Pola1*np.sin(angle)
         return self
 
 
