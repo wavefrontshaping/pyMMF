@@ -184,14 +184,14 @@ def solve_radial(
                            )
 
         # finds where fN change sign
-        zero_crossings = np.where(np.diff(sign_f))[0] 
+        zero_crossings = np.where(np.diff(sign_f))[0][::-1]
         logger.info(f'Found {len(zero_crossings)} radial mode(s) for m={m}')
         if len(zero_crossings) == 0:
             break
 
         for l,iz in enumerate(zero_crossings):
 
-            logger.info(f'Searching propagation constant for |l| = {l}')
+            logger.info(f'Searching propagation constant for |l| = {l+1}')
             # find the beta value that satisfies the best the boundary condition 
             r_max = np.max(r)
 
@@ -237,7 +237,7 @@ def solve_radial(
             if m == 0:
                 modes.betas.append(beta)
                 modes.m.append(m)
-                modes.l.append(l)
+                modes.l.append(l+1)
                 modes.number+=1
                 modes.profiles.append(f(indexProfile.R).ravel())
                 modes.profiles[-1] = modes.profiles[-1]/np.sqrt(np.sum(np.abs(modes.profiles[-1])**2))
@@ -247,7 +247,7 @@ def solve_radial(
                 for s, phi_func in zip([-1,1],phi_funcs):
                     modes.betas.append(beta)
                     modes.m.append(s*m if degenerate_mode == 'exp' else m)
-                    modes.l.append(l)
+                    modes.l.append(l+1)
                     modes.number+=1
                     modes.profiles.append(f(indexProfile.R).ravel()*phi_func(m*indexProfile.TH.ravel()))
                     modes.profiles[-1] = modes.profiles[-1]/np.sqrt(np.sum(np.abs(modes.profiles[-1])**2))
