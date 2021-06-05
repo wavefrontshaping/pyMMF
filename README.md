@@ -32,8 +32,9 @@ It finds the modes by numerically finding the eigenvalues of the transverse oper
 The eigenvectors represent the mode profiles and the eigenvalues give the corresponding propagation constants.
 The solver needs to know how many modes you want to compute, if the number set is higher than the number of propagationg modes, it will only returns the propagating modes.
 More detailed explanations can be found is this two-part tutorial:
-* [Finding modes of straight fibers](http://wavefrontshaping.net/index.php/68-community/tutorials/multimode-fibers/149-multimode-fiber-modes-part-2)
-* [Finding modes of bent fibers](http://wavefrontshaping.net/index.php/component/content/article/68-community/tutorials/multimode-fibers/148-multimode-fiber-modes-part-1)
+* [Finding modes of straight fibers](https://www.wavefrontshaping.net/post/id/3)
+* [Finding modes of bent fibers](https://www.wavefrontshaping.net/post/id/4)
+* [Fast numerical estimations of axisymmetric multimode fibers modes](https://www.wavefrontshaping.net/post/id/66)
 
 ## Examples
 
