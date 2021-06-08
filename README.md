@@ -95,9 +95,17 @@ NmodesMax = pyMMF.estimateNumModesGRIN(wl,radius,NA)
 
 To be safe, we ask for a bit more than the estimated number of modes previously calculated.
 
-
+##### 2d eigenvalue solver
 ```python
-modes = solver.solve(nmodesMax=NmodesMax+10,boundary = 'close',curvature = curvature)
+modes = solver.solve(nmodesMax=NmodesMax+10,
+                     boundary = 'close',
+                     mode = 'eig',
+                     curvature = curvature)
+```
+
+##### Radial solver
+```python
+modes = solver.solve(mode = 'radial')
 ```
 
 #### Results
