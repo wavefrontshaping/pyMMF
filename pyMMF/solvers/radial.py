@@ -8,6 +8,7 @@ Riccati's equations.
 import numpy as np
 from scipy.interpolate import interp1d
 from numba import jit, double
+import time
 
 from ..modes import Modes
 from ..logger import get_logger
@@ -136,6 +137,9 @@ def solve_radial(
     wl,
     **options
 ):
+    
+    t0 = time.time()
+    
     degenerate_mode = options.get('degenerate_mode','sin')
     phi_funcs = EXP_PHASE_FUNCS if degenerate_mode == 'exp' else SIN_PHASE_FUNCS
     min_radius_bc = options.get('min_radius_bc',MIN_RADIUS_BC_DEFAULT)
@@ -257,4 +261,5 @@ def solve_radial(
         m = m+1
     # sort the modes
     modes.sort()  
+    logger.info("Solver found %g modes is %0.2f seconds." % (modes.number,time.time()-t0))
     return modes
