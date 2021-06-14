@@ -45,7 +45,7 @@ More detailed explanations can be found is this two-part tutorial:
 ```python
 import pyMMF
 import numpy as np
-import matplotlib as pyplot
+import matplotlib.pyplot as plt
 ```
 
 #### Parameters
