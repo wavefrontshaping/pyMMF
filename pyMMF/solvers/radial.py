@@ -84,7 +84,7 @@ def get_field_fast(m, dh, r, nr, beta, k0):
                       r.astype(np.float32), 
                       nr.astype(np.float32), 
                       np.float64(beta),
-                       np.float64(k0)
+                      np.float64(k0)
                      )
 
 
@@ -98,7 +98,7 @@ def scan_betas(m,dh,r,nr,betas,k0):
     return [np.sign(get_field_fast(m,dh,r,nr,beta,k0)[-1]) for beta in betas]
 
 
-def binary_search(func, min_val, max_val, sign, prev, tol=1e-3):
+def binary_search(func, min_val, max_val, sign, tol=1e-3):
 
     if min_val == max_val:
         logger.error('Stagnation due to floating point precision')
@@ -193,7 +193,6 @@ def solve_radial(
                         min_val=betas[iz],
                         max_val=betas[iz+1],
                         sign=sign_f[iz],
-                        prev=None,
                         tol=tol
                     )
                     if not binfo.converged:
@@ -206,7 +205,7 @@ def solve_radial(
                     # assume f = 0 for r>r_max
                     f_interp = np.pad(f_vec, (0,len(r)-len(f_vec)),'constant')
                     # assume f = 0 for r>radius * min_radius_bc
-                    f_interp[r > radius * min_radius_bc] = 0
+                    # f_interp[r > radius * min_radius_bc] = 0
                     f = interp1d(r, f_interp, kind='cubic')
                     break
                 except (RecursionError,PrecisionError) as e:
