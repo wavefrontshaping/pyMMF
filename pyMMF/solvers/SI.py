@@ -12,11 +12,15 @@ from ..modes import Modes
 from ..logger import get_logger
 logger = get_logger(__name__)
 
+from joblib import Parallel, delayed
 
 def solve_SI(indexProfile, wl, **options):
     degenerate_mode = options.get('degenerate_mode','sin')
+    n_jobs = options.get('n_jobs', -2)
     modes = findPropagationConstants(wl,indexProfile)
-    modes = associateLPModeProfiles(modes,indexProfile,degenerate_mode=degenerate_mode)
+    modes = associateLPModeProfiles(modes,indexProfile,
+                                    degenerate_mode=degenerate_mode,
+                                    n_jobs=n_jobs)
     return modes
 
 
@@ -76,7 +80,7 @@ def findPropagationConstants(wl,indexProfile, tol=1e-9):
 
 
     interval = np.arange(np.spacing(10),v-np.spacing(10),v*1e-4)
-    while(len(roots)>0):
+    while len(roots):
         
         def root_func(u):
             w=np.sqrt(v**2-u**2)
@@ -106,14 +110,50 @@ def findPropagationConstants(wl,indexProfile, tol=1e-9):
     return modes
 
 
-def associateLPModeProfiles(modes, indexProfile, degenerate_mode = 'sin'):
+def calc_mode(modes, idx, degenerate_mode, R, a, TH,
+              Rlessa, Rgreatera):
+    m = modes.m[idx]
+    l = modes.l[idx]
+    u = modes.u[idx]
+    w = modes.w[idx]
+
+    phase = m * TH
+    psi = 0
+
+    degenerated = False
+    if (m, l) in zip(modes.m[:idx], modes.l[:idx]):
+        degenerated = True
+
+    # Non-zero transverse component
+    if degenerate_mode == 'sin':
+        # two pi/2 rotated degenerate modes for m > 0
+        if degenerated:
+            psi = np.pi/2
+        phase_mult = np.cos(phase + psi)
+
+    elif degenerate_mode == 'exp':
+        if degenerated:
+            modes.m[idx] = -m
+            m = modes.m[idx]
+        # noticably faster than writing exp(1j*phase)
+        phase_mult = np.cos(phase) + 1j * np.sin(phase)
+
+    Et = phase_mult * (jv(m, u/a*R)/jv(m, u)*Rlessa +
+                       kn(m, w/a*R)/kn(m, w)*Rgreatera)
+    mode = Et.ravel().astype(np.complex64)
+    mode /= np.sqrt(np.sum(np.abs(mode)**2))
+    return mode
+
+
+def associateLPModeProfiles(modes, indexProfile, degenerate_mode='sin',
+                            n_jobs=-2):
     '''
     Associate the linearly polarized mode profile to the corresponding constants found solving the analytical dispersion relation.
     see: "Weakly Guiding Fibers" by D. Golge in Applied Optics, 1971
     '''
     
     assert(not modes.profiles)
-    assert(degenerate_mode in ['sin','exp'])
+    assert(degenerate_mode in ['sin', 'exp'])
     R = indexProfile.R
     TH = indexProfile.TH
     a = indexProfile.a
@@ -122,39 +162,10 @@ def associateLPModeProfiles(modes, indexProfile, degenerate_mode = 'sin'):
     
     # Avoid division bt zero in the Bessel function
     R[R<np.finfo(np.float32).eps] = np.finfo(np.float32).eps
-  
-    for idx in range(modes.number):
-        m = modes.m[idx]
-        l = modes.l[idx]
-        u = modes.u[idx]
-        w = modes.w[idx]
-
-        phase = m * TH
-        psi = 0
-
-        degenerated = False
-        if (m, l) in zip(modes.m[:idx], modes.l[:idx]):
-            degenerated = True
-
-        # Non-zero transverse component
-        if degenerate_mode == 'sin':
-            # two pi/2 rotated degenerate modes for m > 0
-            if degenerated:
-                psi = np.pi/2
-            phase_mult = np.cos(phase + psi)
-
-        elif degenerate_mode == 'exp':
-            if degenerated:
-                modes.m[idx] = -m
-                m = modes.m[idx]
-            # noticably faster than writing exp(1j*phase)
-            phase_mult = np.cos(phase) + 1j * np.sin(phase)
-
-        Et = phase_mult * (jv(m, u/a*R)/jv(m, u)*(R <= a) +
-                           kn(m, w/a*R)/kn(m, w)*(R > a))
-
-        mode = Et.ravel().astype(np.complex64)
-        mode /= np.sqrt(np.sum(np.abs(mode)**2))
-        modes.profiles.append(mode)
-
+    Rlessa = (R <= a)
+    Rgreatera = (R > a)
+    
+    modes.profiles = Parallel(n_jobs=n_jobs)(
+        delayed(calc_mode)(modes, idx, degenerate_mode, R, a, TH,
+                           Rlessa, Rgreatera) for idx in range(modes.number))
     return modes
