@@ -106,7 +106,7 @@ def findPropagationConstants(wl,indexProfile, tol=1e-9):
 
         m += 1
     
-    logger.info("Found %g modes is %0.2f seconds." % (modes.number,time.time()-t0))
+    logger.info("Found %g modes in %0.2f seconds." % (modes.number,time.time()-t0))
     return modes
 
 
@@ -159,7 +159,8 @@ def associateLPModeProfiles(modes, indexProfile, degenerate_mode='sin',
     a = indexProfile.a
     
     logger.info('Finding analytical LP mode profiles associated to the propagation constants.')
-    
+    t0 = time.time()
+
     # Avoid division bt zero in the Bessel function
     R[R<np.finfo(np.float32).eps] = np.finfo(np.float32).eps
     Rlessa = (R <= a)
@@ -168,4 +169,7 @@ def associateLPModeProfiles(modes, indexProfile, degenerate_mode='sin',
     modes.profiles = Parallel(n_jobs=n_jobs)(
         delayed(calc_mode)(modes, idx, degenerate_mode, R, a, TH,
                            Rlessa, Rgreatera) for idx in range(modes.number))
+    logger.info("Found %g LP mode profiles in %0.1f minutes." % (
+        modes.number, (time.time() - t0) / 60))
+
     return modes
