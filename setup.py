@@ -33,5 +33,6 @@ setup(name='pyMMF',
           'matplotlib',
           'scipy',
           'numba',
+          'joblib'
       ],
     )
