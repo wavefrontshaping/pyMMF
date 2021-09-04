@@ -1,3 +1,10 @@
+It is a fork of the original module from Sebastien M. Popoff. 
+This module has some improvements:
+
+1. Semianalytical solver has parallelized by joblib, thanks to which its performance has increased dramatically on thick fibers.
+2. Stability of fast radial solver increased, specifically on thick fibers and small wavelengths.
+
+
 # pyMMF
 
 Simple module to find numerically the propagation modes and their corresponding propagation constants
