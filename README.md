@@ -4,6 +4,10 @@ This module has some improvements:
 1. Semianalytical solver has parallelized by joblib, thanks to which its performance has increased dramatically on thick fibers.
 2. Stability of fast radial solver increased, specifically on thick fibers and small wavelengths.
 
+If the improved module was helpful to your work, please consider citing it:
+
+[![DOI](https://zenodo.org/badge/376397616.svg)](https://zenodo.org/badge/latestdoi/376397616)
+
 
 # pyMMF
 
