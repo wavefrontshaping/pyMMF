@@ -7,7 +7,6 @@ class TestRadialSolver(unittest.TestCase):
     def test_GRIN(self):
         print('Testing radial solver with GRIN fiber')
         data = np.load('GRIN_test_radial.npz', allow_pickle = True)
-        print('>>', data)
         params = data['params'][()]
         M0_benchmark = data['M0']
         
