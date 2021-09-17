@@ -9,7 +9,6 @@ import numpy as np
 from scipy.interpolate import interp1d
 from numba import jit, double
 import time
-from scipy.optimize import bisect
 
 from ..modes import Modes
 from ..logger import get_logger
@@ -117,24 +116,21 @@ def scan_betas(m,dh,r,nr,betas,k0):
     return [np.sign(get_field_fast(m,dh,r,nr,beta,k0)[-1]) for beta in betas]
 
 def binary_search(func, min_val, max_val, sign, prev, tol = 1e-3):
-    return bisect(func, min_val, max_val, xtol=tol, full_output=True)
+    
+    mid_val = (np.longdouble(min_val)+np.longdouble(max_val))/2
+    res = func(mid_val)
+    
+    if min_val == max_val:
+        logger.error('Stagnation due to floating point precision')
+        raise PrecisionError
 
-# def binary_search(func, min_val, max_val, sign, prev, tol = 1e-3):
+    if np.abs(res) < tol:
+        return mid_val
     
-#     mid_val = (np.longdouble(min_val)+np.longdouble(max_val))/2
-#     res = func(mid_val)
-    
-#     if min_val == max_val:
-#         logger.error('Stagnation due to floating point precision')
-#         raise PrecisionError
-
-#     if np.abs(res) < tol:
-#         return mid_val
-    
-#     if sign*res>0:
-#         return binary_search(func, mid_val, max_val, sign, res, tol)
-#     else:
-#         return binary_search(func, min_val, mid_val, sign, res, tol)
+    if sign*res>0:
+        return binary_search(func, mid_val, max_val, sign, res, tol)
+    else:
+        return binary_search(func, min_val, mid_val, sign, res, tol)
     
 def solve_radial(
     indexProfile,
@@ -220,25 +216,14 @@ def solve_radial(
                         return f[-1]/np.max(np.abs(f))
 
 
-#                     beta = binary_search(
-#                         func_fast, 
-#                         min_val = betas[iz], 
-#                         max_val = betas[iz+1], 
-#                         sign = sign_f[iz],
-#                         prev = None,
-#                         tol = tol
-#                     )
-                    beta, binfo = binary_search(
-                        func_fast,
-                        min_val=betas[iz],
-                        max_val=betas[iz+1],
-                        sign=sign_f[iz],
-                        prev=None,
-                        tol=tol
+                    beta = binary_search(
+                        func_fast, 
+                        min_val = betas[iz], 
+                        max_val = betas[iz+1], 
+                        sign = sign_f[iz],
+                        prev = None,
+                        tol = tol
                     )
-                    if not binfo.converged:
-                        logger.info(f'Binary search was not converged with beta={beta},\n{binfo}')
-                        raise RecursionError
                     # get the discretized radial function
                     f_vec = get_field_fast(m,dh,r_search,n_search,beta,k0)
                     # get the radial function by interpolation
