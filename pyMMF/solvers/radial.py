@@ -10,7 +10,6 @@ from scipy.interpolate import interp1d
 from scipy.optimize import bisect
 from numba import jit
 import time
-from scipy.optimize import bisect
 
 from ..modes import Modes
 from ..logger import get_logger
@@ -156,24 +155,21 @@ def binary_search(func, min_val, max_val, sign, beta_tol=1e-12, field_limit_tol=
 
 =======
 def binary_search(func, min_val, max_val, sign, prev, tol = 1e-3):
-    return bisect(func, min_val, max_val, xtol=tol, full_output=True)
+    
+    mid_val = (np.longdouble(min_val)+np.longdouble(max_val))/2
+    res = func(mid_val)
+    
+    if min_val == max_val:
+        logger.error('Stagnation due to floating point precision')
+        raise PrecisionError
 
-# def binary_search(func, min_val, max_val, sign, prev, tol = 1e-3):
+    if np.abs(res) < tol:
+        return mid_val
     
-#     mid_val = (np.longdouble(min_val)+np.longdouble(max_val))/2
-#     res = func(mid_val)
-    
-#     if min_val == max_val:
-#         logger.error('Stagnation due to floating point precision')
-#         raise PrecisionError
-
-#     if np.abs(res) < tol:
-#         return mid_val
-    
-#     if sign*res>0:
-#         return binary_search(func, mid_val, max_val, sign, res, tol)
-#     else:
-#         return binary_search(func, min_val, mid_val, sign, res, tol)
+    if sign*res>0:
+        return binary_search(func, mid_val, max_val, sign, res, tol)
+    else:
+        return binary_search(func, min_val, mid_val, sign, res, tol)
     
 >>>>>>> 3a45a05 (add tests.py)
 def solve_radial(
@@ -254,6 +250,7 @@ def solve_radial(
                         return f[-1]/np.max(np.abs(f))
 
 
+<<<<<<< HEAD
                     beta, binfo = binary_search(
                         func_fast,
                         min_val=betas[iz],
@@ -264,6 +261,16 @@ def solve_radial(
                     )
                     if not binfo.converged:
                         raise BisectNotConvergedError(beta, func_fast(beta), binfo)
+=======
+                    beta = binary_search(
+                        func_fast, 
+                        min_val = betas[iz], 
+                        max_val = betas[iz+1], 
+                        sign = sign_f[iz],
+                        prev = None,
+                        tol = tol
+                    )
+>>>>>>> a851a62 (add GRIN example for radial solver)
                     # get the discretized radial function
                     f_vec = get_field_fast(m,dh,r_search,n_search,beta,k0)
                     # get the radial function by interpolation
