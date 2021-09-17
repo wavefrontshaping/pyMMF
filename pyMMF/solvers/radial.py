@@ -10,6 +10,7 @@ from scipy.interpolate import interp1d
 from scipy.optimize import bisect
 from numba import jit
 import time
+from scipy.optimize import bisect
 
 from ..modes import Modes
 from ..logger import get_logger
@@ -126,6 +127,7 @@ def scan_betas(m,dh,r,nr,betas,k0):
     '''
     return [np.sign(get_field_fast(m,dh,r,nr,beta,k0)[-1]) for beta in betas]
 
+<<<<<<< HEAD
 
 def binary_search(func, min_val, max_val, sign, beta_tol=1e-12, field_limit_tol=1e-3):
     max_val_incr_factor = 1.1
@@ -152,6 +154,28 @@ def binary_search(func, min_val, max_val, sign, beta_tol=1e-12, field_limit_tol=
     return beta, binfo
 
 
+=======
+def binary_search(func, min_val, max_val, sign, prev, tol = 1e-3):
+    return bisect(func, min_val, max_val, xtol=tol, full_output=True)
+
+# def binary_search(func, min_val, max_val, sign, prev, tol = 1e-3):
+    
+#     mid_val = (np.longdouble(min_val)+np.longdouble(max_val))/2
+#     res = func(mid_val)
+    
+#     if min_val == max_val:
+#         logger.error('Stagnation due to floating point precision')
+#         raise PrecisionError
+
+#     if np.abs(res) < tol:
+#         return mid_val
+    
+#     if sign*res>0:
+#         return binary_search(func, mid_val, max_val, sign, res, tol)
+#     else:
+#         return binary_search(func, min_val, mid_val, sign, res, tol)
+    
+>>>>>>> 3a45a05 (add tests.py)
 def solve_radial(
     indexProfile,
     wl,
