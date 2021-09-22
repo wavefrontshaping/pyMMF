@@ -7,35 +7,21 @@ import time
 import numpy as np
 from scipy.optimize import root
 from scipy.special import jv, kn
-from itertools import chain
-
 
 from ..modes import Modes
 from ..logger import get_logger
 logger = get_logger(__name__)
 
-def solve_SI(
-    indexProfile,
-    wl,
-    **options
-):
+from joblib import Parallel, delayed
 
+def solve_SI(indexProfile, wl, **options):
     degenerate_mode = options.get('degenerate_mode','sin')
+    n_jobs = options.get('n_jobs', -2)
     modes = findPropagationConstants(wl,indexProfile)
-    modes = associateLPModeProfiles(modes,indexProfile,degenerate_mode=degenerate_mode)
+    modes = associateLPModeProfiles(modes,indexProfile,
+                                    degenerate_mode=degenerate_mode,
+                                    n_jobs=n_jobs)
     return modes
-
-def _root_guesses(f,a,b,dx):
-    x1 = a; f1 = f(a)
-    x2 = a + dx; f2 = f(x2)
-    roots = []
-    while x1 < b:
-        if f1*f2 < 0 and f1*f2 > -1.:
-            roots.append(.5*(x1+x2))
-        x1 = x2; f1 = f2
-        x2 = x1 + dx; f2 = f(x2)
-    return roots
-
 
 
 def findPropagationConstants(wl,indexProfile, tol=1e-9):
@@ -89,14 +75,12 @@ def findPropagationConstants(wl,indexProfile, tol=1e-9):
     v=(2*np.pi/lbda*NA*a)   
    
     roots = [0]
-    m=0
+    m = 0
     modes = Modes()
-    
-    
-    
-    
+
+
     interval = np.arange(np.spacing(10),v-np.spacing(10),v*1e-4)
-    while(len(roots)>0):
+    while len(roots):
         
         def root_func(u):
             w=np.sqrt(v**2-u**2)
@@ -104,70 +88,88 @@ def findPropagationConstants(wl,indexProfile, tol=1e-9):
                
         guesses = np.argwhere(np.abs(np.diff(np.sign(root_func(interval)))))
         froot = lambda x0: root(root_func,x0,tol = tol)
-        sols = list(map(froot,interval[guesses]))
+        sols = map(froot, interval[guesses])
         roots = [s.x for s in sols if s.success]
       
         # remove solution outside the valid interval, round the solutions and remove duplicates
         roots = np.unique([np.round(r/tol)*tol for r in roots if (r > 0 and r<v)]).tolist()
+        roots_num = len(roots)
 
-        
-        
-        if(len(roots) > 0):
-           
+        if roots_num:
             degeneracy = 1 if m == 0 else 2
-            modes.betas = np.concatenate((modes.betas, [np.sqrt((2*np.pi/lbda*n1)**2-(r/a)**2) for r in roots]*degeneracy))
-            modes.u = np.concatenate((modes.u,roots*degeneracy)).tolist()
-            modes.w = np.concatenate((modes.w,[np.sqrt(v**2-r**2) for r in roots]*degeneracy)).tolist()
-            modes.number += len(roots)*degeneracy
-            modes.m.extend([m]*len(roots)*degeneracy)  
-            modes.l.extend([x+1 for x in range(len(roots))]*degeneracy)
-        m+=1
+            modes.betas.extend([np.sqrt((2*np.pi/lbda*n1)**2-(r/a)**2) for r in roots]*degeneracy)
+            modes.u.extend(roots*degeneracy)
+            modes.w.extend([np.sqrt(v**2-r**2) for r in roots]*degeneracy)
+            modes.number += roots_num*degeneracy
+            modes.m.extend([m]*roots_num*degeneracy)
+            modes.l.extend([x+1 for x in range(roots_num)]*degeneracy)
+
+        m += 1
     
-    logger.info("Found %g modes is %0.2f seconds." % (modes.number,time.time()-t0))
+    logger.info("Found %g modes in %0.2f seconds." % (modes.number,time.time()-t0))
     return modes
 
-def associateLPModeProfiles(modes, indexProfile, degenerate_mode = 'sin'):
+
+def calc_mode(modes, idx, degenerate_mode, R, a, TH,
+              Rlessa, Rgreatera):
+    m = modes.m[idx]
+    l = modes.l[idx]
+    u = modes.u[idx]
+    w = modes.w[idx]
+
+    phase = m * TH
+    psi = 0
+
+    degenerated = False
+    if (m, l) in zip(modes.m[:idx], modes.l[:idx]):
+        degenerated = True
+
+    # Non-zero transverse component
+    if degenerate_mode == 'sin':
+        # two pi/2 rotated degenerate modes for m > 0
+        if degenerated:
+            psi = np.pi/2
+        phase_mult = np.cos(phase + psi)
+
+    elif degenerate_mode == 'exp':
+        if degenerated:
+            modes.m[idx] = -m
+            m = modes.m[idx]
+        # noticably faster than writing exp(1j*phase)
+        phase_mult = np.cos(phase) + 1j * np.sin(phase)
+
+    Et = phase_mult * (jv(m, u/a*R)/jv(m, u)*Rlessa +
+                       kn(m, w/a*R)/kn(m, w)*Rgreatera)
+    mode = Et.ravel().astype(np.complex64)
+    mode /= np.sqrt(np.sum(np.abs(mode)**2))
+    return mode
+
+
+def associateLPModeProfiles(modes, indexProfile, degenerate_mode='sin',
+                            n_jobs=-2):
     '''
     Associate the linearly polarized mode profile to the corresponding constants found solving the analytical dispersion relation.
     see: "Weakly Guiding Fibers" by D. Golge in Applied Optics, 1971
     '''
     
     assert(not modes.profiles)
-    assert(degenerate_mode in ['sin','exp'])
+    assert(degenerate_mode in ['sin', 'exp'])
     R = indexProfile.R
     TH = indexProfile.TH
     a = indexProfile.a
     
     logger.info('Finding analytical LP mode profiles associated to the propagation constants.')
-    
+    t0 = time.time()
+
     # Avoid division bt zero in the Bessel function
     R[R<np.finfo(np.float32).eps] = np.finfo(np.float32).eps
-  
-    for idx in range(modes.number):
-        m = modes.m[idx]
-        l = modes.l[idx]
-        u = modes.u[idx]
-        w = modes.w[idx]
-        
+    Rlessa = (R <= a)
+    Rgreatera = (R > a)
+    
+    modes.profiles = Parallel(n_jobs=n_jobs)(
+        delayed(calc_mode)(modes, idx, degenerate_mode, R, a, TH,
+                           Rlessa, Rgreatera) for idx in range(modes.number))
+    logger.info("Found %g LP mode profiles in %0.1f minutes." % (
+        modes.number, (time.time() - t0) / 60))
 
-        
-        psi = 0
-        # Non-zero transverse component
-        if degenerate_mode == 'sin':
-            # two pi/2 rotated degenerate modes for m > 0
-            if  (m,l) in zip(modes.m[:idx],modes.l[:idx]):
-                psi = np.pi/2
-            Et = ( jv(m,u/a*R)/jv(m,u)*np.cos(m*TH+psi)*(R <= a)+ \
-                   kn(m,w/a*R)/kn(m,w)*np.cos(m*TH+psi)*(R > a))
-                
-        elif degenerate_mode == 'exp':
-            if  (m,l) in zip(modes.m[:idx],modes.l[:idx]):
-                modes.m[idx] = -m
-                m = modes.m[idx]
-            Et = ( jv(m,u/a*R)/jv(m,u)*np.exp(1j*m*TH)*(R <= a)+ \
-                   kn(m,w/a*R)/kn(m,w)*np.exp(1j*m*TH)*(R > a))
-
-        modes.profiles.append(Et.ravel().astype(np.complex64))
-        modes.profiles[-1] = modes.profiles[-1]/np.sqrt(np.sum(np.abs(modes.profiles[-1])**2))
-        
     return modes

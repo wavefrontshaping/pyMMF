@@ -1,0 +1,5 @@
+
+*.pyc
+example/mmf_radial_fix.py
+example/.ipynb_checkpoints/*
+*.log

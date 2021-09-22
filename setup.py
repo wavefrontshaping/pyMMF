@@ -6,23 +6,22 @@ import os
 
 
 long_description='Please read the documentation on Github.'
-if os.path.exists('README.txt'):
-    long_description = open('README.txt').read()
+if os.path.exists('README.md'):
+    long_description = open('README.md').read()
 
 
 setup(name='pyMMF',
-    version='0.4',
+    version='0.5',
     description='Multimode optical fiber simulation package.',
-    author='Sebastien M. Popoff',
+    author='Sebastien M. Popoff & Pavel Gostev',
     author_email='sebastien.popoff@espci.psl.eu',
     url='https://www.wavefrontshaping.net',
     license = 'MIT',
-    #py_modules = ['pyMMF'],
     packages = ['pyMMF','pyMMF.solvers'],
     long_description=long_description,
     classifiers=[
-		"Programming Language :: Python :: 2",
-		"Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 2",
+        "Programming Language :: Python :: 3",
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Education",
         "Topic :: Scientific/Engineering",
@@ -33,5 +32,6 @@ setup(name='pyMMF',
           'matplotlib',
           'scipy',
           'numba',
+          'joblib'
       ],
     )

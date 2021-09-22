@@ -1,3 +1,4 @@
+
 # pyMMF
 
 Simple module to find numerically the propagation modes and their corresponding propagation constants
@@ -24,6 +25,15 @@ Download the file and execute the following command.
 ```shell
 python setup.py install
 ```
+
+## Contributions
+
+This code is written and maintained by S. M. Popoff
+
+I thank contributions from Pavel Gostev [vongostev/pyMMF](https://github.com/vongostev/pyMMF):
+1. Semianalytical solver has parallelized by joblib, thanks to which its performance has increased dramatically on thick fibers.
+2. Stability of fast radial solver increased, specifically on thick fibers and small wavelengths.
+
 
 ## How does it work?
 
