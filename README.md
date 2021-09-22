@@ -1,13 +1,3 @@
-It is a fork of the original module from Sebastien M. Popoff. 
-This module has some improvements:
-
-1. Semianalytical solver has parallelized by joblib, thanks to which its performance has increased dramatically on thick fibers.
-2. Stability of fast radial solver increased, specifically on thick fibers and small wavelengths.
-
-If the improved module was helpful to your work, please consider citing it:
-
-[![DOI](https://zenodo.org/badge/376397616.svg)](https://zenodo.org/badge/latestdoi/376397616)
-
 
 # pyMMF
 
@@ -35,6 +25,15 @@ Download the file and execute the following command.
 ```shell
 python setup.py install
 ```
+
+## Contributions
+
+This code is written and maintained by S. M. Popoff
+
+I thank contributions from Pavel Gostev [vongostev/pyMMF](https://github.com/vongostev/pyMMF):
+1. Semianalytical solver has parallelized by joblib, thanks to which its performance has increased dramatically on thick fibers.
+2. Stability of fast radial solver increased, specifically on thick fibers and small wavelengths.
+
 
 ## How does it work?
 
