@@ -96,8 +96,6 @@ def get_field_fast(m, dh, r, nr, beta, k0):
        a scalar wave approximation" Applied Optics, vol. 30,
        pp. 1113-1116, 1991.
     '''
-#     func = jit('float64[:](int8,float32,float32[:],float32[:],float64)', nopython=True, fastmath=True)(get_field_)
-
     return _get_field_fast(np.int8(m),
                       np.float32(dh),
                       r.astype(np.float32), 
