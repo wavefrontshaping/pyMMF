@@ -37,14 +37,46 @@ I thank contributions from Pavel Gostev [vongostev/pyMMF](https://github.com/von
 
 ## How does it work?
 
-The sovler solve, for a given index profile, the transverse part of the **scalar** propagation equation.
+`pyMMF` proposes different solvers to find the propagation constants and mode profiles of multimode optical fibers.
+They solve the the transverse part of the **scalar** propagation equation.
+
+
+### Semi-analytical solver for step-index
+Ideal step-index fibers allow anlytical dispersion relations and mode profile expressions.
+This solver numericaly solves this relation dispersion and compute the modes using the analytical formula of the modes. 
+It is only valid for ideal step-index fibers.
+
+Use `solver.solve(mode = 'SI', ...)`
+
+### Radial solver
+
+Solver for fibers with an axisymmetric index profile defined by a radial function,
+e.g. graded index fibers.
+It solves the 1D problem using the finite difference recursive scheme for Riccati's equations. 
+It allows finding accurately and quickly the mode profiles and propagation constants for fibers 
+when the index profiles only depends on the radial coordinate.  
+
+More details here:
+* [Fast numerical estimations of axisymmetric multimode fibers modes](https://www.wavefrontshaping.net/post/id/66)
+
+Use `solver.solve(mode = 'radial', ...)`
+
+### Eigenvalue solver
+
 It finds the modes by numerically finding the eigenvalues of the transverse operator represented as a large but sparse matrix on a square mesh.
 The eigenvectors represent the mode profiles and the eigenvalues give the corresponding propagation constants.
 The solver needs to know how many modes you want to compute, if the number set is higher than the number of propagationg modes, it will only returns the propagating modes.
+This solver is slower and requires finer discretisations compared to the radial solver, but it allows using arbitrary, 
+and in particular non-axisymmetric, index profiles.
+It also allows introducing bending to the fiber and finding the modes of the perturbed fiber.
+
 More detailed explanations can be found is this two-part tutorial:
 * [Finding modes of straight fibers](https://www.wavefrontshaping.net/post/id/3)
 * [Finding modes of bent fibers](https://www.wavefrontshaping.net/post/id/4)
-* [Fast numerical estimations of axisymmetric multimode fibers modes](https://www.wavefrontshaping.net/post/id/66)
+
+Use `solver.solve(mode = 'eig', ...)`
+
+
 
 ## Examples
 
@@ -82,7 +114,7 @@ profile = pyMMF.IndexProfile(npoints = npoints, areaSize = areaSize)
 We use the helper function that generates a parabolic index profile:
 
 ```python
-profile.initParabolicGRIN(n1=n1,a=radius,NA=NA)
+profile.initParabolicGRIN(n1=n1, a=radius, NA=NA)
 ```
 
 We then give the profile and the wavelength to the solver
