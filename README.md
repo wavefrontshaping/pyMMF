@@ -169,3 +169,7 @@ plt.imshow(np.real(modes.profiles[m]).reshape([npoints]*2))
 plt.subplot(122)
 plt.imshow(np.imag(modes.profiles[m]).reshape([npoints]*2))
 ```
+
+### Other examples
+
+Other examples are provided as notebooks in the [example](example) folder.
