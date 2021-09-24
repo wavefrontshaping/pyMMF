@@ -51,6 +51,7 @@ def solve_eig(
         nmodesMax= options.get('nmodesMax',6)
         boundary = options.get('boundary','close')
         propag_only = options.get('propag_only',True)
+        poisson = options.get("poisson", 0.5)
 
         t0 = time.time()
         
@@ -105,7 +106,7 @@ def solve_eig(
 #            curv_mat = sparse.diags(1.-2*xi*self.indexProfile.X.flatten()/curvature, dtype = np.complex128)
             curv_inv_diag = 1.
             if curvature[0] is not None:
-                curv_inv_diag+=2*xi*self.indexProfile.X.flatten()/curvature[0]
+                curv_inv_diag+=2*xi*indexProfile.X.flatten()/curvature[0]
             if curvature[1] is not None:
                 curv_inv_diag+=2*xi*indexProfile.Y.flatten()/curvature[1]   
             curv_mat = sparse.diags(1./curv_inv_diag, dtype = np.complex128)
