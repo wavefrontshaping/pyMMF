@@ -251,6 +251,7 @@ class propagationModeSolver():
                 indexProfile = self.indexProfile,
                 wl = self.wl,
                 curvature=curvature,
+                poisson = self.poisson,
                 **options
             )
         else:
