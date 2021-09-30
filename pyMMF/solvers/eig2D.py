@@ -51,14 +51,13 @@ def solve_eig(
         nmodesMax= options.get('nmodesMax',6)
         boundary = options.get('boundary','close')
         propag_only = options.get('propag_only',True)
+        poisson = options.get("poisson", 0.5)
 
         t0 = time.time()
-        
         
         k0 = 2.*np.pi/wl
         npoints = indexProfile.npoints
         diags = []
-        
         logger.info('Solving the spatial eigenvalue problem for mode finding.')   
         
         ## Construction of the operator 
@@ -72,11 +71,8 @@ def solve_eig(
             diags.append([1./dh**2]*npoints*(npoints-1))
             diags.append([1./dh**2]*npoints*(npoints-1))
             
-#            diags.append(([0]*(npoints-1)+[1./dh**2])*(npoints-1)+[0]*(npoints-1))
-#            diags.append(([0]*(npoints-1)+[1./dh**2])*(npoints-1)+[0]*(npoints-1))
             diags.append(([1./dh**2]+[0]*(npoints-1))*(npoints-1)+[1./dh**2])
             diags.append(([1./dh**2]+[0]*(npoints-1))*(npoints-1)+[1./dh**2])
-            
             
             diags.append([1./dh**2]*npoints)
             diags.append([1./dh**2]*npoints)
@@ -101,11 +97,10 @@ def solve_eig(
             # see http://wavefrontshaping.net/index.php/68-community/tutorials/multimode-fibers/149-multimode-fiber-modes-part-2
             xi = 1.-(indexProfile.n.flatten()-1.)/indexProfile.n.flatten()*(1.-2.*poisson)
            
-            
 #            curv_mat = sparse.diags(1.-2*xi*self.indexProfile.X.flatten()/curvature, dtype = np.complex128)
             curv_inv_diag = 1.
             if curvature[0] is not None:
-                curv_inv_diag+=2*xi*self.indexProfile.X.flatten()/curvature[0]
+                curv_inv_diag+=2*xi*indexProfile.X.flatten()/curvature[0]
             if curvature[1] is not None:
                 curv_inv_diag+=2*xi*indexProfile.Y.flatten()/curvature[1]   
             curv_mat = sparse.diags(1./curv_inv_diag, dtype = np.complex128)
