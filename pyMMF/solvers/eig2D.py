@@ -55,11 +55,9 @@ def solve_eig(
 
         t0 = time.time()
         
-        
         k0 = 2.*np.pi/wl
         npoints = indexProfile.npoints
         diags = []
-        
         logger.info('Solving the spatial eigenvalue problem for mode finding.')   
         
         ## Construction of the operator 
@@ -73,11 +71,8 @@ def solve_eig(
             diags.append([1./dh**2]*npoints*(npoints-1))
             diags.append([1./dh**2]*npoints*(npoints-1))
             
-#            diags.append(([0]*(npoints-1)+[1./dh**2])*(npoints-1)+[0]*(npoints-1))
-#            diags.append(([0]*(npoints-1)+[1./dh**2])*(npoints-1)+[0]*(npoints-1))
             diags.append(([1./dh**2]+[0]*(npoints-1))*(npoints-1)+[1./dh**2])
             diags.append(([1./dh**2]+[0]*(npoints-1))*(npoints-1)+[1./dh**2])
-            
             
             diags.append([1./dh**2]*npoints)
             diags.append([1./dh**2]*npoints)
@@ -102,7 +97,6 @@ def solve_eig(
             # see http://wavefrontshaping.net/index.php/68-community/tutorials/multimode-fibers/149-multimode-fiber-modes-part-2
             xi = 1.-(indexProfile.n.flatten()-1.)/indexProfile.n.flatten()*(1.-2.*poisson)
            
-            
 #            curv_mat = sparse.diags(1.-2*xi*self.indexProfile.X.flatten()/curvature, dtype = np.complex128)
             curv_inv_diag = 1.
             if curvature[0] is not None:
