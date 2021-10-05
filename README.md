@@ -76,7 +76,11 @@ More detailed explanations can be found is this two-part tutorial:
 
 Use `solver.solve(mode = 'eig', ...)`
 
-
+### WKB solver
+Find the propagation constants of parabolic GRIN multimode fibers under the WKB (Wentzel–Kramers–Brillouin) approximation [1]_.
+This approximation leads to inaccurate results for modes close to the cutoff, 
+which can be a significant proportion of the modes for typical fibers. 
+It is provided only for comparison. 
 
 ## Examples
 
