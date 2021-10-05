@@ -8,8 +8,6 @@ Created on Mon Feb  4 12:02:57 2019
 
 import numpy as np
 from scipy.linalg import expm
-from scipy.ndimage import rotate as scipy_rotate
-from scipy.ndimage import shift as scipy_shift
 from .logger import get_logger, handleException 
 
 logger = get_logger(__name__)
@@ -18,7 +16,6 @@ class Modes():
     
     def __init__(self):
         self.betas = []
-        self.propag = []
         self.u = []
         self.w = []
         self.modesList = []
@@ -49,7 +46,7 @@ class Modes():
                 to the center of the observation window.
                 defaults to None
                 
-            angle: float or None
+            rotation: float or None
                 (slow) angle in radians, allows to rotate the mode matrix with an arbitrary angle.
                 Note that the rotation is applied BEFORE the transverse shift.
                 defaults to None
@@ -72,7 +69,7 @@ class Modes():
         
         for pol in range(npola):
         
-            for ind, modeProfile in enumerate(self.profiles):
+            for ind,modeProfile in enumerate(self.profiles):
                 
                 if (shift is None and angle is None):
                     M[pol*N:(pol+1)*N,pol*self.number+ind] = modeProfile#.reshape(1,self._npoints**2)
@@ -81,13 +78,14 @@ class Modes():
                 
                     if angle is not None:
                         mode2D = \
-                            scipy_rotate(mode2D.real, angle, reshape=False) + \
-                            complex(0,1)*scipy_rotate(mode2D.imag, angle, reshape=False)
+                            scipy_rotate(mode2D.real,angle,reshape=False) + \
+                            complex(0,1)*scipy_rotate(mode2D.imag,angle,reshape=False)
                 
                     if shift is not None:
+                
                         mode2D = \
-                            scipy_shift(input=mode2D.real, shift=shift) \
-                            + complex(0,1)*scipy_shift(input=mode2D.imag, shift=shift)
+                            scipy_shift(input=mode2D.real,shift=shift) \
+                            + complex(0,1)*scipy_shift(input=mode2D.imag,shift=shift)
 
                     M[pol*N:(pol+1)*N,pol*self.number+ind] = mode2D.flatten()
 
@@ -96,22 +94,6 @@ class Modes():
 
         return M     
     
-    def sort(self):
-        idx = np.flip(np.argsort(self.betas), axis=0)
-        self.betas = [self.betas[i] for i in idx]
-        if self.u:
-            self.u = [self.u[i] for i in idx]
-        if self.w:
-            self.w = [self.w[i] for i in idx]
-        if self.m:
-            self.m = [self.m[i] for i in idx]
-        if self.l:
-            self.l = [self.l[i] for i in idx]
-        if self.profiles:
-            self.profiles = [self.profiles[i] for i in idx]
-        if self.modesList:
-            self.modesList = [self.modesList[i] for i in idx]
-        
     def getNearDegenerate(self,tol=1e-2,sort=False):
         '''
         Find the groups of near degenerate modes with a given tolerence.
@@ -119,20 +101,18 @@ class Modes():
         '''
         copy_betas = {i:b for i,b in enumerate(self.betas)}
         groups = []
-
-
+        
+        
         while not (len(copy_betas) == 0):
-            next_ind = np.min(list(copy_betas.keys()))
+            next_ind = np.min(copy_betas.keys())
             beta0 = copy_betas.pop(next_ind)
             current_group = [next_ind]
-            to_remove = []
             for ind in copy_betas.keys():
                 if np.abs(copy_betas[ind]-beta0) <= tol:
-                    to_remove.append(ind)
+                    copy_betas.pop(ind)
                     current_group.append(ind)
-            [copy_betas.pop(x) for x in to_remove];
             groups.append(current_group)
-
+        
         return groups
             
     
@@ -182,20 +162,6 @@ class Modes():
         '''
         betas_vec = self.betas*npola
         B = np.diag(betas_vec).astype(np.complex128)
-
-        # check if cuvature is a list or array of length 2 or None
-        if hasattr(curvature, "__len__") and len(curvature) == 2:
-            if 0 in curvature:
-                logger.error('curvature = 0 not allowed!')
-                raise(ValueError('curvature = 0 not allowed!'))
-        elif curvature == None:
-            pass
-        elif isinstance(curvature, float) or isinstance(curvature, int):
-            # if only one value for curvature, use the curvatrue for the X axis and add curvature = None for the Y axis
-            curvature = [curvature,None]
-        else:
-            logger.error('Wrong type of data for curvature.')
-            raise(ValueError('Wrong type of data for curvature.'))
         
         if curvature is not None:
             assert(self.wl)
@@ -206,16 +172,16 @@ class Modes():
                 logger.error("Adding curvature to the propagation operator requires the system to be solved for a straight fiber!")
                 return
             
+#            xi = 1- self.
             if self.modeMatrix is None:
                 self.getModeMatrix(npola = npola)
             M = self.getModeMatrix()
             x = np.diag(self.indexProfile.X.flatten())
-            Gamma_x = M.transpose().conjugate().dot(x).dot(M)
-            y = np.diag(self.indexProfile.Y.flatten())
-            Gamma_y = M.transpose().conjugate().dot(y).dot(M)
+            
+            Gamma = M.transpose().conjugate().dot(x).dot(M)
             k0 = 2*np.pi/self.wl
             n_min = np.min(self.indexProfile.n)
-            B = B - n_min*k0*(1./curvature[0]*Gamma_x+1./curvature[1]*Gamma_y)
+            B = B - n_min*k0/curvature*Gamma
             
         return B
     
@@ -223,6 +189,9 @@ class Modes():
         '''
         
         '''
+        betas_vec = self.betas*npola
+        Op = np.diag(1./np.array(betas_vec)**2).astype(np.complex128)
+        
 
         assert(self.wl)
         assert(self.indexProfile)
@@ -234,21 +203,22 @@ class Modes():
         if self.modeMatrix is None:
             self.getModeMatrix(npola = npola)
         M = self.getModeMatrix()
-
-
-        B = self.getEvolutionOperator(npola = npola,curvature = curvature)
-
+        x = np.diag(self.indexProfile.X.flatten())
         
-        new_betas,U = np.linalg.eig(B)
+        Gamma = M.transpose().conjugate().dot(x).dot(M)
+        import matplotlib.pyplot as plt
+        plt.figure()
+        
+#        k0 = 2*np.pi/self.wl
 
+        Op +=  2./curvature*Op.dot(Gamma.astype(np.complex128))
+        plt.imshow(np.abs((1. - 2./curvature*Gamma)))
+        
+        S,U = np.linalg.eig(Op)
+        new_betas = 1./np.sqrt(S)
         new_modes = U.transpose().conjugate().dot(M.transpose().conjugate())
-
-        # sort the modes
-        new_modes = np.stack([m for _,m in sorted(zip(new_betas,new_modes), key=lambda pair: pair[0].real, reverse = True)])
-        new_betas = sorted(new_betas, key=lambda val: val.real, reverse = True)
-
             
-        return new_betas, new_modes.transpose()
+        return new_betas, new_modes
         
     
     def getPropagationMatrix(self,distance,npola = 1,curvature = None):
@@ -265,7 +235,7 @@ class Modes():
         ----------
         	
         distance : float
-        		size of the fiber segment (in microns)
+        		size of the fiber segment (in meters)
     
         npola : int (1 or 2)
         		number of polarizations considered. For npola = 2, the mode matrix will be a block diagonal matrix.
