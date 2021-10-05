@@ -151,9 +151,7 @@ class propagationModeSolver():
         self.poisson = 0.5
         
         logger.debug('Debug mode ON.')
-        
-    
-        
+
     def setIndexProfile(self,indexProfile):
         self.indexProfile = indexProfile
         
@@ -252,7 +250,6 @@ class propagationModeSolver():
                 self.wl,
                 **options
             )
-            
             
         elif mode == 'eig':
             modes = solve_eig(
