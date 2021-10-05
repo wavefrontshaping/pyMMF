@@ -8,6 +8,8 @@ Created on Mon Feb  4 12:02:57 2019
 
 import numpy as np
 from scipy.linalg import expm
+from scipy.ndimage import rotate as scipy_rotate
+from scipy.ndimage import shift as scipy_shift
 from .logger import get_logger, handleException 
 
 logger = get_logger(__name__)
@@ -47,7 +49,7 @@ class Modes():
                 to the center of the observation window.
                 defaults to None
                 
-            rotation: float or None
+            angle: float or None
                 (slow) angle in radians, allows to rotate the mode matrix with an arbitrary angle.
                 Note that the rotation is applied BEFORE the transverse shift.
                 defaults to None
@@ -70,7 +72,7 @@ class Modes():
         
         for pol in range(npola):
         
-            for ind,modeProfile in enumerate(self.profiles):
+            for ind, modeProfile in enumerate(self.profiles):
                 
                 if (shift is None and angle is None):
                     M[pol*N:(pol+1)*N,pol*self.number+ind] = modeProfile#.reshape(1,self._npoints**2)
@@ -79,14 +81,13 @@ class Modes():
                 
                     if angle is not None:
                         mode2D = \
-                            scipy_rotate(mode2D.real,angle,reshape=False) + \
-                            complex(0,1)*scipy_rotate(mode2D.imag,angle,reshape=False)
+                            scipy_rotate(mode2D.real, angle, reshape=False) + \
+                            complex(0,1)*scipy_rotate(mode2D.imag, angle, reshape=False)
                 
                     if shift is not None:
-                
                         mode2D = \
-                            scipy_shift(input=mode2D.real,shift=shift) \
-                            + complex(0,1)*scipy_shift(input=mode2D.imag,shift=shift)
+                            scipy_shift(input=mode2D.real, shift=shift) \
+                            + complex(0,1)*scipy_shift(input=mode2D.imag, shift=shift)
 
                     M[pol*N:(pol+1)*N,pol*self.number+ind] = mode2D.flatten()
 

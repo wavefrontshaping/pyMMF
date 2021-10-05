@@ -27,8 +27,6 @@ class IndexProfile():
         self.TH, self.R = cart2pol(self.X, self.Y)
         self.dh = 1.*self.areaSize/(self.npoints-1.)
         self.radialFunc = None
-
-           
         self.type =  None
 	
     def initFromArray(self,n_array):
