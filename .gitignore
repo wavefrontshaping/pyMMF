@@ -1,5 +1,11 @@
 
 *.pyc
-example/mmf_radial_fix.py
-example/.ipynb_checkpoints/*
 *.log
+
+
+example/.ipynb_checkpoints/*
+build/
+dist/
+.vscode/
+
+
