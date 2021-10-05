@@ -26,7 +26,7 @@ def solve_SI(indexProfile, wl, **options):
 
 def findPropagationConstants(wl,indexProfile, tol=1e-9):
     '''
-    Find the propagation constants of a step index fiber by numerically finding the sollution of the
+    Find the propagation constants of a step index fiber by numerically finding the solution of the
     scalar dispersion relation [1]_ [2]_.
     
 
@@ -126,15 +126,11 @@ def calc_mode(modes, idx, degenerate_mode, R, a, TH,
 
     # Non-zero transverse component
     if degenerate_mode == 'sin':
-        # two pi/2 rotated degenerate modes for m > 0
-        if degenerated:
-            psi = np.pi/2
+        # two pi/2 rotated degenerate modes for m < 0
+        psi = np.pi/2 if m[idx] < 0 else 0 
         phase_mult = np.cos(phase + psi)
 
     elif degenerate_mode == 'exp':
-        if degenerated:
-            modes.m[idx] = -m
-            m = modes.m[idx]
         # noticably faster than writing exp(1j*phase)
         phase_mult = np.cos(phase) + 1j * np.sin(phase)
 
@@ -160,6 +156,11 @@ def associateLPModeProfiles(modes, indexProfile, degenerate_mode='sin',
     
     logger.info('Finding analytical LP mode profiles associated to the propagation constants.')
     t0 = time.time()
+
+    # for exp modes, we have +m and -m for degenerate modes
+    if degenerate_mode == 'exp':
+        modes.m = \
+            [m if not (m, l) in zip(modes.m[:idx], modes.l[:idx]) else -m for idx, (m,l) in enumerate(zip(modes.m, modes.l))]
 
     # Avoid division bt zero in the Bessel function
     R[R<np.finfo(np.float32).eps] = np.finfo(np.float32).eps
