@@ -27,8 +27,6 @@ class IndexProfile():
         self.TH, self.R = cart2pol(self.X, self.Y)
         self.dh = 1.*self.areaSize/(self.npoints-1.)
         self.radialFunc = None
-
-           
         self.type =  None
 	
     def initFromArray(self,n_array):
@@ -64,7 +62,3 @@ class IndexProfile():
         radialFunc = lambda r: n1 if r<a else n2
 		
         self.initFromRadialFunction(radialFunc)
-        
-#    def addAbsLayer(self,r):
-##        assert(self.n)
-#        self.n = self.n + ((self.R > r)*((np.exp(1e-3*np.abs(self.R - r))-1.)*complex(0,1))).flatten()

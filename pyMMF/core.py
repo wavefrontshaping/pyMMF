@@ -16,10 +16,18 @@ import numpy as np
 import sys, time
 from .modes import Modes
 from .logger import get_logger, handleException 
-from .solvers import solve_eig, solve_SI, solve_radial
+from .solvers import (
+    solve_eig, 
+    solve_SI, 
+    solve_radial, 
+    solve_WKB
+)
 
 class AssertionError(Exception):
-    pass
+    def __init__(self):
+        self.msg = 'Invalid combunation of index profile type and solver.'
+        logger.error(self.msg)
+        super().__init__(self.msg)
 
 logger = get_logger(__name__)
 
@@ -251,6 +259,15 @@ class propagationModeSolver():
                 indexProfile = self.indexProfile,
                 wl = self.wl,
                 curvature=curvature,
+                **options
+            )
+        elif mode == 'WKB':
+            if self.indexProfile.type != 'GRIN':
+                logger.error('WKB solver only available for parabolic GRIN profiles') 
+                raise AssertionError
+            modes = solve_WKB(
+                self.indexProfile,
+                self.wl,
                 **options
             )
         else:
