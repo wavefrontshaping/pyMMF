@@ -9,3 +9,6 @@ dist/
 .vscode/
 
 
+example/mmf_radial_fix.py
+example/pymmf_performance.ipynb
+example/pymmf_eig_performance.ipynb

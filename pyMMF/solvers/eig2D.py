@@ -4,11 +4,17 @@ Solver based on finite difference solution of the eigenvalue problen of the Helm
 import numpy as np
 import time
 import scipy.sparse as sparse
-from scipy.sparse.linalg import eigs
+from scipy.sparse.linalg import eigs, eigsh
+from scipy.linalg import norm as spnorm
 
 from ..modes import Modes
 from ..logger import get_logger
 logger = get_logger(__name__)
+
+
+def is_hermitian(A):
+    return (A != A.getH()).nnz == 0
+
 
 def solve_eig(
     indexProfile,
@@ -62,31 +68,38 @@ def solve_eig(
         
         ## Construction of the operator 
         dh = indexProfile.dh
-        diags.append(-4./dh**2+k0**2*indexProfile.n.flatten()**2)
+        index_flatten = indexProfile.n.flatten()
+        diags.append(-4./dh**2+k0**2*index_flatten**2)
+
+        dh_npoints_x = [1./dh**2]*(npoints-1)
+        bound_cond_x = (dh_npoints_x+[0.])*(npoints-1) + dh_npoints_x
+        bound_cond_y = [1./dh**2]*npoints*(npoints-1)
         
         if boundary == 'periodic':
             logger.info('Use periodic boundary condition.')
-            diags.append(([1./dh**2]*(npoints-1)+[0.])*(npoints-1)+[1./dh**2]*(npoints-1))
-            diags.append(([1./dh**2]*(npoints-1)+[0.])*(npoints-1)+[1./dh**2]*(npoints-1))
-            diags.append([1./dh**2]*npoints*(npoints-1))
-            diags.append([1./dh**2]*npoints*(npoints-1))
+            diags.append(bound_cond_x)
+            diags.append(bound_cond_x)
+            diags.append(bound_cond_y)
+            diags.append(bound_cond_y)
             
-            diags.append(([1./dh**2]+[0]*(npoints-1))*(npoints-1)+[1./dh**2])
-            diags.append(([1./dh**2]+[0]*(npoints-1))*(npoints-1)+[1./dh**2])
-            
-            diags.append([1./dh**2]*npoints)
-            diags.append([1./dh**2]*npoints)
+            periodic_bound_cond = ([1./dh**2]+[0]*(npoints-1))*(npoints-1)+[1./dh**2]
+            diags.append(periodic_bound_cond)
+            diags.append(periodic_bound_cond)
+
+            periodic_bound_cond2 = [1./dh**2]*npoints        
+            diags.append(periodic_bound_cond2)
+            diags.append(periodic_bound_cond2)
             
             offsets = [0,-1,1,-npoints,npoints,-npoints+1,npoints-1,-npoints*(npoints-1),npoints*(npoints-1)]
         elif boundary == 'close':
             logger.info('Use close boundary condition.')
             
             # x parts of the Laplacian
-            diags.append(([1./dh**2]*(npoints-1)+[0.])*(npoints-1)+[1./dh**2]*(npoints-1))
-            diags.append(([1./dh**2]*(npoints-1)+[0.])*(npoints-1)+[1./dh**2]*(npoints-1))
+            diags.append(bound_cond_x)
+            diags.append(bound_cond_x)
             # y parts of the Laplacian
-            diags.append([1./dh**2]*npoints*(npoints-1))
-            diags.append([1./dh**2]*npoints*(npoints-1))
+            diags.append(bound_cond_y)
+            diags.append(bound_cond_y)
             
             offsets = [0,-1,1,-npoints,npoints]
             
@@ -95,44 +108,44 @@ def solve_eig(
             # - the 1. term represent the geometrical effect
             # - the term in (1-2*poisson_coeff) represent the effect of compression/dilatation
             # see http://wavefrontshaping.net/index.php/68-community/tutorials/multimode-fibers/149-multimode-fiber-modes-part-2
-            xi = 1.-(indexProfile.n.flatten()-1.)/indexProfile.n.flatten()*(1.-2.*poisson)
+            xi = 1.-(index_flatten-1.)/index_flatten*(1.-2.*poisson)
            
-#            curv_mat = sparse.diags(1.-2*xi*self.indexProfile.X.flatten()/curvature, dtype = np.complex128)
+            # curv_mat = sparse.diags(1.-2*xi*self.indexProfile.X.flatten()/curvature, dtype = np.complex128)
             curv_inv_diag = 1.
             if curvature[0] is not None:
-                curv_inv_diag+=2*xi*indexProfile.X.flatten()/curvature[0]
+                curv_inv_diag += 2*xi*indexProfile.X.flatten()/curvature[0]
             if curvature[1] is not None:
-                curv_inv_diag+=2*xi*indexProfile.Y.flatten()/curvature[1]   
-            curv_mat = sparse.diags(1./curv_inv_diag, dtype = np.complex128)
-#            curv_mat = sparse.diags(1./(1.+2*xi*self.indexProfile.X.flatten()/curvature), dtype = np.complex128)
+                curv_inv_diag += 2*xi*indexProfile.Y.flatten()/curvature[1]
+            curv_mat = sparse.diags(1./curv_inv_diag, dtype=np.float64)
+            # curv_mat = sparse.diags(1./(1.+2*xi*self.indexProfile.X.flatten()/curvature), dtype = np.complex128)
 
 
-#        logger.info('Note that boundary conditions should not matter too much for guided modes.')   
-   
+        # logger.info('Note that boundary conditions should not matter too much for guided modes.')   
 
-            
-        
-        H = sparse.diags(diags,offsets, dtype = np.complex128)
+        H = sparse.diags(diags, offsets, dtype=np.float64)
 
         if curvature:
             H = curv_mat.dot(H)
         
         beta_min = k0*np.min(indexProfile.n)
-        beta_max =  k0*np.max(indexProfile.n)
+        beta_max = k0*np.max(indexProfile.n)
 
         # Finds the eigenvalues of the operator with the greatest real part
-        res = eigs(H,k=nmodesMax,which = 'LR')
-                    
+        if is_hermitian(H):
+            eigvals, eigvecs = eigsh(H, k=nmodesMax, which='LM')
+        else:
+            eigvals, eigvecs = eigs(H, k=nmodesMax, which='LR')
+
         modes = Modes()
         modes.wl = wl
         modes.indexProfile = indexProfile
         # select only the propagating modes
-        for i,betasq in enumerate(res[0]):
+        for i, betasq in enumerate(eigvals):
              if (betasq > beta_min**2 and betasq < beta_max**2) or not propag_only:
                 modes.betas.append(np.sqrt(betasq))
-                modes.number+=1
-                modes.profiles.append(res[1][:,i])
-                modes.profiles[-1] = modes.profiles[-1]/np.sqrt(np.sum(np.abs(modes.profiles[-1])**2))
+                modes.number += 1
+                modes.profiles.append(eigvecs[:, i])
+                modes.profiles[-1] /= spnorm(modes.profiles[-1], ord=2)
                 # is the mode a propagative one?
                 modes.propag.append((betasq > beta_min**2 and betasq < beta_max**2))
                 

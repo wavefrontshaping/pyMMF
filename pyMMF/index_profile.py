@@ -62,3 +62,22 @@ class IndexProfile():
         radialFunc = lambda r: n1 if r<a else n2
 		
         self.initFromRadialFunction(radialFunc)
+
+    def initSI4CoreIndex(self, n1: float = 1.45, a: float = 1., delta: float = 0.039,
+                         NA: float = 0.4, core_offset: float = 5):
+        n2 = n1 * (1 - delta)
+        self.NA = NA
+        self.a = a
+        self.type = 'SI'
+        self.n1 = n1
+        core_offset = int(core_offset // self.dh)
+        cores_coords = [[self.npoints // 2 + core_offset, self.npoints // 2],
+                        [self.npoints // 2 - core_offset, self.npoints // 2],
+                        [self.npoints // 2, self.npoints // 2 + core_offset],
+                        [self.npoints // 2, self.npoints // 2 - core_offset]]
+        self.n = np.ones_like(self.R) * n2
+        for indxs in cores_coords:
+            i, j = indxs
+            self.n[(self.X - self.X[i, j]) ** 2 +
+                   (self.Y - self.Y[i, j]) ** 2 < a] = n1
+        self.n.flatten()
