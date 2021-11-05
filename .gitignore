@@ -12,3 +12,5 @@ dist/
 example/mmf_radial_fix.py
 example/pymmf_performance.ipynb
 example/pymmf_eig_performance.ipynb
+example/pymmf_eig_performance.py
+example/pymmf_performance.py

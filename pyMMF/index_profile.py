@@ -58,26 +58,47 @@ class IndexProfile():
         self.n1 = n1
         n2 = np.sqrt(n1**2-NA**2)
         #Delta = NA**2/(2.*n1**2)
-        
-        radialFunc = lambda r: n1 if r<a else n2
-		
-        self.initFromRadialFunction(radialFunc)
 
-    def initSI4CoreIndex(self, n1: float = 1.45, a: float = 1., delta: float = 0.039,
-                         NA: float = 0.4, core_offset: float = 5):
+        radialFunc = lambda r: n1 if r < a else n2
+
+        self.initFromRadialFunction(radialFunc)
+        
+    def initStepIndexMultiCore(
+            self, n1: float = 1.45, a: float = 1., delta: float = 0.039,
+            dims: int = 4, layers: int = 1,
+            NA: float = 0.4, core_offset: float = 5):
         n2 = n1 * (1 - delta)
         self.NA = NA
         self.a = a
-        self.type = 'SI'
+        self.type = 'SIMC'
         self.n1 = n1
         core_offset = int(core_offset // self.dh)
-        cores_coords = [[self.npoints // 2 + core_offset, self.npoints // 2],
-                        [self.npoints // 2 - core_offset, self.npoints // 2],
-                        [self.npoints // 2, self.npoints // 2 + core_offset],
-                        [self.npoints // 2, self.npoints // 2 - core_offset]]
+        angles = np.arange(0, 2 * np.pi, 2 * np.pi / dims)
+        radiuses = np.arange(layers + 1) * core_offset
+        cores_coords = [[self.npoints // 2 + int(r * np.sin(t)),
+                         self.npoints // 2 + int(r * np.cos(t))]
+                        for r in radiuses for t in angles]
         self.n = np.ones_like(self.R) * n2
         for indxs in cores_coords:
             i, j = indxs
-            self.n[(self.X - self.X[i, j]) ** 2 +
-                   (self.Y - self.Y[i, j]) ** 2 < a] = n1
+            self.n[np.sqrt((self.X - self.X[i, j]) ** 2 +
+                   (self.Y - self.Y[i, j]) ** 2) < a] = n1
         self.n.flatten()
+
+    def initStepIndexConcentric(
+            self, n1: float = 1.45, a: float = 1., delta: float = 0.039,
+            NA: float = 0.4, core_offset: float = 5, layers: int = 1):
+        n2 = n1 * (1 - delta)
+        self.NA = NA
+        self.a = a
+        self.type = 'SIC'
+        self.n1 = n1
+        radiuses = np.arange(layers + 1) * core_offset
+
+        def radialFunc(r):
+            for r0 in radiuses:
+                if np.abs(r - r0) < a:
+                    return n1
+            return n2
+
+        self.initFromRadialFunction(radialFunc)

@@ -74,7 +74,7 @@ def solve_eig(
         dh_npoints_x = [1./dh**2]*(npoints-1)
         bound_cond_x = (dh_npoints_x+[0.])*(npoints-1) + dh_npoints_x
         bound_cond_y = [1./dh**2]*npoints*(npoints-1)
-        
+
         if boundary == 'periodic':
             logger.info('Use periodic boundary condition.')
             diags.append(bound_cond_x)
@@ -109,7 +109,7 @@ def solve_eig(
             # - the term in (1-2*poisson_coeff) represent the effect of compression/dilatation
             # see http://wavefrontshaping.net/index.php/68-community/tutorials/multimode-fibers/149-multimode-fiber-modes-part-2
             xi = 1.-(index_flatten-1.)/index_flatten*(1.-2.*poisson)
-           
+
             # curv_mat = sparse.diags(1.-2*xi*self.indexProfile.X.flatten()/curvature, dtype = np.complex128)
             curv_inv_diag = 1.
             if curvature[0] is not None:
@@ -126,14 +126,16 @@ def solve_eig(
 
         if curvature:
             H = curv_mat.dot(H)
-        
+
         beta_min = k0*np.min(indexProfile.n)
         beta_max = k0*np.max(indexProfile.n)
 
         # Finds the eigenvalues of the operator with the greatest real part
         if is_hermitian(H):
+            logger.info('H is hermitian. Using `eigsh` to speed up a process.')
             eigvals, eigvecs = eigsh(H, k=nmodesMax, which='LM')
         else:
+            logger.info('H is not hermitian. Using `eigs`.')
             eigvals, eigvecs = eigs(H, k=nmodesMax, which='LR')
 
         modes = Modes()
