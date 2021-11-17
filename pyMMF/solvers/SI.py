@@ -127,7 +127,7 @@ def calc_mode(modes, idx, degenerate_mode, R, a, TH,
     # Non-zero transverse component
     if degenerate_mode == 'sin':
         # two pi/2 rotated degenerate modes for m < 0
-        psi = np.pi/2 if m[idx] < 0 else 0 
+        psi = np.pi/2 if m < 0 else 0 
         phase_mult = np.cos(phase + psi)
 
     elif degenerate_mode == 'exp':

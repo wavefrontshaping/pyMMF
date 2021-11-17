@@ -104,7 +104,10 @@ def estimateNumModesGRIN(wl,a,NA,pola=1):
     '''
     k0 = 2.*np.pi/wl
     V = k0*a*NA
-    return np.ceil(V**2/4.*pola/2.).astype(int)
+    nmodes = np.ceil(V**2/4.*pola/2.).astype(int)
+    logger.info(f'Estimated {nmodes} modes.')
+    return nmodes
+
 
 def estimateNumModesSI(wl,a,NA,pola=1):
     '''
@@ -129,7 +132,9 @@ def estimateNumModesSI(wl,a,NA,pola=1):
     '''
     k0 = 2.*np.pi/wl
     V = k0*a*NA
-    return np.ceil(V**2/2.*pola/2.).astype(int)
+    nmodes = np.ceil(V**2/2.*pola/2.).astype(int)
+    logger.info(f'Estimated {nmodes} modes.')
+    return nmodes
 
    
 
@@ -195,7 +200,7 @@ class propagationModeSolver():
             'eig' solves the eigenvalue problem in the discretized space.
             'SI' solves numerically the analytical dispersion relation and approximate modes to LP modes.
             'default' use the best appropriate solver.
-            detauls to 'default'
+            default to 'default'
         **options: dict
             specific options for the solver
 		    
@@ -283,7 +288,7 @@ class propagationModeSolver():
         
     def get_optimal_solver(self, curvature):
         if self.indexProfile.type == 'SI' and not curvature:
-            logger.info('Selectinf step-index solver')
+            logger.info('Selecting step-index solver')
             return 'SI'
         elif self.indexProfile.radialFunc is not None:
             logger.info('Selectinf axisymmetric radial solver')

@@ -60,5 +60,5 @@ class IndexProfile():
         #Delta = NA**2/(2.*n1**2)
         
         radialFunc = lambda r: n1 if r<a else n2
-		
+
         self.initFromRadialFunction(radialFunc)
