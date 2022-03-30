@@ -123,12 +123,11 @@ def calc_mode(modes, idx, degenerate_mode, R, a, TH,
     degenerated = False
     if (m, l) in zip(modes.m[:idx], modes.l[:idx]):
         degenerated = True
-    print(f'{degenerated=}')
 
     # Non-zero transverse component
     if degenerate_mode == 'sin':
         # two pi/2 rotated degenerate modes for m < 0
-        psi = np.pi/2 if degenerated < 0 else 0 
+        psi = np.pi/2 if degenerated else 0 
         phase_mult = np.cos(phase + psi)
 
     elif degenerate_mode == 'exp':
@@ -168,7 +167,6 @@ def associateLPModeProfiles(modes, indexProfile, degenerate_mode='sin',
     Rlessa = (R <= a)
     Rgreatera = (R > a)
     
-    print('Coucou')
     modes.profiles = Parallel(n_jobs=n_jobs)(
         delayed(calc_mode)(modes, idx, degenerate_mode, R, a, TH,
                            Rlessa, Rgreatera) for idx in range(modes.number))
