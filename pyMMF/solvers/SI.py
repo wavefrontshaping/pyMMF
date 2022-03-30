@@ -127,12 +127,13 @@ def calc_mode(modes, idx, degenerate_mode, R, a, TH,
     # Non-zero transverse component
     if degenerate_mode == 'sin':
         # two pi/2 rotated degenerate modes for m < 0
-        psi = np.pi/2 if m[idx] < 0 else 0 
+        psi = np.pi/2 if degenerated else 0 
         phase_mult = np.cos(phase + psi)
 
     elif degenerate_mode == 'exp':
         # noticably faster than writing exp(1j*phase)
         phase_mult = np.cos(phase) + 1j * np.sin(phase)
+        print(m)
 
     Et = phase_mult * (jv(m, u/a*R)/jv(m, u)*Rlessa +
                        kn(m, w/a*R)/kn(m, w)*Rgreatera)
