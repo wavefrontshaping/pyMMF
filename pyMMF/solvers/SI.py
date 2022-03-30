@@ -117,12 +117,13 @@ def calc_mode(modes, idx, degenerate_mode, R, a, TH,
     u = modes.u[idx]
     w = modes.w[idx]
 
-    phase = m * TH
-    psi = 0
-
     degenerated = False
     if (m, l) in zip(modes.m[:idx], modes.l[:idx]):
         degenerated = True
+        m = -m
+
+    phase = m * TH
+    psi = 0
 
     # Non-zero transverse component
     if degenerate_mode == 'sin':
