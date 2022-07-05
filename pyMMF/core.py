@@ -19,7 +19,8 @@ from .logger import get_logger, handleException
 from .solvers import (
     solve_eig, 
     solve_SI, 
-    solve_radial, 
+    solve_radial,
+    solve_radial_legacy, 
     solve_WKB
 )
 
@@ -250,7 +251,17 @@ class propagationModeSolver():
                 self.wl,
                 **options
             )
-            
+
+        elif mode == 'radial_legacy':
+            if self.indexProfile.radialFunc is None:
+                logger.error('radial solver only available for axisymmetric profiles defined by a radial function')
+                raise AssertionError
+            modes = solve_radial_legacy(
+                self.indexProfile,
+                self.wl,
+                **options
+            )
+
         elif mode == 'eig':
             modes = solve_eig(
                 indexProfile = self.indexProfile,
