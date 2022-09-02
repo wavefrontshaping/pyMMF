@@ -212,7 +212,6 @@ class propagationModeSolver():
         '''
         assert(self.indexProfile)
         assert(self.wl)
-
         # check if cuvature is a list or array of length 2 or None
         if curvature == None:
             pass
@@ -242,7 +241,7 @@ class propagationModeSolver():
                 self.wl,
                 **options
             )
-        elif mode == 'radial':
+        elif mode == 'radial_test':
             if self.indexProfile.radialFunc is None:
                 logger.error('radial solver only available for axisymmetric profiles defined by a radial function')
                 raise AssertionError
@@ -252,7 +251,7 @@ class propagationModeSolver():
                 **options
             )
 
-        elif mode == 'radial_legacy':
+        elif mode == 'radial':
             if self.indexProfile.radialFunc is None:
                 logger.error('radial solver only available for axisymmetric profiles defined by a radial function')
                 raise AssertionError
