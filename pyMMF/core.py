@@ -241,7 +241,7 @@ class propagationModeSolver():
                 self.wl,
                 **options
             )
-        elif mode == 'radial_test':
+        elif mode == 'radial':
             if self.indexProfile.radialFunc is None:
                 logger.error('radial solver only available for axisymmetric profiles defined by a radial function')
                 raise AssertionError
@@ -251,7 +251,7 @@ class propagationModeSolver():
                 **options
             )
 
-        elif mode == 'radial':
+        elif mode == 'radial_legacy':
             if self.indexProfile.radialFunc is None:
                 logger.error('radial solver only available for axisymmetric profiles defined by a radial function')
                 raise AssertionError
