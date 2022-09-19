@@ -7,7 +7,7 @@ Riccati's equations.
 
 import numpy as np
 from scipy.interpolate import interp1d
-from scipy.optimize import bisect
+from scipy.optimize import brentq as bisect
 from numba import jit
 import time
 
@@ -61,13 +61,15 @@ class CalculationStopException(Exception):
         super().__init__(self.msg)
 
 
-@jit('float64[:](int8,float32,float32[:],float32[:],float64,float64)', nopython=True, fastmath=True)
-def _get_field_fast(m, dh, r, nr, beta, k0):
+@jit('float64[:](int8,float32,float32[:],float32[:],float64, float64, float64)', nopython=True, fastmath=True)
+def _get_field_fast(m, dh, r, nr, beta_min, delta_beta, k0):
+
+    beta_sq = beta_min**2+delta_beta**2+2*beta_min*delta_beta
     def Q(r):
         return 1 / r
 
     def P(r,n):
-        return (k0 * n)**2 - beta**2 - (m / r)**2
+        return (k0 * n)**2 - beta_sq - (m / r)**2
 
     def iter_g(gn,r,n):
         Qh = dh*Q(r)/2
@@ -95,7 +97,7 @@ def _get_field_fast(m, dh, r, nr, beta, k0):
     return f_vec
 
 
-def get_field_fast(m, dh, r, nr, beta, k0):
+def get_field_fast(m, dh, r, nr, beta_min, delta_beta, k0):
     '''
     Get the field calulcated using the recursive scheme for the quadratic Ricatti
     equation as [1].
@@ -112,19 +114,21 @@ def get_field_fast(m, dh, r, nr, beta, k0):
                       np.float32(dh),
                       r.astype(np.float32), 
                       nr.astype(np.float32), 
-                      np.float64(beta),
+                      np.float64(beta_min),
+                      np.float64(delta_beta),
                       np.float64(k0)
                      )
 
 
-def scan_betas(m,dh,r,nr,betas,k0):
+def scan_betas(m,dh,r,nr, beta_min, delta_betas,k0):
     '''
     rough scan of betas values between beta_min and beta_max
     returns the sign of the value of the function for the
     farthest radial point for each beta value.
     (sign changes indicate the presence of an eigenvector)
     '''
-    return [np.sign(get_field_fast(m,dh,r,nr,beta,k0)[-1]) for beta in betas]
+    # print((m,dh,k0))
+    return [np.sign(get_field_fast(m,dh,r,nr,beta_min, delta_beta,k0)[-1]) for delta_beta in delta_betas]
 
 
 def binary_search(func, min_val, max_val, sign, beta_tol=1e-12, field_limit_tol=1e-3):
@@ -145,8 +149,9 @@ def binary_search(func, min_val, max_val, sign, beta_tol=1e-12, field_limit_tol=
         converged = binfo.converged
 
     fval = func(beta)
-    if fval > field_limit_tol:
+    if np.abs(fval) > field_limit_tol:
         raise BisectRootValueError(beta, fval, field_limit_tol)
+
 
     binfo.fval = fval
     return beta, binfo
@@ -179,7 +184,7 @@ def solve_radial(
 
     beta_min = k0*n_func(r_max)
     beta_max =  k0*n_func(0)
-    betas = np.linspace(beta_min, beta_max, N_beta_coarse)
+    delta_betas = np.linspace(0, beta_max-beta_min, N_beta_coarse)
 
     modes = Modes()
     modes.wl = wl
@@ -201,7 +206,8 @@ def solve_radial(
                             dh = dh,
                             r = r,
                             nr = nr,
-                            betas = betas,
+                            beta_min = beta_min,
+                            delta_betas = delta_betas,
                             k0 = k0
                            )
 
@@ -225,32 +231,31 @@ def solve_radial(
 
                 try:
                     #'Searching for beta value that satisfies the zero condition at r={r_max/radius:.3f}a'
-                    def func_fast(beta):
-                        f = get_field_fast(m,dh,r_search,n_search,beta,k0)
+                    def func_fast(delta_beta):
+                        f = get_field_fast(m,dh,r_search,n_search,beta_min, delta_beta,k0)
                         return f[-1]/np.max(np.abs(f))
 
 
-                    beta, binfo = binary_search(
+                    delta_beta, binfo = binary_search(
                         func_fast,
-                        min_val=betas[iz],
-                        max_val=betas[iz+1],
+                        min_val=delta_betas[iz],
+                        max_val=delta_betas[iz+1],
                         sign=sign_f[iz],
                         beta_tol=beta_tol,
                         field_limit_tol=field_limit_tol
                     )
                     if not binfo.converged:
-                        raise BisectNotConvergedError(beta, func_fast(beta), binfo)
+                        raise BisectNotConvergedError(delta_beta, func_fast(delta_beta), binfo)
                     # get the discretized radial function
-                    f_vec = get_field_fast(m,dh,r_search,n_search,beta,k0)
+                    f_vec = get_field_fast(m,dh,r_search,n_search,beta_min, delta_beta,k0)
                     # get the radial function by interpolation
                     # assume f = 0 for r>r_max
-                    f_interp = np.pad(f_vec, (0,len(r)-len(f_vec)),'constant')
+                    f_interp = np.pad(f_vec, (0,len(r)-len(f_vec)),'constant', constant_values = 0)
                     # assume f = 0 for r>radius * min_radius_bc
                     # f_interp[r > radius * 1] = 0
                     f = interp1d(r, f_interp, kind='cubic')
                     break
                 except (BisectNotConvergedError, PrecisionError, BisectRootValueError):
-                    #logger.warning(e)
                     logger.warning('Boundary condition could not be met.')
                     r_max *= change_bc_radius_step
                     logger.warning(f'Retrying by changing r_max to {r_max/radius:.2f}a')
@@ -258,23 +263,25 @@ def solve_radial(
                     logger.error(f'Unknown exception: {E}')
                     raise CalculationStopException
 
+            mode_profile = f(indexProfile.R)
+
             # add mode
             if m == 0:
-                modes.betas.append(beta)
+                modes.betas.append(delta_beta+beta_min)
                 modes.m.append(m)
                 modes.l.append(l+1)
                 modes.number+=1
-                modes.profiles.append(f(indexProfile.R).ravel())
+                modes.profiles.append(mode_profile.ravel())
                 modes.profiles[-1] = modes.profiles[-1]/np.sqrt(np.sum(np.abs(modes.profiles[-1])**2))
                 # is the mode a propagative one?
                 modes.propag.append(True)
             else:
                 for s, phi_func in zip([-1,1],phi_funcs):
-                    modes.betas.append(beta)
+                    modes.betas.append(delta_beta+beta_min)
                     modes.m.append(s*m if degenerate_mode == 'exp' else m)
                     modes.l.append(l+1)
                     modes.number+=1
-                    modes.profiles.append(f(indexProfile.R).ravel()*phi_func(m*indexProfile.TH.ravel()))
+                    modes.profiles.append(mode_profile.ravel()*phi_func(m*indexProfile.TH.ravel()))
                     modes.profiles[-1] = modes.profiles[-1]/np.sqrt(np.sum(np.abs(modes.profiles[-1])**2))
                     # is the mode a propagative one?
                     modes.propag.append(True)
