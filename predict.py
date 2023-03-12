@@ -12,7 +12,7 @@ from typing import List
 PROFILE_TYPE_OPTIONS = ['GRIN', 'SI']
 
 
-AREA_SIZE_COEFF = 1.5   
+AREA_SIZE_COEFF = 1.2
 CURVATURE = None
 
 SOLVER_N_POINTS_SEARCH = 2**8
@@ -97,7 +97,7 @@ class Predictor(BasePredictor):
             description="Wavelength (in nm)", ge=100, le=2000, default=1550
         ),
         core_diam: float = Input(
-            description="Core diameter (in microns)", ge=10, le=60, default=25
+            description="Core diameter (in microns)", ge=10, le=80, default=50
         ),
         n_cladding: float = Input(
             description="Core diameter (in microns)", ge=1.3, le=1.6, default=1.45
@@ -151,6 +151,7 @@ class Predictor(BasePredictor):
                 f'Mode {i} (l={modes.l[i]}, m={modes.m[i]})',
                 fontsize = 16
             )
+        plt.title('First modes')
         plt.savefig(fig_first_modes_path)
         outputs.append(fig_first_modes_path)
 
@@ -170,6 +171,8 @@ class Predictor(BasePredictor):
                 f'Mode {n_modes+i+1} (l={modes.l[i]}, m={modes.m[i]})',
                 fontsize = 16
             )
+        plt.title('Last modes')
+
         plt.savefig(fig_last_modes_path)
         outputs.append(fig_last_modes_path)
         
