@@ -160,7 +160,7 @@ class Predictor(BasePredictor):
                 f'Mode {i} (l={modes.l[i]}, m={modes.m[i]})',
                 fontsize = 16
             )
-        plt.title('First modes')
+        plt.suptitle('First modes')
         plt.savefig(fig_first_modes_path)
         outputs.append(fig_first_modes_path)
 
@@ -180,7 +180,7 @@ class Predictor(BasePredictor):
                 f'Mode {n_modes+i+1} (l={modes.l[i]}, m={modes.m[i]})',
                 fontsize = 16
             )
-        plt.title('Last modes')
+        plt.suptitle('Last modes')
 
         plt.savefig(fig_last_modes_path)
         outputs.append(fig_last_modes_path)
