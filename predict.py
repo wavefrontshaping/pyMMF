@@ -122,7 +122,7 @@ class Predictor(BasePredictor):
         ),
     ) -> List[Path]:
         
-        curvature = (curvature_x, 0) if is_curvature else None
+        curvature = (curvature_x, None) if is_curvature else None
 
         outputs = []
         output_dir = Path(tempfile.mkdtemp())
