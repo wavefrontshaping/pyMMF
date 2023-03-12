@@ -12,9 +12,10 @@ from typing import List
 PROFILE_TYPE_OPTIONS = ['GRIN', 'SI']
 # SOLVER_OPTIONS = ['Radial', 'Eig', 'Radial test']
 SOLVER = 'Radial'
+CURVATURE_OPTIONS = ['Yes', 'No']
 
 AREA_SIZE_COEFF = 1.2
-CURVATURE = None
+# CURVATURE = None
 
 SOLVER_N_POINTS_SEARCH = 2**8
 SOLVER_N_POINTS_MODE = 2**8
@@ -44,7 +45,7 @@ def colorize(z, theme = 'dark', saturation = 1., beta = 1.4, transparent = False
         return c
  
 
-def compute_modes(profile_type, solver, diameter, NA, wl, n1):
+def compute_modes(profile_type, solver, diameter, NA, wl, n1, curvature):
     profile = pyMMF.IndexProfile(
         npoints = SOLVER_N_POINTS_MODE, 
         areaSize = AREA_SIZE_COEFF*diameter
@@ -71,7 +72,7 @@ def compute_modes(profile_type, solver, diameter, NA, wl, n1):
     dh = diameter/SOLVER_N_POINTS_SEARCH
 
     modes = solver.solve(mode=solver_type,
-                        curvature = CURVATURE,
+                        curvature = curvature,
                         r_max = r_max, # max radius to calculate (and first try for large radial boundary condition)
                         dh = dh, # radial resolution during the computation
                         min_radius_bc = SOLVER_MIN_RADIUS_BC, # min large radial boundary condition
@@ -111,23 +112,34 @@ class Predictor(BasePredictor):
         NA: float = Input(
             description="Core diameter (in microns)", ge=0.05, le=.5, default=.2
         ),
+        is_curvature: str = Input(
+            description="Curvature. Select 'No' for straight fiber.",
+            default="No",
+            choices= CURVATURE_OPTIONS,
+        ),
+        curvature_x: float = Input(
+            description="Curvature (in cm)", ge=0.1, le=20, default=1
+        ),
     ) -> List[Path]:
-        outputs = []
+        
+        curvature = (curvature_x, 0) if is_curvature else None
 
+        outputs = []
         output_dir = Path(tempfile.mkdtemp())
         
-
         modes = compute_modes(
             profile_type, 
             SOLVER,
             core_diam, 
             NA, 
             wl/1e3, 
-            n_cladding
+            n_cladding,
+            curvature
             )
 
         M0 = modes.getModeMatrix()
         n_modes = modes.number
+        
 
         fig_betas_path = output_dir.joinpath(f"betas.png")
 
