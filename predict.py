@@ -12,7 +12,7 @@ from typing import List
 PROFILE_TYPE_OPTIONS = ['GRIN', 'SI']
 
 
-AREA_SIZE_COEFF = 1.2   
+AREA_SIZE_COEFF = 1.5   
 CURVATURE = None
 
 SOLVER_N_POINTS_SEARCH = 2**8
@@ -151,8 +151,8 @@ class Predictor(BasePredictor):
                 f'Mode {i} (l={modes.l[i]}, m={modes.m[i]})',
                 fontsize = 16
             )
-            plt.savefig(fig_first_modes_path)
-            outputs.append(fig_first_modes_path)
+        plt.savefig(fig_first_modes_path)
+        outputs.append(fig_first_modes_path)
 
 
         fig_last_modes_path = output_dir.joinpath(f"last_modes.png")
@@ -170,10 +170,12 @@ class Predictor(BasePredictor):
                 f'Mode {n_modes+i+1} (l={modes.l[i]}, m={modes.m[i]})',
                 fontsize = 16
             )
-            plt.savefig(fig_last_modes_path)
-            outputs.append(fig_last_modes_path)
+        plt.savefig(fig_last_modes_path)
+        outputs.append(fig_last_modes_path)
         
-        ## Display the modes
+        mode_file  = output_dir.joinpath(f"modes.npz")
+        np.savez(mode_file, profiles = M0, betas = modes.betas)
+        outputs.append(mode_file)
         
         return outputs
         # return Output(
