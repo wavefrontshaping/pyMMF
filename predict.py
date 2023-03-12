@@ -10,7 +10,8 @@ import tempfile
 from typing import List
 
 PROFILE_TYPE_OPTIONS = ['GRIN', 'SI']
-SOLVER_OPTIONS = ['Radial', 'Eig', 'Radial test']
+# SOLVER_OPTIONS = ['Radial', 'Eig', 'Radial test']
+SOLVER = 'Radial'
 
 AREA_SIZE_COEFF = 1.2
 CURVATURE = None
@@ -98,11 +99,11 @@ class Predictor(BasePredictor):
             default="GRIN",
             choices=PROFILE_TYPE_OPTIONS,
         ),
-        solver: str = Input(
-            description="Solver",
-            default="Radial",
-            choices=SOLVER_OPTIONS,
-        ),
+        # solver: str = Input(
+        #     description="Solver",
+        #     default="Radial",
+        #     choices=SOLVER_OPTIONS,
+        # ),
         wl: float = Input(
             description="Wavelength (in nm)", ge=100, le=2000, default=1550
         ),
@@ -123,7 +124,7 @@ class Predictor(BasePredictor):
 
         modes = compute_modes(
             profile_type, 
-            solver,
+            SOLVER,
             core_diam, 
             NA, 
             wl/1e3, 
@@ -194,7 +195,12 @@ class Predictor(BasePredictor):
         outputs.append(fig_last_modes_path)
         
         mode_file  = output_dir.joinpath(f"modes.npz")
-        np.savez(mode_file, profiles = M0, betas = modes.betas)
+        np.savez(
+            mode_file, 
+            n_points = SOLVER_N_POINTS_MODE,
+            n_modes = modes.n_modes,
+            profiles = M0, 
+            betas = modes.betas)
         outputs.append(mode_file)
         
         return outputs
