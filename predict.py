@@ -136,7 +136,7 @@ class Predictor(BasePredictor):
             )
         plt.xticks(fontsize = 16)
         plt.yticks(fontsize = 16)
-        plt.title(r'Computed propagation constants' ,fontsize = 16)
+        plt.title(f'{n_modes} modes found' ,fontsize = 16)
         plt.ylabel(r'Propagation constant $\beta$ (in $\mu$m$^{-1}$)', fontsize = 16)
         plt.xlabel(r'Mode index', fontsize = 16)
         plt.savefig(fig_betas_path)
@@ -193,7 +193,7 @@ class Predictor(BasePredictor):
         np.savez(
             mode_file, 
             n_points = SOLVER_N_POINTS_MODE,
-            n_modes = modes.number,
+            n_modes = n_modes,
             profiles = M0, 
             betas = modes.betas)
         outputs.append(mode_file)
