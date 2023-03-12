@@ -82,11 +82,6 @@ def compute_modes(profile_type, solver, diameter, NA, wl, n1):
 
     return modes
 
-class Output(BaseModel):
-    fig_betas: Path
-    fig_first_modes: Path
-    fig_last_modes: Path
-
 class Predictor(BasePredictor):
     def setup(self):
         """Load the model into memory to make running multiple predictions efficient"""
@@ -198,14 +193,10 @@ class Predictor(BasePredictor):
         np.savez(
             mode_file, 
             n_points = SOLVER_N_POINTS_MODE,
-            n_modes = modes.n_modes,
+            n_modes = modes.number,
             profiles = M0, 
             betas = modes.betas)
         outputs.append(mode_file)
         
         return outputs
-        # return Output(
-        #     fig_betas = fig_betas_path, 
-        #     fig_first_modes = fig_first_modes_path,
-        #     fig_last_modes = fig_last_modes_path
-        #     )
+
