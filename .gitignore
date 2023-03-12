@@ -1,7 +1,7 @@
 
 *.pyc
 *.log
-
+.ipynb_checkpoints/
 
 example/.ipynb_checkpoints/*
 build/
@@ -9,3 +9,6 @@ dist/
 .vscode/
 
 
+bckp_polar/
+test*
+pyMMF/solvers/.ipynb_checkpoints/
