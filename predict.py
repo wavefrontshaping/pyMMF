@@ -126,6 +126,9 @@ class Predictor(BasePredictor):
             n_cladding
             )
 
+        M0 = modes.getModeMatrix()
+        n_modes = modes.number
+
         fig_betas_path = output_dir.joinpath(f"betas.png")
 
         
@@ -140,14 +143,7 @@ class Predictor(BasePredictor):
         plt.ylabel(r'Propagation constant $\beta$ (in $\mu$m$^{-1}$)', fontsize = 16)
         plt.xlabel(r'Mode index', fontsize = 16)
         plt.savefig(fig_betas_path)
-        outputs.append(fig_betas_path)
-
-        # outputs.append(file_path)
-
-        # outputs.append('Mode profiles')
-
-        M0 = modes.getModeMatrix()
-        n_modes = modes.number
+        outputs.append(fig_betas_path)        
 
         fig_first_modes_path = output_dir.joinpath(f"first_modes.png")
         plt.plot(figsize = (2, 2))
