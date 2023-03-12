@@ -43,13 +43,16 @@ def colorize(z, theme = 'dark', saturation = 1., beta = 1.4, transparent = False
         return c
  
 
-def compute_modes(diameter, NA, wl, n1):
+def compute_modes(profile_type, diameter, NA, wl, n1):
     profile = pyMMF.IndexProfile(
         npoints = SOLVER_N_POINTS_MODE, 
         areaSize = AREA_SIZE_COEFF*diameter
     )
     # build profile
-    profile.initParabolicGRIN(n1=n1, a=diameter/2, NA=NA)
+    if profile_type == 'GRIN':
+        profile.initParabolicGRIN(n1=n1, a=diameter/2, NA=NA)
+    else:
+        profile.initStepIndex(n1=n1, a=diameter/2, NA=NA)
     # init solver
     solver = pyMMF.propagationModeSolver()
     solver.setIndexProfile(profile)
@@ -102,16 +105,18 @@ class Predictor(BasePredictor):
         NA: float = Input(
             description="Core diameter (in microns)", ge=0.05, le=.5, default=.2
         ),
-    ) -> Output:
+    ) -> List[Path]:
+        outputs = []
+
         output_dir = Path(tempfile.mkdtemp())
         
 
-        modes = compute_modes(core_diam, NA, wl/1e3, n_cladding)
+        modes = compute_modes(profile_type, core_diam, NA, wl/1e3, n_cladding)
 
         fig_betas_path = output_dir.joinpath(f"betas.png")
 
         
-        plt.figure(figsize = (6,5))
+        plt.figure(figsize = (6,5), constrained_layout=True)
         plt.plot(
             np.sort(np.real(modes.betas))[::-1],
             linewidth=2.
@@ -122,6 +127,7 @@ class Predictor(BasePredictor):
         plt.ylabel(r'Propagation constant $\beta$ (in $\mu$m$^{-1}$)', fontsize = 16)
         plt.xlabel(r'Mode index', fontsize = 16)
         plt.savefig(fig_betas_path)
+        outputs.append(fig_betas_path)
 
         # outputs.append(file_path)
 
@@ -146,6 +152,7 @@ class Predictor(BasePredictor):
                 fontsize = 16
             )
             plt.savefig(fig_first_modes_path)
+            outputs.append(fig_first_modes_path)
 
 
         fig_last_modes_path = output_dir.joinpath(f"last_modes.png")
@@ -164,13 +171,13 @@ class Predictor(BasePredictor):
                 fontsize = 16
             )
             plt.savefig(fig_last_modes_path)
-            # plt.close()
-            # outputs.append(file_path)
+            outputs.append(fig_last_modes_path)
         
         ## Display the modes
         
-        return Output(
-            fig_betas = fig_betas_path, 
-            fig_first_modes = fig_first_modes_path,
-            fig_last_modes = fig_last_modes_path
-            )
+        return outputs
+        # return Output(
+        #     fig_betas = fig_betas_path, 
+        #     fig_first_modes = fig_first_modes_path,
+        #     fig_last_modes = fig_last_modes_path
+        #     )
