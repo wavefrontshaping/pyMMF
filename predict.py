@@ -10,7 +10,7 @@ import tempfile
 from typing import List
 
 PROFILE_TYPE_OPTIONS = ['GRIN', 'SI']
-
+SOLVER_OPTIONS = ['Radial', 'Eig', 'Radial test']
 
 AREA_SIZE_COEFF = 1.2
 CURVATURE = None
@@ -43,7 +43,7 @@ def colorize(z, theme = 'dark', saturation = 1., beta = 1.4, transparent = False
         return c
  
 
-def compute_modes(profile_type, diameter, NA, wl, n1):
+def compute_modes(profile_type, solver, diameter, NA, wl, n1):
     profile = pyMMF.IndexProfile(
         npoints = SOLVER_N_POINTS_MODE, 
         areaSize = AREA_SIZE_COEFF*diameter
@@ -53,6 +53,13 @@ def compute_modes(profile_type, diameter, NA, wl, n1):
         profile.initParabolicGRIN(n1=n1, a=diameter/2, NA=NA)
     else:
         profile.initStepIndex(n1=n1, a=diameter/2, NA=NA)
+    if solver == 'Radial':
+        solver_type = 'radial'
+    elif solver == 'Radial test':
+        solver_type = 'radial_test'
+    elif solver == 'Eig':
+        solver_type = 'eig'
+
     # init solver
     solver = pyMMF.propagationModeSolver()
     solver.setIndexProfile(profile)
@@ -62,9 +69,7 @@ def compute_modes(profile_type, diameter, NA, wl, n1):
     k0 = 2.*np.pi/wl
     dh = diameter/SOLVER_N_POINTS_SEARCH
 
-    # print(('radial', CURVATURE, r_max, SOLVER_MIN_RADIUS_BC, SOLVER_BC_RADIUS_STEP,
-    # SOLVER_N_BETA_COARSE, SOLVER_DEGENERATE_MODE))
-    modes = solver.solve(mode='radial',
+    modes = solver.solve(mode=solver_type,
                         curvature = CURVATURE,
                         r_max = r_max, # max radius to calculate (and first try for large radial boundary condition)
                         dh = dh, # radial resolution during the computation
@@ -93,6 +98,11 @@ class Predictor(BasePredictor):
             default="GRIN",
             choices=PROFILE_TYPE_OPTIONS,
         ),
+        solver: str = Input(
+            description="Solver",
+            default="Radial",
+            choices=SOLVER_OPTIONS,
+        ),
         wl: float = Input(
             description="Wavelength (in nm)", ge=100, le=2000, default=1550
         ),
@@ -111,7 +121,14 @@ class Predictor(BasePredictor):
         output_dir = Path(tempfile.mkdtemp())
         
 
-        modes = compute_modes(profile_type, core_diam, NA, wl/1e3, n_cladding)
+        modes = compute_modes(
+            profile_type, 
+            solver,
+            core_diam, 
+            NA, 
+            wl/1e3, 
+            n_cladding
+            )
 
         fig_betas_path = output_dir.joinpath(f"betas.png")
 
