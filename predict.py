@@ -45,7 +45,7 @@ def colorize(z, theme = 'dark', saturation = 1., beta = 1.4, transparent = False
         return c
  
 
-def compute_modes(profile_type, solver, diameter, NA, wl, n1, curvature):
+def compute_modes(profile_type, solver, diameter, NA, wl, n1):
     profile = pyMMF.IndexProfile(
         npoints = SOLVER_N_POINTS_MODE, 
         areaSize = AREA_SIZE_COEFF*diameter
@@ -72,7 +72,6 @@ def compute_modes(profile_type, solver, diameter, NA, wl, n1, curvature):
     dh = diameter/SOLVER_N_POINTS_SEARCH
 
     modes = solver.solve(mode=solver_type,
-                        curvature = curvature,
                         r_max = r_max, # max radius to calculate (and first try for large radial boundary condition)
                         dh = dh, # radial resolution during the computation
                         min_radius_bc = SOLVER_MIN_RADIUS_BC, # min large radial boundary condition
@@ -122,7 +121,7 @@ class Predictor(BasePredictor):
         ),
     ) -> List[Path]:
         
-        curvature = (curvature_x, None) if is_curvature else None
+        curvature = (curvature_x*1e4, None) if is_curvature else None
 
         outputs = []
         output_dir = Path(tempfile.mkdtemp())
@@ -134,19 +133,24 @@ class Predictor(BasePredictor):
             NA, 
             wl/1e3, 
             n_cladding,
-            curvature
             )
 
-        M0 = modes.getModeMatrix()
+        
+        if curvature is not None:
+            betas, M0 = modes.getCurvedModes(npola = 1, curvature = curvature)
+        else:
+            betas = modes.betas
+            M0 = modes.getModeMatrix()
+            
+        
         n_modes = modes.number
         
 
         fig_betas_path = output_dir.joinpath(f"betas.png")
-
-        
+     
         plt.figure(figsize = (6,5), constrained_layout=True)
         plt.plot(
-            np.sort(np.real(modes.betas))[::-1],
+            np.sort(np.real(betas))[::-1],
             linewidth=2.
             )
         plt.xticks(fontsize = 16)
@@ -203,7 +207,7 @@ class Predictor(BasePredictor):
             n_points = SOLVER_N_POINTS_MODE,
             n_modes = n_modes,
             profiles = M0, 
-            betas = modes.betas)
+            betas = betas)
         outputs.append(mode_file)
         
         return outputs
