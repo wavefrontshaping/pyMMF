@@ -18,7 +18,7 @@ AREA_SIZE_COEFF = 1.2
 # CURVATURE = None
 
 SOLVER_N_POINTS_SEARCH = 2**8
-SOLVER_N_POINTS_MODE = 2**8
+SOLVER_N_POINTS_MODE = 2**7
 SOLVER_R_MAX_COEFF = 1.8
 SOLVER_BC_RADIUS_STEP = 0.95
 SOLVER_N_BETA_COARSE = 1000
@@ -117,11 +117,11 @@ class Predictor(BasePredictor):
             choices= CURVATURE_OPTIONS,
         ),
         curvature_x: float = Input(
-            description="Curvature (in cm)", ge=0.1, le=20, default=1
+            description="Curvature (in mm)", ge=1, le=200, default=10
         ),
     ) -> List[Path]:
         
-        curvature = (curvature_x*1e4, None) if is_curvature else None
+        curvature = (curvature_x*1e3, 1e9) if is_curvature else None
 
         outputs = []
         output_dir = Path(tempfile.mkdtemp())
@@ -137,7 +137,12 @@ class Predictor(BasePredictor):
 
         
         if curvature is not None:
-            betas, M0 = modes.getCurvedModes(npola = 1, curvature = curvature)
+            # betas, M0 = modes.getCurvedModes(npola = 1, curvature = curvature)
+            M = modes.getModeMatrix()
+            B = modes.getEvolutionOperator(npola = 1,curvature = curvature)
+            betas,U = np.linalg.eig(B)
+            M0 = U.transpose().conjugate().dot(M.transpose().conjugate())
+            M0 = M0.transpose()
         else:
             betas = modes.betas
             M0 = modes.getModeMatrix()
