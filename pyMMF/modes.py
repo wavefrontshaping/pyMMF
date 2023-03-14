@@ -215,7 +215,10 @@ class Modes():
             Gamma_y = M.transpose().conjugate().dot(y).dot(M)
             k0 = 2*np.pi/self.wl
             n_min = np.min(self.indexProfile.n)
-            B = B - n_min*k0*(1./curvature[0]*Gamma_x+1./curvature[1]*Gamma_y)
+            if curvature[0]:
+                B = B - n_min*k0*1./curvature[0]*Gamma_x
+            if curvature[1]:
+                B = B - n_min*k0*1./curvature[1]*Gamma_y
             
         return B
     
