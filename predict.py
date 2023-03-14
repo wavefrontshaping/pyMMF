@@ -13,6 +13,7 @@ PROFILE_TYPE_OPTIONS = ['GRIN', 'SI']
 # SOLVER_OPTIONS = ['Radial', 'Eig', 'Radial test']
 SOLVER = 'Radial'
 CURVATURE_OPTIONS = ['Yes', 'No']
+DEGENERATE_MODES_OPTIONS = ['cos', 'exp']
 
 AREA_SIZE_COEFF = 1.2
 # CURVATURE = None
@@ -22,7 +23,7 @@ SOLVER_N_POINTS_MODE = 2**7
 SOLVER_R_MAX_COEFF = 1.8
 SOLVER_BC_RADIUS_STEP = 0.95
 SOLVER_N_BETA_COARSE = 1000
-SOLVER_DEGENERATE_MODE = 'exp'
+# SOLVER_DEGENERATE_MODE = 'exp'
 SOLVER_MIN_RADIUS_BC = 1.5
 
 def colorize(z, theme = 'dark', saturation = 1., beta = 1.4, transparent = False, alpha = 1., max_threshold = 1):
@@ -45,7 +46,7 @@ def colorize(z, theme = 'dark', saturation = 1., beta = 1.4, transparent = False
         return c
  
 
-def compute_modes(profile_type, solver, diameter, NA, wl, n1):
+def compute_modes(profile_type, solver, diameter, NA, wl, n1, mode_repr):
     profile = pyMMF.IndexProfile(
         npoints = SOLVER_N_POINTS_MODE, 
         areaSize = AREA_SIZE_COEFF*diameter
@@ -77,7 +78,8 @@ def compute_modes(profile_type, solver, diameter, NA, wl, n1):
                         min_radius_bc = SOLVER_MIN_RADIUS_BC, # min large radial boundary condition
                         change_bc_radius_step = SOLVER_BC_RADIUS_STEP, #change of the large radial boundary condition if fails 
                         N_beta_coarse = SOLVER_N_BETA_COARSE, # number of steps of the initial coarse scan
-                        degenerate_mode = SOLVER_DEGENERATE_MODE
+                        degenerate_mode = mode_repr,
+                        field_limit_tol = 1e-4
                         )
 
     return modes
@@ -111,8 +113,14 @@ class Predictor(BasePredictor):
         NA: float = Input(
             description="Core diameter (in microns)", ge=0.05, le=.5, default=.2
         ),
+        mode_repr: str = Input(
+            description="Mode representation, 'cos' for LP modes, 'exp' for OAM modes (if no curvature)",
+            default="cos",
+            choices=DEGENERATE_MODES_OPTIONS,
+        ),
+        
         is_curvature: str = Input(
-            description="Curvature. Select 'No' for straight fiber.",
+            description="Curvature. Select 'No' for a straight fiber. Expect much longer computation time with curvature.",
             default="No",
             choices= CURVATURE_OPTIONS,
         ),
@@ -121,7 +129,7 @@ class Predictor(BasePredictor):
         ),
     ) -> List[Path]:
         
-        curvature = (curvature_x*1e3, 1e9) if is_curvature else None
+        curvature = curvature_x*1e3 if is_curvature == 'Yes' else None
 
         outputs = []
         output_dir = Path(tempfile.mkdtemp())
@@ -133,20 +141,17 @@ class Predictor(BasePredictor):
             NA, 
             wl/1e3, 
             n_cladding,
+            mode_repr
             )
 
-        
+        M0 = modes.getModeMatrix()
+        print(curvature)
         if curvature is not None:
-            # betas, M0 = modes.getCurvedModes(npola = 1, curvature = curvature)
-            M = modes.getModeMatrix()
-            B = modes.getEvolutionOperator(npola = 1,curvature = curvature)
-            betas,U = np.linalg.eig(B)
-            M0 = U.transpose().conjugate().dot(M.transpose().conjugate())
-            M0 = M0.transpose()
+            betas, M0 = modes.getCurvedModes(npola = 1, curvature = curvature)
         else:
             betas = modes.betas
-            M0 = modes.getModeMatrix()
             
+        betas = modes.betas
         
         n_modes = modes.number
         
@@ -170,7 +175,6 @@ class Predictor(BasePredictor):
         plt.plot(figsize = (2, 2))
 
         for i in range(4):
-            # file_path = output_dir.joinpath(f"mode_{i}.png")
             Mi = M0[...,i]
             profile = Mi.reshape([SOLVER_N_POINTS_MODE]*2)
             # plt.figure(figsize = (4,4))
