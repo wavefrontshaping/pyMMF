@@ -4,26 +4,24 @@
 from cog import BasePredictor, Input, Path, BaseModel
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.io import savemat
 import pyMMF
 from colorsys import hls_to_rgb
 import tempfile
 from typing import List
 
 PROFILE_TYPE_OPTIONS = ['GRIN', 'SI']
-# SOLVER_OPTIONS = ['Radial', 'Eig', 'Radial test']
 SOLVER = 'Radial'
 CURVATURE_OPTIONS = ['Yes', 'No']
 DEGENERATE_MODES_OPTIONS = ['cos', 'exp']
 
 AREA_SIZE_COEFF = 1.2
-# CURVATURE = None
 
 SOLVER_N_POINTS_SEARCH = 2**8
 SOLVER_N_POINTS_MODE = 2**7
 SOLVER_R_MAX_COEFF = 1.8
 SOLVER_BC_RADIUS_STEP = 0.95
 SOLVER_N_BETA_COARSE = 1000
-# SOLVER_DEGENERATE_MODE = 'exp'
 SOLVER_MIN_RADIUS_BC = 1.5
 
 def colorize(z, theme = 'dark', saturation = 1., beta = 1.4, transparent = False, alpha = 1., max_threshold = 1):
@@ -85,9 +83,6 @@ def compute_modes(profile_type, solver, diameter, NA, wl, n1, mode_repr):
     return modes
 
 class Predictor(BasePredictor):
-    def setup(self):
-        """Load the model into memory to make running multiple predictions efficient"""
-        # self.model = torch.load("./weights.pth")
 
     def predict(
         self,
@@ -96,11 +91,6 @@ class Predictor(BasePredictor):
             default="GRIN",
             choices=PROFILE_TYPE_OPTIONS,
         ),
-        # solver: str = Input(
-        #     description="Solver",
-        #     default="Radial",
-        #     choices=SOLVER_OPTIONS,
-        # ),
         wl: float = Input(
             description="Wavelength (in nm)", ge=100, le=2000, default=1550
         ),
@@ -154,7 +144,6 @@ class Predictor(BasePredictor):
         betas = modes.betas
         
         n_modes = modes.number
-        
 
         fig_betas_path = output_dir.joinpath(f"betas.png")
      
@@ -210,14 +199,26 @@ class Predictor(BasePredictor):
         plt.savefig(fig_last_modes_path)
         outputs.append(fig_last_modes_path)
         
-        mode_file  = output_dir.joinpath(f"modes.npz")
+        # Save for Python
+        python_mode_file  = output_dir.joinpath(f"modes.npz")
         np.savez(
-            mode_file, 
+            python_mode_file, 
             n_points = SOLVER_N_POINTS_MODE,
             n_modes = n_modes,
             profiles = M0, 
             betas = betas)
-        outputs.append(mode_file)
-        
+        outputs.append(python_mode_file)
+
+        # Save for Matlab
+        matlab_mode_file  = output_dir.joinpath(f"modes.mat")
+        matlab_dic = {
+            'n_points': SOLVER_N_POINTS_MODE,
+            'n_modes': n_modes,
+            'profiles': M0,
+            'betas': betas
+        }
+        savemat(matlab_mode_file, matlab_dic)
+        outputs.append(matlab_mode_file)
+
         return outputs
 
