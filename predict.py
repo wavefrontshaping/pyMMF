@@ -92,19 +92,19 @@ class Predictor(BasePredictor):
             choices=PROFILE_TYPE_OPTIONS,
         ),
         wl: float = Input(
-            description="Wavelength (in nm)", ge=100, le=2000, default=1550
+            description="Wavelength (in nm).", ge=100, le=2000, default=1550
         ),
         core_diam: float = Input(
-            description="Core diameter (in microns)", ge=10, le=80, default=50
+            description="Core diameter (in microns).", ge=10, le=80, default=50
         ),
         n_cladding: float = Input(
-            description="Core diameter (in microns)", ge=1.3, le=1.6, default=1.45
+            description="Refractive index of the cladding.", ge=1.3, le=1.6, default=1.45
         ),
         NA: float = Input(
-            description="Core diameter (in microns)", ge=0.05, le=.5, default=.2
+            description="Core diameter (in microns).", ge=0.05, le=.5, default=.2
         ),
         mode_repr: str = Input(
-            description="Mode representation, 'cos' for LP modes, 'exp' for OAM modes (if no curvature)",
+            description="Mode representation, 'cos' for LP modes, 'exp' for OAM modes (if no curvature).",
             default="cos",
             choices=DEGENERATE_MODES_OPTIONS,
         ),
