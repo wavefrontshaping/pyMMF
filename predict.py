@@ -11,18 +11,18 @@ import tempfile
 from typing import List
 
 PROFILE_TYPE_OPTIONS = ['GRIN', 'SI']
-SOLVER = 'Radial'
 CURVATURE_OPTIONS = ['Yes', 'No']
 DEGENERATE_MODES_OPTIONS = ['cos', 'exp']
+SOLVER_OPTIONS = ['Radial', 'Radial 2']
 
-AREA_SIZE_COEFF = 1.2
+AREA_SIZE_COEFF = 1.0
 
 SOLVER_N_POINTS_SEARCH = 2**8
 SOLVER_N_POINTS_MODE = 2**7
 SOLVER_R_MAX_COEFF = 1.8
 SOLVER_BC_RADIUS_STEP = 0.95
 SOLVER_N_BETA_COARSE = 1000
-SOLVER_MIN_RADIUS_BC = 1.5
+SOLVER_MIN_RADIUS_BC = .5
 
 def colorize(z, theme = 'dark', saturation = 1., beta = 1.4, transparent = False, alpha = 1., max_threshold = 1):
     r = np.abs(z)
@@ -54,9 +54,10 @@ def compute_modes(profile_type, solver, diameter, NA, wl, n1, mode_repr):
         profile.initParabolicGRIN(n1=n1, a=diameter/2, NA=NA)
     else:
         profile.initStepIndex(n1=n1, a=diameter/2, NA=NA)
+
     if solver == 'Radial':
         solver_type = 'radial'
-    elif solver == 'Radial test':
+    elif solver == 'Radial 2':
         solver_type = 'radial_test'
     elif solver == 'Eig':
         solver_type = 'eig'
@@ -77,7 +78,7 @@ def compute_modes(profile_type, solver, diameter, NA, wl, n1, mode_repr):
                         change_bc_radius_step = SOLVER_BC_RADIUS_STEP, #change of the large radial boundary condition if fails 
                         N_beta_coarse = SOLVER_N_BETA_COARSE, # number of steps of the initial coarse scan
                         degenerate_mode = mode_repr,
-                        field_limit_tol = 1e-4
+                        field_limit_tol = 1e-4,
                         )
 
     return modes
@@ -90,6 +91,11 @@ class Predictor(BasePredictor):
             description="Index profile (Graded index or step-index)",
             default="GRIN",
             choices=PROFILE_TYPE_OPTIONS,
+        ),
+        solver_choice: str = Input(
+            description="Solver, if one shows errors due to poor convergence, try the other one.",
+            default="Radial 2",
+            choices=SOLVER_OPTIONS,
         ),
         wl: float = Input(
             description="Wavelength (in nm).", ge=100, le=2000, default=1550
@@ -126,7 +132,7 @@ class Predictor(BasePredictor):
         
         modes = compute_modes(
             profile_type, 
-            SOLVER,
+            solver_choice,
             core_diam, 
             NA, 
             wl/1e3, 
