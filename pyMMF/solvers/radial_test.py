@@ -174,6 +174,7 @@ def solve_radial_test(
     dh = options.get('dh', indexProfile.areaSize/indexProfile.npoints)
     beta_tol = options.get('beta_tol', np.finfo(np.float64).eps)
     field_limit_tol = options.get('field_limit_tol', 1e-3)
+    save_radial = options.get("save_radial", False)
     
     k0 = 2.*np.pi/wl
 
@@ -253,7 +254,9 @@ def solve_radial_test(
                     f_interp = np.pad(f_vec, (0,len(r)-len(f_vec)),'constant', constant_values = 0)
                     # assume f = 0 for r>radius * min_radius_bc
                     # f_interp[r > radius * 1] = 0
-                    f = interp1d(r, f_interp, kind='cubic')
+                    f = interp1d(
+                        r, f_interp, kind="cubic", bounds_error=False, fill_value=0
+                    )
                     break
                 except (BisectNotConvergedError, PrecisionError, BisectRootValueError):
                     logger.warning('Boundary condition could not be met.')
@@ -275,6 +278,9 @@ def solve_radial_test(
                 modes.profiles[-1] = modes.profiles[-1]/np.sqrt(np.sum(np.abs(modes.profiles[-1])**2))
                 # is the mode a propagative one?
                 modes.propag.append(True)
+
+                if save_radial:
+                    modes.data.append({"radial_func": f, "r_max": r_max})
             else:
                 for s, phi_func in zip([-1,1],phi_funcs):
                     modes.betas.append(delta_beta+beta_min)
@@ -285,6 +291,9 @@ def solve_radial_test(
                     modes.profiles[-1] = modes.profiles[-1]/np.sqrt(np.sum(np.abs(modes.profiles[-1])**2))
                     # is the mode a propagative one?
                     modes.propag.append(True)
+
+                    if save_radial:
+                        modes.data.append({"radial_func": f, "r_max": r_max})
 
         m += 1
         r_max = np.max(indexProfile.R)
