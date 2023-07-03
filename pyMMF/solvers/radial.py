@@ -176,7 +176,7 @@ def solve_radial(indexProfile, wl, **options):
     N_beta_coarse = options.get("N_beta_coarse", N_BETA_COARSE_DEFAULT)
     beta_tol = options.get("beta_tol", np.finfo(np.float64).eps)
     r_max = options.get("r_max", indexProfile.areaSize)
-    save_radial = options.get("save_radial", False)
+    save_func = options.get("save_func", False)
     dh = options.get("dh", indexProfile.areaSize / indexProfile.npoints)
     k0 = 2.0 * np.pi / wl
 
@@ -258,9 +258,21 @@ def solve_radial(indexProfile, wl, **options):
                     # assume f = 0 for r>r_max
                     f_interp = np.pad(f_vec, (0, len(r) - len(f_vec)), "constant")
 
-                    f = interp1d(
+                    f_r = interp1d(
                         r, f_interp, kind="cubic", bounds_error=False, fill_value=0
                     )
+
+                    if save_func:
+                        # normalize the radial function
+                        def radial_norm(t, r_vec, d):
+                            return np.sqrt(
+                                2 * np.pi * np.sum(np.abs(t) ** 2 * r_vec) * d
+                            )
+
+                        dr = dh / 2
+                        r_vec = np.arange(0, r_max, dr)
+                        norm_fr = radial_norm(f_r(r_vec), r_vec, dr)
+
                     break
                 except (RecursionError, PrecisionError) as e:
                     logger.warning(e)
@@ -274,15 +286,17 @@ def solve_radial(indexProfile, wl, **options):
                 modes.m.append(m)
                 modes.l.append(l + 1)
                 modes.number += 1
-                modes.profiles.append(f(indexProfile.R).ravel())
+                modes.profiles.append(f_r(indexProfile.R).ravel())
                 modes.profiles[-1] = modes.profiles[-1] / np.sqrt(
                     np.sum(np.abs(modes.profiles[-1]) ** 2)
                 )
                 # is the mode a propagative one?
                 modes.propag.append(True)
 
-                if save_radial:
-                    modes.data.append({"radial_func": f, "r_max": r_max})
+                if save_func:
+                    modes.data.append(
+                        {"radial_func": f_r, "r_max": r_max, "norm": norm_fr}
+                    )
             else:
                 for s, phi_func in zip([-1, 1], phi_funcs):
                     modes.betas.append(beta)
@@ -290,7 +304,7 @@ def solve_radial(indexProfile, wl, **options):
                     modes.l.append(l + 1)
                     modes.number += 1
                     modes.profiles.append(
-                        f(indexProfile.R).ravel()
+                        f_r(indexProfile.R).ravel()
                         * phi_func(m * indexProfile.TH.ravel())
                     )
                     modes.profiles[-1] = modes.profiles[-1] / np.sqrt(
@@ -299,8 +313,10 @@ def solve_radial(indexProfile, wl, **options):
                     # is the mode a propagative one?
                     modes.propag.append(True)
 
-                    if save_radial:
-                        modes.data.append({"radial_func": f, "r_max": r_max})
+                    if save_func:
+                        modes.data.append(
+                            {"radial_func": f_r, "r_max": r_max, "norm": norm_fr}
+                        )
 
         m = m + 1
     # sort the modes

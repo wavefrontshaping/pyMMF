@@ -10,9 +10,11 @@ from scipy.interpolate import interp1d
 from scipy.optimize import brentq as bisect
 from numba import jit
 import time
+import copy
 
 from ..modes import Modes
 from ..logger import get_logger
+
 
 logger = get_logger(__name__)
 
@@ -186,7 +188,7 @@ def solve_radial_test(indexProfile, wl, **options):
     dh = options.get("dh", indexProfile.areaSize / indexProfile.npoints)
     beta_tol = options.get("beta_tol", np.finfo(np.float64).eps)
     field_limit_tol = options.get("field_limit_tol", 1e-3)
-    save_radial = options.get("save_radial", False)
+    save_func = options.get("save_func", False)
 
     k0 = 2.0 * np.pi / wl
 
@@ -265,9 +267,21 @@ def solve_radial_test(indexProfile, wl, **options):
                     )
                     # assume f = 0 for r>radius * min_radius_bc
                     # f_interp[r > radius * 1] = 0
-                    f = interp1d(
+                    f_r = interp1d(
                         r, f_interp, kind="cubic", bounds_error=False, fill_value=0
                     )
+
+                    if save_func:
+                        # normalize the radial function
+                        def radial_norm(t, r_vec, d):
+                            return np.sqrt(
+                                2 * np.pi * np.sum(np.abs(t) ** 2 * r_vec) * d
+                            )
+
+                        dr = dh / 2
+                        r_vec = np.arange(0, r_max, dr)
+                        norm_fr = radial_norm(f_r(r_vec), r_vec, dr)
+
                     break
                 except (BisectNotConvergedError, PrecisionError, BisectRootValueError):
                     logger.warning("Boundary condition could not be met.")
@@ -277,7 +291,7 @@ def solve_radial_test(indexProfile, wl, **options):
                     logger.error(f"Unknown exception: {E}")
                     raise CalculationStopException
 
-            mode_profile = f(indexProfile.R)
+            mode_profile = f_r(indexProfile.R)
 
             # add mode
             if m == 0:
@@ -292,8 +306,10 @@ def solve_radial_test(indexProfile, wl, **options):
                 # is the mode a propagative one?
                 modes.propag.append(True)
 
-                if save_radial:
-                    modes.data.append({"radial_func": f, "r_max": r_max})
+                if save_func:
+                    modes.data.append(
+                        {"radial_func": f_r, "r_max": r_max, "norm": norm_fr}
+                    )
             else:
                 for s, phi_func in zip([-1, 1], phi_funcs):
                     modes.betas.append(delta_beta + beta_min)
@@ -309,8 +325,10 @@ def solve_radial_test(indexProfile, wl, **options):
                     # is the mode a propagative one?
                     modes.propag.append(True)
 
-                    if save_radial:
-                        modes.data.append({"radial_func": f, "r_max": r_max})
+                    if save_func:
+                        modes.data.append(
+                            {"radial_func": f_r, "r_max": r_max, "norm": norm_fr}
+                        )
 
         m += 1
         r_max = np.max(indexProfile.R)
