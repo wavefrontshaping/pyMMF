@@ -18,7 +18,7 @@ from ..logger import get_logger
 
 logger = get_logger(__name__)
 
-MIN_RADIUS_BC_DEFAULT = 1.5
+MIN_RADIUS_BC_DEFAULT = 0.5
 CHANGE_BC_RADIUS_STEP_DEFAULT = 0.9
 N_BETA_COARSE_DEFAULT = int(1e3)
 
