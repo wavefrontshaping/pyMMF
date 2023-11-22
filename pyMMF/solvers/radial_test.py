@@ -21,6 +21,7 @@ logger = get_logger(__name__)
 MIN_RADIUS_BC_DEFAULT = 0.5
 CHANGE_BC_RADIUS_STEP_DEFAULT = 0.9
 N_BETA_COARSE_DEFAULT = int(1e3)
+DEFAULT_DEGENERATE_MODE = "sin"
 
 # choice for degenerate subspaces
 EXP_PHASE_FUNCS = [lambda x: np.exp(1j * x), lambda x: np.exp(-1j * x)]
@@ -177,7 +178,7 @@ def binary_search(func, min_val, max_val, sign, beta_tol=1e-12, field_limit_tol=
 def solve_radial_test(indexProfile, wl, **options):
     t0 = time.time()
 
-    degenerate_mode = options.get("degenerate_mode", "sin")
+    degenerate_mode = options.get("degenerate_mode", DEFAULT_DEGENERATE_MODE)
     phi_funcs = EXP_PHASE_FUNCS if degenerate_mode == "exp" else SIN_PHASE_FUNCS
     min_radius_bc = options.get("min_radius_bc", MIN_RADIUS_BC_DEFAULT)
     change_bc_radius_step = options.get(
