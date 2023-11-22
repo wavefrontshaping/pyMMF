@@ -139,7 +139,6 @@ def scan_betas(m, dh, r, nr, beta_min, delta_betas, k0):
     farthest radial point for each beta value.
     (sign changes indicate the presence of an eigenvector)
     """
-    # print((m,dh,k0))
     return [
         np.sign(get_field_fast(m, dh, r, nr, beta_min, delta_beta, k0)[-1])
         for delta_beta in delta_betas
@@ -210,7 +209,6 @@ def solve_radial_test(indexProfile, wl, **options):
     m = 0
 
     while True:
-        # logger.info(f'Searching radial modes for m = {m}')
         if m == 0:
             r = r - dh / 2
 
@@ -240,7 +238,8 @@ def solve_radial_test(indexProfile, wl, **options):
                 n_search = nr[r <= r_max]
 
                 try:
-                    #'Searching for beta value that satisfies the zero condition at r={r_max/radius:.3f}a'
+                    #'Searching for beta value that satisfies the zero condition
+                    # at r={r_max/radius:.3f}a'
                     def func_fast(delta_beta):
                         f = get_field_fast(
                             m, dh, r_search, n_search, beta_min, delta_beta, k0
@@ -269,7 +268,6 @@ def solve_radial_test(indexProfile, wl, **options):
                         f_vec, (0, len(r) - len(f_vec)), "constant", constant_values=0
                     )
                     # assume f = 0 for r>radius * min_radius_bc
-                    # f_interp[r > radius * 1] = 0
                     f_r = interp1d(
                         r, f_interp, kind="cubic", bounds_error=False, fill_value=0
                     )
@@ -292,7 +290,7 @@ def solve_radial_test(indexProfile, wl, **options):
                     logger.warning(f"Retrying by changing r_max to {r_max/radius:.2f}a")
                 except Exception as E:
                     logger.error(f"Unknown exception: {E}")
-                    raise CalculationStopException
+                    raise CalculationStopException(f"Unknown exception: {E}")
 
             mode_profile = f_r(indexProfile.R)
 
