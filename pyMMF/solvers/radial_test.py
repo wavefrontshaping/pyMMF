@@ -185,7 +185,7 @@ def solve_radial_test(indexProfile, wl, **options):
         "change_bc_radius_step", CHANGE_BC_RADIUS_STEP_DEFAULT
     )
     N_beta_coarse = options.get("N_beta_coarse", N_BETA_COARSE_DEFAULT)
-    r_max = options.get("r_max", np.max(indexProfile.R))
+    r_max0 = options.get("r_max", np.max(indexProfile.R))
     dh = options.get("dh", indexProfile.areaSize / indexProfile.npoints)
     beta_tol = options.get("beta_tol", np.finfo(np.float64).eps)
     field_limit_tol = options.get("field_limit_tol", 1e-3)
@@ -196,9 +196,9 @@ def solve_radial_test(indexProfile, wl, **options):
     n_func = indexProfile.radialFunc
     radius = indexProfile.a
 
-    r = np.arange(0, r_max + dh, dh).astype(np.float64)
+    r = np.arange(0, r_max0 + dh, dh).astype(np.float64)
 
-    beta_min = k0 * n_func(r_max)
+    beta_min = k0 * n_func(r_max0)
     beta_max = k0 * n_func(0)
     delta_betas = np.linspace(0, beta_max - beta_min, N_beta_coarse)
 
@@ -230,6 +230,7 @@ def solve_radial_test(indexProfile, wl, **options):
         for l, iz in enumerate(zero_crossings):
             logger.info(f"Searching propagation constant for |l| = {l+1}")
             # find the beta value that satisfies the best the boundary condition
+            r_max = r_max0
             while True:
                 if r_max < min_radius_bc * radius:
                     raise SmallRmaxError(r_max, min_radius_bc)
