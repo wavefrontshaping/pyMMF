@@ -18,9 +18,10 @@ from ..logger import get_logger
 
 logger = get_logger(__name__)
 
-MIN_RADIUS_BC_DEFAULT = 1.5
+MIN_RADIUS_BC_DEFAULT = 0.5
 CHANGE_BC_RADIUS_STEP_DEFAULT = 0.9
 N_BETA_COARSE_DEFAULT = int(1e3)
+DEFAULT_DEGENERATE_MODE = "sin"
 
 # choice for degenerate subspaces
 EXP_PHASE_FUNCS = [lambda x: np.exp(1j * x), lambda x: np.exp(-1j * x)]
@@ -177,14 +178,14 @@ def binary_search(func, min_val, max_val, sign, beta_tol=1e-12, field_limit_tol=
 def solve_radial_test(indexProfile, wl, **options):
     t0 = time.time()
 
-    degenerate_mode = options.get("degenerate_mode", "sin")
+    degenerate_mode = options.get("degenerate_mode", DEFAULT_DEGENERATE_MODE)
     phi_funcs = EXP_PHASE_FUNCS if degenerate_mode == "exp" else SIN_PHASE_FUNCS
     min_radius_bc = options.get("min_radius_bc", MIN_RADIUS_BC_DEFAULT)
     change_bc_radius_step = options.get(
         "change_bc_radius_step", CHANGE_BC_RADIUS_STEP_DEFAULT
     )
     N_beta_coarse = options.get("N_beta_coarse", N_BETA_COARSE_DEFAULT)
-    r_max = options.get("r_max", np.max(indexProfile.R))
+    r_max0 = options.get("r_max", np.max(indexProfile.R))
     dh = options.get("dh", indexProfile.areaSize / indexProfile.npoints)
     beta_tol = options.get("beta_tol", np.finfo(np.float64).eps)
     field_limit_tol = options.get("field_limit_tol", 1e-3)
@@ -195,9 +196,9 @@ def solve_radial_test(indexProfile, wl, **options):
     n_func = indexProfile.radialFunc
     radius = indexProfile.a
 
-    r = np.arange(0, r_max + dh, dh).astype(np.float64)
+    r = np.arange(0, r_max0 + dh, dh).astype(np.float64)
 
-    beta_min = k0 * n_func(r_max)
+    beta_min = k0 * n_func(r_max0)
     beta_max = k0 * n_func(0)
     delta_betas = np.linspace(0, beta_max - beta_min, N_beta_coarse)
 
@@ -229,6 +230,7 @@ def solve_radial_test(indexProfile, wl, **options):
         for l, iz in enumerate(zero_crossings):
             logger.info(f"Searching propagation constant for |l| = {l+1}")
             # find the beta value that satisfies the best the boundary condition
+            r_max = r_max0
             while True:
                 if r_max < min_radius_bc * radius:
                     raise SmallRmaxError(r_max, min_radius_bc)
@@ -308,7 +310,12 @@ def solve_radial_test(indexProfile, wl, **options):
 
                 if save_func:
                     modes.data.append(
-                        {"radial_func": f_r, "r_max": r_max, "norm": norm_fr}
+                        {
+                            "radial_func": f_r,
+                            "r_max": r_max,
+                            "norm": norm_fr,
+                            "azimuthal_func": lambda x: 0,
+                        }
                     )
             else:
                 for s, phi_func in zip([-1, 1], phi_funcs):
@@ -327,7 +334,12 @@ def solve_radial_test(indexProfile, wl, **options):
 
                     if save_func:
                         modes.data.append(
-                            {"radial_func": f_r, "r_max": r_max, "norm": norm_fr}
+                            {
+                                "radial_func": f_r,
+                                "r_max": r_max,
+                                "norm": norm_fr,
+                                "azimuthal_func": phi_func,
+                            }
                         )
 
         m += 1
