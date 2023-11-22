@@ -308,7 +308,12 @@ def solve_radial_test(indexProfile, wl, **options):
 
                 if save_func:
                     modes.data.append(
-                        {"radial_func": f_r, "r_max": r_max, "norm": norm_fr}
+                        {
+                            "radial_func": f_r,
+                            "r_max": r_max,
+                            "norm": norm_fr,
+                            "azimuthal_func": lambda x: 0,
+                        }
                     )
             else:
                 for s, phi_func in zip([-1, 1], phi_funcs):
@@ -327,7 +332,12 @@ def solve_radial_test(indexProfile, wl, **options):
 
                     if save_func:
                         modes.data.append(
-                            {"radial_func": f_r, "r_max": r_max, "norm": norm_fr}
+                            {
+                                "radial_func": f_r,
+                                "r_max": r_max,
+                                "norm": norm_fr,
+                                "azimuthal_func": phi_func,
+                            }
                         )
 
         m += 1
