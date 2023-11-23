@@ -51,7 +51,7 @@ def colorize(
         return c
 
 
-def compute_modes(profile_type, solver, diameter, NA, wl, n1, mode_repr):
+def compute_modes(profile_type, diameter, NA, wl, n1, mode_repr):
     profile = pyMMF.IndexProfile(
         npoints=SOLVER_N_POINTS_MODE, areaSize=AREA_SIZE_COEFF * diameter
     )
