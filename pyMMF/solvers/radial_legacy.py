@@ -164,7 +164,7 @@ def binary_search(func, min_val, max_val, sign, prev, tol=1e-3):
 #         return binary_search(func, min_val, mid_val, sign, res, tol)
 
 
-def solve_radial(indexProfile, wl, **options):
+def solve_radial_legacy(indexProfile, wl, **options):
     t0 = time.time()
 
     degenerate_mode = options.get("degenerate_mode", "sin")
