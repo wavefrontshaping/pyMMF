@@ -15,6 +15,10 @@ If the code was helpful to your work, please consider citing it:
 
 [![DOI](https://zenodo.org/badge/148702831.svg)](https://zenodo.org/badge/latestdoi/148702831)
 
+## Online mode predictions
+
+Test `pyMMF` on [Replicate](https://replicate.com/wavefrontshaping/pymmf)
+
 ## Installation
 
 Download the file and execute the following command.
