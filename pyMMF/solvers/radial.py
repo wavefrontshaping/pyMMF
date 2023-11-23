@@ -18,7 +18,7 @@ from ..logger import get_logger
 
 logger = get_logger(__name__)
 
-MIN_RADIUS_BC_DEFAULT = 0.5
+MIN_RADIUS_BC_COEFF_DEFAULT = 4
 CHANGE_BC_RADIUS_STEP_DEFAULT = 0.9
 N_BETA_COARSE_DEFAULT = int(1e3)
 DEFAULT_DEGENERATE_MODE = "sin"
@@ -180,7 +180,7 @@ def solve_radial(indexProfile, wl, **options):
 
     degenerate_mode = options.get("degenerate_mode", DEFAULT_DEGENERATE_MODE)
     phi_funcs = EXP_PHASE_FUNCS if degenerate_mode == "exp" else SIN_PHASE_FUNCS
-    min_radius_bc = options.get("min_radius_bc", MIN_RADIUS_BC_DEFAULT)
+    min_radius_bc = options.get("min_radius_bc", MIN_RADIUS_BC_COEFF_DEFAULT)
     change_bc_radius_step = options.get(
         "change_bc_radius_step", CHANGE_BC_RADIUS_STEP_DEFAULT
     )
@@ -231,7 +231,7 @@ def solve_radial(indexProfile, wl, **options):
             # find the beta value that satisfies the best the boundary condition
             r_max = r_max0
             while True:
-                if r_max < min_radius_bc * radius:
+                if r_max < min_radius_bc * wl:
                     raise SmallRmaxError(r_max, min_radius_bc)
 
                 r_search = r[r <= r_max]
