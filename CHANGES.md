@@ -24,6 +24,8 @@ plt.figure()
 plt.imshow(np.real(R*TH))
 ```
 
+- in the radial solver, argument `min_radius_bc` is now in units of wavelength, defaults to 4.
+
 ## 0.5
 
 ### Changes
