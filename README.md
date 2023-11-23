@@ -221,4 +221,10 @@ plt.imshow(np.real(R*TH))
 
 ### 0.4
 
+#### Changes:
+
+- added Ricatti solver for axisymmetric index profiles
+
+### 0.1
+
 - First public version
