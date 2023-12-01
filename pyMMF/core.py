@@ -40,54 +40,6 @@ sys.excepthook = lambda excType, excValue, traceback: handleException(
 # %%
 
 
-# https://docs.scipy.org/doc/numpy-1.13.0/user/basics.subclassing.html
-class TransmissionMatrix(np.ndarray):
-    def __new__(cls, input_array, npola=1):
-        # Input array is an already formed ndarray instance
-        # We first cast to be our class type
-        obj = np.asarray(input_array).view(cls)
-        # add the new attribute to the created instance
-        obj.npola = npola
-        # Finally, we must return the newly created object:
-        return obj
-
-    def __array_finalize__(self, obj):
-        # see InfoArray.__array_finalize__ for comments
-        if obj is None:
-            return
-        self.npola = getattr(obj, "npola", 1)
-
-    def polarization_rotation(self, angle):
-        if self.npola == 1:
-            return self
-        N = self.shape[0]
-        Pola1 = self.view()[:, : N // 2]
-        Pola2 = self.view()[:, N // 2 : N]
-
-        self.view()[:, : N // 2] = Pola1 * np.cos(angle) + Pola2 * np.sin(angle)
-        self.view()[:, N // 2 : N] = Pola2 * np.cos(angle) - Pola1 * np.sin(angle)
-        return self
-
-
-def randomGroupCoupling(groups):
-    """
-    Create a unitary matrix accounting for random mode coupling only into given groups of modes.
-    """
-    size = np.max([np.max(g) for g in groups]) + 1
-    H = np.zeros([size] * 2, dtype=np.complex128)
-
-    for g in groups:
-        # generate random unitary matrix
-        g_size = len(g)
-        u, _, __ = np.linalg.svd(
-            np.random.randn(g_size, g_size)
-            + complex(0, 1) * np.random.randn(g_size, g_size)
-        )
-        H[np.ix_(g, g)] = u
-
-    return H
-
-
 def estimateNumModesGRIN(wl, a, NA, pola=1):
     """
         Returns a rough estimation of the number of propagating modes of a GRIN fiber.
