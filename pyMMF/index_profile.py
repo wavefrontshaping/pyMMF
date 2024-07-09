@@ -9,6 +9,10 @@ from matplotlib import pyplot as plt
 from typing import List
 from .functions import cart2pol
 from typing import List, Callable
+import pickle
+from scipy.interpolate import interp1d
+
+NB_POINTS_TO_SAVE_RADIAL_FUNC = 10_000
 
 
 class IndexProfile:
@@ -235,3 +239,83 @@ class IndexProfile:
         plt.ylabel("y (um)")
         plt.title("Index profile")
         plt.show()
+
+    def save(self, filename: str) -> None:
+        """
+        Save the index profile to a file.
+
+        Args:
+            filename (str): The name of the file where to save the index profile.
+
+        Returns:
+            None
+
+        Examples:
+            ```python
+            import pyMMF
+            npoints = 256
+            areaSize = 20
+            profile = pyMMF.IndexProfile(npoints=npoints, areaSize=areaSize)
+            ...
+            profile.save("index_profile.pkl")
+            ```
+        """
+
+        dict_to_save = self.__dict__.copy()
+        dict_to_save.pop("radialFunc")
+
+        radial_func_r_vec = np.linspace(
+            0, self.areaSize / 2, NB_POINTS_TO_SAVE_RADIAL_FUNC
+        )
+        dict_to_save["radial_func_r_vec"] = radial_func_r_vec
+        dict_to_save["radial_func_discretized"] = np.fromiter(
+            (self.radialFunc(i) for i in radial_func_r_vec),
+            np.float32,
+        )
+        # Save the dictionary to a file
+        with open(filename, "wb") as f:
+            pickle.dump(dict_to_save, f)
+        # np.savez(filename, **dict_to_save)
+
+    def load(self, filename: str) -> None:
+        """
+        Load the index profile from a file.
+
+        Args:
+            filename (str): The name of the file where the index profile is saved.
+
+        Returns:
+            None
+        """
+        data = np.load(filename, allow_pickle=True)
+        radialFunc = interp1d(
+            data["radial_func_r_vec"],
+            data["radial_func_discretized"],
+            fill_value="extrapolate",
+        )
+        data.pop("radial_func_r_vec")
+        data.pop("radial_func_discretized")
+        for key, value in data.items():
+            setattr(self, key, value)
+
+    @classmethod
+    def fromFile(cls, filename: str):
+        """
+        Load the index profile from a file.
+
+        Args:
+            filename (str): The name of the file where the index profile is saved.
+
+        Returns:
+            IndexProfile: The index profile loaded from the file.
+
+        Examples:
+            ```python
+            import pyMMF
+            filename = "index_profile.pkl"
+            profile = pyMMF.IndexProfile.fromFile(filename)
+            ```
+        """
+        profile = IndexProfile(npoints=0, areaSize=0)
+        profile.load(filename)
+        return profile
