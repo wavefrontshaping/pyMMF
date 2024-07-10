@@ -7,6 +7,7 @@ Created on Mon Feb  4 12:02:57 2019
 """
 
 import numpy as np
+import pickle
 from scipy.linalg import expm
 from scipy.ndimage import rotate as scipy_rotate
 from scipy.ndimage import shift as scipy_shift
@@ -35,14 +36,14 @@ class Modes:
 
     def getModeMatrix(self, npola=1, shift=None, angle=None):
         """
-            Returns the matrix containing the mode profiles.
+        Returns the matrix containing the mode profiles.
         Note that while you can set two polarizations, the modes profiles are obtained under a scalar apporoximation.
 
-            Parameters
-            ----------
+        Parameters
+        ----------
 
-            npola : int (1 or 2)
-                    number of polarizations considered. For npola = 2, the mode matrix will be a block diagonal matrix.
+        npola : int (1 or 2)
+            number of polarizations considered. For npola = 2, the mode matrix will be a block diagonal matrix.
 
         shift : list or None
             (slow) value of a coordinate offset, allows to return the mode matrix for a fiber with the center shifted with regard
@@ -55,11 +56,11 @@ class Modes:
             defaults to None
 
 
-            Returns
-            -------
+        Returns
+        -------
 
-            M : numpy array
-            the matrix representing the basis of the propagating modes.
+        M : numpy array
+        the matrix representing the basis of the propagating modes.
         """
         assert self.profiles
         if shift is not None:
@@ -74,9 +75,9 @@ class Modes:
             for ind, modeProfile in enumerate(self.profiles):
 
                 if shift is None and angle is None:
-                    M[
-                        pol * N : (pol + 1) * N, pol * self.number + ind
-                    ] = modeProfile  # .reshape(1,self._npoints**2)
+                    M[pol * N : (pol + 1) * N, pol * self.number + ind] = (
+                        modeProfile  # .reshape(1,self._npoints**2)
+                    )
                 else:
                     mode2D = modeProfile.reshape([self.indexProfile.npoints] * 2)
 
@@ -92,15 +93,25 @@ class Modes:
                             0, 1
                         ) * scipy_shift(input=mode2D.imag, shift=shift)
 
-                    M[
-                        pol * N : (pol + 1) * N, pol * self.number + ind
-                    ] = mode2D.flatten()
+                    M[pol * N : (pol + 1) * N, pol * self.number + ind] = (
+                        mode2D.flatten()
+                    )
 
         self.modeMatrix = M
 
         return M
 
     def sort(self):
+        """
+        Sorts the modes based on the values of `self.betas` in descending order.
+
+        This method rearranges the elements of `self.betas` and other associated lists
+        (such as `self.u`, `self.w`, `self.m`, `self.l`, `self.profiles`, `self.modesList`, and `self.data`)
+        based on the sorted order of `self.betas` in descending order.
+
+        Returns:
+            None
+        """
         idx = np.flip(np.argsort(self.betas), axis=0)
         self.betas = [self.betas[i] for i in idx]
         if self.u:
@@ -150,14 +161,14 @@ class Modes:
 
         One can add the effect of curvature to a system solved for a straight fiber.
         It returns then the evolution operator in the basis of the straight fiber modes.
-        The calculation is different from directly solving the system for a bent fiber [1]_ [2]_.
+        The calculation is different from directly solving the system for a bent fiber [#]_ [#]_.
 
 
 
         Parameters
         ----------
         npola : int (1 or 2)
-                        number of polarizations considered.
+            number of polarizations considered.
             defaults to 1
 
         curvature: float (optional)
@@ -176,11 +187,11 @@ class Modes:
         Notes
         -----
 
-        .. [1]  M. Plöschner, T. Tyc and T. Čižmár, "Seeing through chaos in multimode fibres"
+        .. [#]  M. Plöschner, T. Tyc and T. Čižmár, "Seeing through chaos in multimode fibres"
                 Nature Photonics, vol. 9,
                 pp. 529–535, 2015.
 
-        .. [2]  S. M. Popoff, "Numerical Estimation of Multimode Fiber Modes and Propagation Constants: Part 2, Bent Fibers"
+        .. [#]  S. M. Popoff, "Numerical Estimation of Multimode Fiber Modes and Propagation Constants: Part 2, Bent Fibers"
                 http://wavefrontshaping.net/index.php/component/content/article/68-community/tutorials/multimode-fibers/149-multimode-fiber-modes-part-2
 
         """
@@ -229,7 +240,16 @@ class Modes:
         return B
 
     def getCurvedModes(self, curvature, npola=1):
-        """ """
+        """
+        Calculates the curved modes of the fiber.
+
+        Args:
+            curvature (float): The curvature of the fiber.
+            npola (int, optional): Number of polarizations. Defaults value: 1.
+
+        Returns:
+            tuple: A tuple containing the eigenvalues (new_betas) and the transposed modes (new_modes).
+        """
 
         assert self.wl
         assert self.indexProfile
@@ -237,7 +257,7 @@ class Modes:
             assert self.curvature == None
         except:
             logger.error(
-                "Adding curvature to the propagation operator requires the system to be solved for a straight fiber!"
+                "Adding curvature to the propagation operator requires the system to be first solved for a straight fiber!"
             )
             return
         if self.modeMatrix is None:
@@ -273,7 +293,7 @@ class Modes:
 
         One can add the effect of curvature to a system solved for a straight fiber.
         It returns then the evolution operator in the basis of the straight fiber modes.
-        The calculation is different from directly solving the system for a bent fiber [1]_.
+        The calculation is different from directly solving the system for a bent fiber [#]_ .
 
         Parameters
         ----------
@@ -290,20 +310,64 @@ class Modes:
         Returns
         -------
 
-                T : numpy array
-                        The transmission matrix of the fiber.
+            T : numpy array
+                    The transmission matrix of the fiber.
 
         See Also
         --------
+
             getEvolutionOperator()
 
         Notes
         -----
 
-        .. [1]  M. Plöschner, T. Tyc and T. Čižmár, "Seeing through chaos in multimode fibres"
+            .. [#]  M. Plöschner, T. Tyc and T. Čižmár, "Seeing through chaos in multimode fibres"
                 Nature Photonics, vol. 9,
                 pp. 529–535, 2015.
+
         """
         B = self.getEvolutionOperator(npola, curvature)
 
         return expm(complex(0, 1) * B * distance)
+
+    def save(self, filename: str):
+        """
+        Save the object to a file using pickle.
+
+        Parameters:
+            filename (str): The name of the file to save the object to.
+
+        Returns:
+            None
+        """
+        with open(filename, "wb") as f:
+            pickle.dump(self.__dict__, f)
+
+    def load(self, filename: str):
+        """
+        Load the object from a file using pickle.
+
+        Parameters:
+            filename (str): The name of the file to load the object from.
+
+        Returns:
+            None
+        """
+        with open(filename, "rb") as f:
+            data = pickle.load(f)
+        self.__dict__.update(data)
+
+    @classmethod
+    def fromFile(cls, filename: str):
+        """
+        Load the object from a file using pickle.
+
+        Parameters:
+            filename (str): The name of the file to load the object from.
+
+        Returns:
+            Modes: The object loaded from the file.
+        """
+        obj = cls()
+        obj.load(filename)
+        return obj
