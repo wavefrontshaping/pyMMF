@@ -341,6 +341,13 @@ class Modes:
 
         Returns:
             None
+
+        Examples:
+            ```python
+            modes = Modes()
+            ...
+            modes.save("modes.pkl")
+            ```
         """
         dict_to_save = self.__dict__.copy()
         if not save_indes_profile:
@@ -360,6 +367,12 @@ class Modes:
 
         Returns:
             None
+
+        Examples:
+            ```python
+            modes = Modes()
+            modes.load("modes.pkl")
+            ```
         """
         with open(filename, "rb") as f:
             data = pickle.load(f)
@@ -381,6 +394,11 @@ class Modes:
 
         Returns:
             Modes: The object loaded from the file.
+
+        Examples:
+            ```python
+            modes = Modes.fromFile("modes.pkl")
+            ```
         """
         obj = cls()
         obj.load(filename)
