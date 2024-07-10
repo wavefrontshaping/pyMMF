@@ -135,6 +135,7 @@ class IndexProfile:
             ```
         """
         self.radialFunc = nr
+        print(self.radialFunc)
         self.n = np.fromiter((nr(i) for i in self.R.reshape([-1])), np.float32)
         self.n = self.n.reshape(self.R.shape)
 
@@ -190,6 +191,9 @@ class IndexProfile:
                 else n2
             )
 
+        print("*" * 80)
+        print(radialFunc)
+
         self.initFromRadialFunction(radialFunc)
 
     def initStepIndex(self, n1: float, a: float, NA: float) -> None:
@@ -220,7 +224,8 @@ class IndexProfile:
         self.n1 = n1
         n2 = np.sqrt(n1**2 - NA**2)
 
-        radialFunc = lambda r: n1 if r < a else n2
+        def radialFunc(r):
+            return n1 if r < a else n2
 
         self.initFromRadialFunction(radialFunc)
 
@@ -263,43 +268,56 @@ class IndexProfile:
             profile.save("index_profile.pkl")
             ```
         """
-
-        dict_to_save = self.__dict__.copy()
-        dict_to_save.pop("radialFunc")
-
-        radial_func_r_vec = np.linspace(
-            0, self.areaSize / 2, NB_POINTS_TO_SAVE_RADIAL_FUNC
-        )
-        dict_to_save["radial_func_r_vec"] = radial_func_r_vec
-        dict_to_save["radial_func_discretized"] = np.fromiter(
-            (self.radialFunc(i) for i in radial_func_r_vec),
-            np.float32,
-        )
+        dict_to_save = self.to_dict()
         # Save the dictionary to a file
         with open(filename, "wb") as f:
             pickle.dump(dict_to_save, f)
         # np.savez(filename, **dict_to_save)
 
-    def load(self, filename: str) -> None:
+    def load(self, filename: [str, dict]) -> None:
         """
         Load the index profile from a file.
 
         Args:
-            filename (str): The name of the file where the index profile is saved.
+            filename (str or dict): The name of the file where the index profile is saved,
+                or a dictionary containing the index profile data.
 
         Returns:
             None
         """
-        data = np.load(filename, allow_pickle=True)
-        radialFunc = interp1d(
-            data["radial_func_r_vec"],
-            data["radial_func_discretized"],
-            fill_value="extrapolate",
-        )
-        data.pop("radial_func_r_vec")
-        data.pop("radial_func_discretized")
+        if isinstance(filename, dict):
+            data_dict = filename
+        elif isinstance(filename, str):
+            data_dict = np.load(filename, allow_pickle=True)
+        data = self.from_dict(data_dict)
         for key, value in data.items():
             setattr(self, key, value)
+
+    def to_dict(self):
+        data_dict = self.__dict__.copy()
+        data_dict.pop("radialFunc")
+
+        radial_func_r_vec = np.linspace(
+            0, self.areaSize / 2, NB_POINTS_TO_SAVE_RADIAL_FUNC
+        )
+        data_dict["radial_func_r_vec"] = radial_func_r_vec
+        data_dict["radial_func_discretized"] = np.fromiter(
+            (self.radialFunc(i) for i in radial_func_r_vec),
+            np.float32,
+        )
+        return data_dict
+
+    def from_dict(self, data_dict):
+
+        radialFunc = interp1d(
+            data_dict["radial_func_r_vec"],
+            data_dict["radial_func_discretized"],
+            fill_value="extrapolate",
+        )
+        data_dict.pop("radial_func_r_vec")
+        data_dict.pop("radial_func_discretized")
+        data_dict["radialFunc"] = radialFunc
+        return data_dict
 
     @classmethod
     def fromFile(cls, filename: str):

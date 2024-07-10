@@ -330,18 +330,26 @@ class Modes:
 
         return expm(complex(0, 1) * B * distance)
 
-    def save(self, filename: str):
+    def save(self, filename: str, save_indes_profile=False):
         """
         Save the object to a file using pickle.
 
         Parameters:
             filename (str): The name of the file to save the object to.
+            save_indes_profile (bool): If True, the index profile will be saved. Defaults to False.
+
 
         Returns:
             None
         """
+        dict_to_save = self.__dict__.copy()
+        if not save_indes_profile:
+            dict_to_save.pop("indexProfile")
+        else:
+            dict_to_save["indexProfile"] = self.indexProfile.to_dict()
+        # dict_to_save.pop("indexProfile")
         with open(filename, "wb") as f:
-            pickle.dump(self.__dict__, f)
+            pickle.dump(dict_to_save, f)
 
     def load(self, filename: str):
         """
@@ -355,6 +363,12 @@ class Modes:
         """
         with open(filename, "rb") as f:
             data = pickle.load(f)
+
+        if data.get("indexProfile"):
+            from .index_profile import IndexProfile
+
+            self.indexProfile = IndexProfile(npoints=0, areaSize=0)
+            self.indexProfile.load(data["indexProfile"])
         self.__dict__.update(data)
 
     @classmethod
