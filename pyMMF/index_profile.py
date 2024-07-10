@@ -183,9 +183,12 @@ class IndexProfile:
         n2 = np.sqrt(n1**2 - NA**2)
         Delta = NA**2 / (2.0 * n1**2)
 
-        radialFunc = lambda r: (
-            np.sqrt(n1**2.0 * (1.0 - 2.0 * (r / a) ** alpha * Delta)) if r < a else n2
-        )
+        def radialFunc(r):
+            return (
+                np.sqrt(n1**2.0 * (1.0 - 2.0 * (r / a) ** alpha * Delta))
+                if r < a
+                else n2
+            )
 
         self.initFromRadialFunction(radialFunc)
 
