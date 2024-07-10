@@ -12,3 +12,11 @@ dist/
 bckp_polar/
 test*
 pyMMF/solvers/.ipynb_checkpoints/
+docs/venv/
+docs_sphinx/
+**/.cache
+./docs/example/*.png
+./docs/example/*.npz
+./docs/example/*.pkl
+pyMMF.egg-info/
+*.png
