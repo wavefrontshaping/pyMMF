@@ -7,6 +7,7 @@ Riccati's equations.
 
 import numpy as np
 from scipy.interpolate import interp1d
+from functools import partial
 from numba import jit, double
 import time
 from scipy.optimize import bisect
