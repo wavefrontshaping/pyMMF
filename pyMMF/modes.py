@@ -291,37 +291,30 @@ class Modes:
 
         One can add the effect of curvature to a system solved for a straight fiber.
         It returns then the evolution operator in the basis of the straight fiber modes.
-        The calculation is different from directly solving the system for a bent fiber [#]_ .
+        The calculation is different from directly solving the system for a bent fiber [#]_.
 
         Parameters
         ----------
-
         distance : float
-            size of the fiber segment (in microns)
-
-        npola : int (1 or 2)
-            number of polarizations considered. For npola = 2, the mode matrix will be a block diagonal matrix.
-
+            Size of the fiber segment (in microns).
+        npola : int
+            Number of polarizations considered. For npola = 2, the mode matrix will be a block diagonal matrix.
         curvature : float
-            curvature of the fiber segment (in microns)
+            Curvature of the fiber segment (in microns).
 
         Returns
         -------
-
-            T : numpy array
-                The transmission matrix of the fiber.
+        T : numpy.ndarray
+            The transmission matrix of the fiber.
 
         See Also
         --------
-
-            getEvolutionOperator()
+        getEvolutionOperator
 
         Notes
         -----
-
-            .. [#]  M. Plöschner, T. Tyc and T. Čižmár, "Seeing through chaos in multimode fibres"
-                Nature Photonics, vol. 9,
-                pp. 529–535, 2015.
+        .. [#]  M. Plöschner, T. Tyc and T. Čižmár, "Seeing through chaos in multimode fibres"
+            Nature Photonics, vol. 9, pp. 529–535, 2015.
 
         """
         B = self.getEvolutionOperator(npola, curvature)
