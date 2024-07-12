@@ -41,26 +41,19 @@ class Modes:
 
         Parameters
         ----------
-
-        npola : int (1 or 2)
-            number of polarizations considered. For npola = 2, the mode matrix will be a block diagonal matrix.
-
+        npola : int
+            Number of polarizations considered. For npola = 2, the mode matrix will be a block diagonal matrix.
         shift : list or None
-            (slow) value of a coordinate offset, allows to return the mode matrix for a fiber with the center shifted with regard
-            to the center of the observation window.
-            defaults to None
-
-        angle: float or None
-            (slow) angle in radians, allows to rotate the mode matrix with an arbitrary angle.
-            Note that the rotation is applied BEFORE the transverse shift.
-            defaults to None
-
+            (slow) Value of a coordinate offset, allows to return the mode matrix for a fiber with the center shifted with regard
+            to the center of the observation window. Defaults to None.
+        angle : float or None
+            (slow) Angle in radians, allows to rotate the mode matrix with an arbitrary angle.
+            Note that the rotation is applied BEFORE the transverse shift. Defaults to None.
 
         Returns
         -------
-
-        M : numpy array
-        the matrix representing the basis of the propagating modes.
+        M : numpy.ndarray
+            The matrix representing the basis of the propagating modes.
         """
         assert self.profiles
         if shift is not None:
@@ -166,12 +159,17 @@ class Modes:
 
 
 
-        Args:
-            npola (int, optional): Number of polarizations. Defaults value: 1.
-            curvature (float or None, optional): The curvature of the fiber. Defaults: None.
+        Parameters
+        ----------
+        npola : int, optional
+            Number of polarizations. Default is 1.
+        curvature : float or None, optional
+            The curvature of the fiber. Default is None.
 
-        Returns:
-        B (numpy array): The propagation operator
+        Returns
+        -------
+        B : numpy.ndarray
+            The propagation operator.
 
         .. _Google Python Style Guide:
            http://google.github.io/styleguide/pyguide.html
@@ -238,12 +236,17 @@ class Modes:
         """
         Calculates the curved modes of the fiber.
 
-        Args:
-            curvature (float): The curvature of the fiber.
-            npola (int, optional): Number of polarizations. Defaults value: 1.
+        Parameters
+        ----------
+        curvature : float
+            The curvature of the fiber.
+        npola : int, optional
+            Number of polarizations. Default is 1.
 
-        Returns:
-            tuple: A tuple containing the eigenvalues (new_betas) and the transposed modes (new_modes).
+        Returns
+        -------
+        tuple
+            A tuple containing the eigenvalues (new_betas) and the transposed modes (new_modes).
         """
 
         assert self.wl
@@ -329,20 +332,22 @@ class Modes:
         """
         Save the object to a file using pickle.
 
-        Parameters:
-            filename (str): The name of the file to save the object to.
-            save_indes_profile (bool): If True, the index profile will be saved. Defaults to False.
+        Parameters
+        ----------
+        filename : str
+            The name of the file to save the object to.
+        save_indes_profile : bool, optional
+            If True, the index profile will be saved. Default is False.
 
+        Returns
+        -------
+        None
 
-        Returns:
-            None
-
-        Examples:
-            ```python
-            modes = Modes()
-            ...
-            modes.save("modes.pkl")
-            ```
+        Examples
+        --------
+        >>> modes = Modes()
+        >>> ...
+        >>> modes.save("modes.pkl")
         """
         dict_to_save = self.__dict__.copy()
         if not save_indes_profile:
@@ -357,17 +362,19 @@ class Modes:
         """
         Load the object from a file using pickle.
 
-        Parameters:
-            filename (str): The name of the file to load the object from.
+        Parameters
+        ----------
+        filename : str
+            The name of the file to load the object from.
 
-        Returns:
-            None
+        Returns
+        -------
+        None
 
-        Examples:
-            ```python
-            modes = Modes()
-            modes.load("modes.pkl")
-            ```
+        Examples
+        --------
+        >>> modes = Modes()
+        >>> modes.load("modes.pkl")
         """
         with open(filename, "rb") as f:
             data = pickle.load(f)
@@ -384,16 +391,19 @@ class Modes:
         """
         Load the object from a file using pickle.
 
-        Parameters:
-            filename (str): The name of the file to load the object from.
+        Parameters
+        ----------
+        filename : str
+            The name of the file to load the object from.
 
-        Returns:
-            Modes: The object loaded from the file.
+        Returns
+        -------
+        Modes
+            The object loaded from the file.
 
-        Examples:
-            ```python
-            modes = Modes.fromFile("modes.pkl")
-            ```
+        Examples
+        --------
+        >>> modes = Modes.fromFile("modes.pkl")
         """
         obj = cls()
         obj.load(filename)
