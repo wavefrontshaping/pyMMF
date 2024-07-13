@@ -36,3 +36,32 @@
         - __init__
       show_root_heading: false
       heading_level: 3
+
+## `Modes` class
+
+::: pyMMF.modes.Modes
+    options:
+      members:
+        - getModeMatrix
+        - sort
+        - getNearDegenerate
+        - getEvolutionOperator
+        - getPropagationMatrix
+        - getCurvedModes
+        - save
+        - load
+        - fromFile
+      selection:
+            docstring_style: numpy
+      rendering:
+            show_source: true
+            show_bases: true
+            show_signature_annotations: true
+      docstring_style: numpy
+      show_root_heading: false
+      show_source: true
+      heading_level: 4
+
+## TEST
+::: pyMMF.modes.Modes.doc_test
+
