@@ -16,7 +16,16 @@ extensions = [
 ]
 
 templates_path = ['_templates']
-exclude_patterns = []
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+
+# -- Options for source suffix ------------------------------------------------
+
+source_suffix = {
+    '.rst': 'restructuredtext',
+    '.md': 'markdown',
+}
+
+# -- Options for HTML output -------------------------------------------------
 
 # -- Options for source suffix ------------------------------------------------
 
