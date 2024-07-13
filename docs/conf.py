@@ -12,10 +12,18 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.napoleon',
     'sphinx.ext.viewcode',
+    'recommonmark',
 ]
 
 templates_path = ['_templates']
 exclude_patterns = []
+
+# -- Options for source suffix ------------------------------------------------
+
+source_suffix = {
+    '.rst': 'restructuredtext',
+    '.md': 'markdown',
+}
 
 # -- Options for HTML output -------------------------------------------------
 
