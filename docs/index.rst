@@ -12,7 +12,7 @@ Welcome to Your Project Name's documentation!
 
    introduction
    usage
-   api.md
+   api
 
 Indices and tables
 ==================
