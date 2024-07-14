@@ -17,32 +17,6 @@ NB_POINTS_TO_SAVE_RADIAL_FUNC = 10_000
 
 class IndexProfile:
     """
-    """
-    Class to define the index profile of the fiber.
-
-    Attributes
-    ----------
-    npoints : int
-        Number of points in each dimension of the grid.
-    n : np.ndarray
-        Index profile.
-    areaSize : float
-        Size in um of the area.
-    X : np.ndarray
-        X coordinate of the grid.
-    Y : np.ndarray
-        Y coordinate of the grid.
-    TH : np.ndarray
-        Theta coordinate of the grid.
-    R : np.ndarray
-        Radial coordinate of the grid.
-    dh : float
-        Spatial resolution.
-    radialFunc : Callable[[float], float]
-        Radial function.
-    type : str
-        Type of index profile.
-    """
 
     """
 
