@@ -17,19 +17,32 @@ NB_POINTS_TO_SAVE_RADIAL_FUNC = 10_000
 
 class IndexProfile:
     """
+    """
     Class to define the index profile of the fiber.
 
-    Attributes:
-        npoints (int): Number of points in each dimension of the grid
-        n (np.ndarray): Index profile
-        areaSize (float): Size in um of the area
-        X (np.ndarray): X coordinate of the grid
-        Y (np.ndarray): Y coordinate of the grid
-        TH (np.ndarray): Theta coordinate of the grid
-        R (np.ndarray): Radial coordinate of the grid
-        dh (float): Spatial resolution
-        radialFunc (Callable[[float], float]): Radial function
-        type (str): Type of index profile
+    Attributes
+    ----------
+    npoints : int
+        Number of points in each dimension of the grid.
+    n : np.ndarray
+        Index profile.
+    areaSize : float
+        Size in um of the area.
+    X : np.ndarray
+        X coordinate of the grid.
+    Y : np.ndarray
+        Y coordinate of the grid.
+    TH : np.ndarray
+        Theta coordinate of the grid.
+    R : np.ndarray
+        Radial coordinate of the grid.
+    dh : float
+        Spatial resolution.
+    radialFunc : Callable[[float], float]
+        Radial function.
+    type : str
+        Type of index profile.
+    """
 
     """
 
@@ -52,9 +65,12 @@ class IndexProfile:
         """
         Initialize the IndexProfile object.
 
-        Args:
-            npoints (int): The number of points in each dimension of the grid.
-            areaSize (float): The size in um of the area (let it be larger that the core size!)
+        Parameters
+        ----------
+        npoints : int
+            The number of points in each dimension of the grid.
+        areaSize : float
+            The size in um of the area (let it be larger that the core size!)
         """
         self.npoints = npoints
         self.n = np.zeros([npoints] * 2)
@@ -71,31 +87,34 @@ class IndexProfile:
         Initializes the index profile from a numpy array.
         Use this function to define a custom index profile.
 
-        Args:
-            n_array (np.ndarray):
-                2d array containing the index values.
-                Each value correspond to a pixel with coordinates given by
-                (self.X, self.Y) in the cartesian coordinate system,
-                or (self.R, self.TH) in the polar coordinate system.
+        Parameters
+        ----------
+        n_array : np.ndarray
+            2d array containing the index values.
+            Each value correspond to a pixel with coordinates given by
+            (self.X, self.Y) in the cartesian coordinate system,
+            or (self.R, self.TH) in the polar coordinate system.
 
-        Returns:
-            None
+        Returns
+        -------
+        None
 
-        Examples:
-            Square fiber index profile:
-            ```python
-            import numpy as np
-            import pyMMF
-            n1 = 1.45, n2 = 1.44
-            npoints = 64
-            core_size = 10
-            areaSize = 20
-            profile = pyMMF.IndexProfile(npoints=npoints, areaSize=areaSize)
-            index_array = n2*np.ones((npoints,npoints))
-            mask_core = (np.abs(profile.X) < core_size/2) & (np.abs(profile.Y) < core_size/2)
-            index_array[mask_core] = n1
-            profile.initFromArray(index_array)
-            ```
+        Examples
+        --------
+        Square fiber index profile:
+        ```python
+        import numpy as np
+        import pyMMF
+        n1 = 1.45, n2 = 1.44
+        npoints = 64
+        core_size = 10
+        areaSize = 20
+        profile = pyMMF.IndexProfile(npoints=npoints, areaSize=areaSize)
+        index_array = n2*np.ones((npoints,npoints))
+        mask_core = (np.abs(profile.X) < core_size/2) & (np.abs(profile.Y) < core_size/2)
+        index_array[mask_core] = n1
+        profile.initFromArray(index_array)
+        ```
         """
         assert n_array.shape == self.n.shape
         self.n = n_array
@@ -105,34 +124,38 @@ class IndexProfile:
 
     def initFromRadialFunction(self, nr: Callable[[float], float]) -> None:
         """
-        Initializes the index profile fron a radial function.
+        Initializes the index profile from a radial function.
         Use this function to define a custom axisymmetric index profile.
 
-        Args:
-            nr (Callable[[float], float]): A callable function that takes a float argument and returns the refractive index.
+        Parameters
+        ----------
+        nr : Callable[[float], float]
+            A callable function that takes a float argument and returns the refractive index.
 
-        Returns:
-            None
+        Returns
+        -------
+        None
 
-        Examples:
-            Ring core fiber index profile:
-            ```python
-            import numpy as np
-            import pyMMF
-            n1 = 1.445; n2 = 1.45; n3 = 1.44
-            a = 5; b = 10
-            npoints = 256
-            areaSize = 25
-            profile = pyMMF.IndexProfile(npoints=npoints, areaSize=areaSize)
-            def radialFunc(r):
-                if r < a:
-                    return n1
-                elif r < b:
-                    return n2
-                else:
-                    return n3
-            profile.initFromRadialFunction(radialFunc)
-            ```
+        Examples
+        --------
+        Ring core fiber index profile:
+        ```python
+        import numpy as np
+        import pyMMF
+        n1 = 1.445; n2 = 1.45; n3 = 1.44
+        a = 5; b = 10
+        npoints = 256
+        areaSize = 25
+        profile = pyMMF.IndexProfile(npoints=npoints, areaSize=areaSize)
+        def radialFunc(r):
+            if r < a:
+                return n1
+            elif r < b:
+                return n2
+            else:
+                return n3
+        profile.initFromRadialFunction(radialFunc)
+        ```
         """
         self.radialFunc = nr
         print(self.radialFunc)
@@ -158,25 +181,32 @@ class IndexProfile:
             \Delta n = \frac{NA^2}{2 n_1^2}
         \]
 
-        Args:
-            n1 (float): The refractive index at the core center.
-            a (float): The core radius.
-            NA (float): The numerical aperture.
-            alpha: The exponent of the parabolic profile.
+        Parameters
+        ----------
+        n1 : float
+            The refractive index at the core center.
+        a : float
+            The core radius.
+        NA : float
+            The numerical aperture.
+        alpha : float, optional
+            The exponent of the parabolic profile. Default is 2.0.
 
-        Returns:
-            None
+        Returns
+        -------
+        None
 
-        Examples:
-            Parabolic GRIN fiber:
-            ```python
-            import pyMMF
-            n1 = 1.45; a = 10; NA = 0.2
-            npoints = 64
-            areaSize = 20
-            profile = pyMMF.IndexProfile(npoints=npoints, areaSize=areaSize)
-            profile.initParabolicGRIN(n1=n1, a=a, NA=NA)
-            ```
+        Examples
+        --------
+        Parabolic GRIN fiber:
+        ```python
+        import pyMMF
+        n1 = 1.45; a = 10; NA = 0.2
+        npoints = 64
+        areaSize = 20
+        profile = pyMMF.IndexProfile(npoints=npoints, areaSize=areaSize)
+        profile.initParabolicGRIN(n1=n1, a=a, NA=NA)
+        ```
         """
         self.NA = NA
         self.a = a
@@ -200,23 +230,29 @@ class IndexProfile:
         """
         Initializes the step index profile.
 
-        Args:
-            n1 (float): The refractive index inside the core region.
-            a (float): The core radius.
-            NA (float): The numerical aperture.
+        Parameters
+        ----------
+        n1 : float
+            The refractive index inside the core region.
+        a : float
+            The core radius.
+        NA : float
+            The numerical aperture.
 
-        Returns:
-            None
+        Returns
+        -------
+        None
 
-        Examples:
-            ```python
-            import pyMMF
-            n1 = 1.45; a = 10; NA = 0.2
-            npoints = 256
-            areaSize = 20
-            profile = pyMMF.IndexProfile(npoints=npoints, areaSize=areaSize)
-            profile.initStepIndex(n1=n1, a=a, NA=NA)
-            ```
+        Examples
+        --------
+        ```python
+        import pyMMF
+        n1 = 1.45; a = 10; NA = 0.2
+        npoints = 256
+        areaSize = 20
+        profile = pyMMF.IndexProfile(npoints=npoints, areaSize=areaSize)
+        profile.initStepIndex(n1=n1, a=a, NA=NA)
+        ```
         """
         self.NA = NA
         self.a = a
@@ -233,8 +269,9 @@ class IndexProfile:
         """
         Plot the index profile.
 
-        Returns:
-            None
+        Returns
+        -------
+        None
         """
         plt.figure()
         plt.imshow(
@@ -252,21 +289,25 @@ class IndexProfile:
         """
         Save the index profile to a file.
 
-        Args:
-            filename (str): The name of the file where to save the index profile.
+        Parameters
+        ----------
+        filename : str
+            The name of the file where to save the index profile.
 
-        Returns:
-            None
+        Returns
+        -------
+        None
 
-        Examples:
-            ```python
-            import pyMMF
-            npoints = 256
-            areaSize = 20
-            profile = pyMMF.IndexProfile(npoints=npoints, areaSize=areaSize)
-            ...
-            profile.save("index_profile.pkl")
-            ```
+        Examples
+        --------
+        ```python
+        import pyMMF
+        npoints = 256
+        areaSize = 20
+        profile = pyMMF.IndexProfile(npoints=npoints, areaSize=areaSize)
+        ...
+        profile.save("index_profile.pkl")
+        ```
         """
         dict_to_save = self.to_dict()
         # Save the dictionary to a file
@@ -278,12 +319,15 @@ class IndexProfile:
         """
         Load the index profile from a file.
 
-        Args:
-            filename (str or dict): The name of the file where the index profile is saved,
-                or a dictionary containing the index profile data.
+        Parameters
+        ----------
+        filename : str or dict
+            The name of the file where the index profile is saved,
+            or a dictionary containing the index profile data.
 
-        Returns:
-            None
+        Returns
+        -------
+        None
         """
         if isinstance(filename, dict):
             data_dict = filename
@@ -324,18 +368,23 @@ class IndexProfile:
         """
         Load the index profile from a file.
 
-        Args:
-            filename (str): The name of the file where the index profile is saved.
+        Parameters
+        ----------
+        filename : str
+            The name of the file where the index profile is saved.
 
-        Returns:
-            IndexProfile: The index profile loaded from the file.
+        Returns
+        -------
+        IndexProfile
+            The index profile loaded from the file.
 
-        Examples:
-            ```python
-            import pyMMF
-            filename = "index_profile.pkl"
-            profile = pyMMF.IndexProfile.fromFile(filename)
-            ```
+        Examples
+        --------
+        ```python
+        import pyMMF
+        filename = "index_profile.pkl"
+        profile = pyMMF.IndexProfile.fromFile(filename)
+        ```
         """
         profile = IndexProfile(npoints=0, areaSize=0)
         profile.load(filename)
