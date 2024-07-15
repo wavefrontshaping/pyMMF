@@ -1,6 +1,8 @@
 import numpy as np
 from scipy.special import jv, kn
-import logging
+from .logger import get_logger
+
+logger = get_logger(__name__)
 from typing import Tuple
 from colorsys import hls_to_rgb
 
