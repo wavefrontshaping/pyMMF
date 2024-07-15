@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pyMMF"
+version = "0.7"
+description = "Multimode optical fiber simulation package."
+authors = [
+    { name = "Sebastien M. Popoff", email = "sebastien.popoff@espci.psl.eu" },
+    { name = "Pavel Gostev" }
+]
+license = { text = "MIT" }
+readme = "README.md"
+requires-python = ">=3.6"
+classifiers = [
+    "Programming Language :: Python :: 2",
+    "Programming Language :: Python :: 3",
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Education",
+    "Topic :: Scientific/Engineering",
+    "License :: OSI Approved :: MIT License",
+]
+dependencies = [
+    "numpy",
+    "matplotlib",
+    "scipy",
+    "numba",
+    "joblib",
+]
+
+[project.urls]
+Homepage = "https://www.wavefrontshaping.net"
+
+[tool.setuptools.packages.find]
+where = ["pyMMF", "pyMMF.solvers"]
