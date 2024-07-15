@@ -7,7 +7,7 @@ from typing import Tuple
 from colorsys import hls_to_rgb
 
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 def colorize(
