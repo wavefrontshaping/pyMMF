@@ -1,0 +1,5 @@
+joblib
+matplotlib
+numba
+numpy
+scipy
