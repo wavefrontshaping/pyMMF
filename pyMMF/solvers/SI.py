@@ -29,21 +29,23 @@ def solve_SI(indexProfile, wl, **options):
 def findPropagationConstants(wl, indexProfile, tol=1e-9):
     """
     Find the propagation constants of a step index fiber by numerically finding the solution of the
-    scalar dispersion relation [1]_ [2]_.
+    scalar dispersion relation [#]_ [#]_.
 
 
 
 
     Parameters
     ----------
-    wl : float
-                wavelength in microns.
 
-    indexProfile: IndexProfile object
-        object that contains data about the transverse index profile.
+        wl : float
+            wavelength in microns.
+
+        indexProfile: IndexProfile object
+            object that contains data about the transverse index profile.
 
     Returns
     -------
+
     modes : Modes object
         Object containing data about the modes.
         Note that it does not fill the transverse profiles, only the data about the propagation constants
@@ -51,16 +53,17 @@ def findPropagationConstants(wl, indexProfile, tol=1e-9):
 
     See Also
     --------
+
         associateLPModeProfiles()
 
     Notes
     -----
 
-    .. [1]  K. Okamoto, "Fundamentals of optical waveguides"
+    .. [#]  K. Okamoto, "Fundamentals of optical waveguides"
             Academic Press,
             2006
 
-    .. [2]  S. M. Popoff, "Modes of step index multimode fibers"
+    .. [#]  S. M. Popoff, "Modes of step index multimode fibers"
             http://wavefrontshaping.net/index.php/component/content/article/68-community/tutorials/multimode-fibers/118-modes-of-step-index-multimode-fibers
 
     """
@@ -86,10 +89,14 @@ def findPropagationConstants(wl, indexProfile, tol=1e-9):
     while len(roots):
 
         def root_func(u):
+            if v**2 < u**2:
+                return np.nan
             w = np.sqrt(v**2 - u**2)
+
             return jv(m, u) / (u * jv(m - 1, u)) + kn(m, w) / (w * kn(m - 1, w))
 
-        guesses = np.argwhere(np.abs(np.diff(np.sign(root_func(interval)))))
+        test_values = [root_func(u) for u in interval]
+        guesses = np.argwhere(np.abs(np.diff(np.sign(test_values))))
         froot = lambda x0: root(root_func, x0, tol=tol)
         sols = map(froot, interval[guesses])
         roots = [s.x for s in sols if s.success]
