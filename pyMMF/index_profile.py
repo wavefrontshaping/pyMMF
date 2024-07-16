@@ -6,7 +6,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 from typing import List
 from .functions import cart2pol
-from typing import List, Callable
+from typing import List, Callable, Union
 import pickle
 from scipy.interpolate import interp1d
 
@@ -280,6 +280,25 @@ class IndexProfile:
             return n1 if r < a else n2
 
         self.initFromRadialFunction(radialFunc)
+
+    def getOptimalSolver(self, curvature: bool = False):
+        """
+        Returns the optimal solver based on the index profile and curvature flag.
+
+        Parameters:
+            curvature (bool): Flag indicating whether curvature is considered.
+
+        Returns:
+            str: The optimal solver based on the index profile and curvature flag.
+                 Possible values are "SI" (for self.type == "SI" and not curvature),
+                 "radial" (if self.indexProfile.radialFunc is not None), or "eig" (default).
+        """
+        if self.type == "SI" and not curvature:
+            return "SI"
+        elif self.radialFunc is not None:
+            return "radial"
+        else:
+            return "eig"
 
     def plot(self) -> None:
         """
