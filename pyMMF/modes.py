@@ -235,7 +235,6 @@ class Modes:
 
         for g in degenerate_groups:
             for combination in itertools.product(g, g):
-                print(combination)
                 mask_near_degenerate[combination] = 1
         return mask_near_degenerate
 
