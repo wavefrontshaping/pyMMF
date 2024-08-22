@@ -131,7 +131,7 @@ class Modes:
         if self.data:
             self.data = [self.data[i] for i in idx]
 
-    def getNearDegenerate(self, tol=1e-2, sort=False):
+    def getNearDegenerate(self, tol=1e-2):
         """
         Find the groups of near degenerate modes with a given tolerence.
         Optionnaly sort the modes (not implemented).
@@ -152,6 +152,15 @@ class Modes:
             groups.append(current_group)
 
         return groups
+
+    def getNearDegenerateMask(self, tol=1e-2):
+        degenerate_groups = self.getNearDegenerate(tol=tol)
+        nmodes = self.number
+        mask_near_degenerate = np.zeros([nmodes, nmodes], dtype=complex)
+
+        for g in degenerate_groups:
+            min, max = np.min(g), np.max(g) + 1
+            mask_near_degenerate[slice(min, max), slice(min, max)] = 1
 
     def getEvolutionOperator(self, npola=1, curvature=None):
         """
