@@ -12,6 +12,7 @@ from scipy.linalg import expm
 from scipy.ndimage import rotate as scipy_rotate
 from scipy.ndimage import shift as scipy_shift
 from .logger import get_logger, handleException
+import itertools
 
 logger = get_logger(__name__)
 
@@ -233,8 +234,9 @@ class Modes:
         mask_near_degenerate = np.zeros([nmodes, nmodes], dtype=complex)
 
         for g in degenerate_groups:
-            min, max = np.min(g), np.max(g) + 1
-            mask_near_degenerate[slice(min, max), slice(min, max)] = 1
+            for combination in itertools.product(g, g):
+                print(combination)
+                mask_near_degenerate[combination] = 1
         return mask_near_degenerate
 
     def getEvolutionOperator(self, npola=1, curvature=None):
