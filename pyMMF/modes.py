@@ -235,6 +235,7 @@ class Modes:
         for g in degenerate_groups:
             min, max = np.min(g), np.max(g) + 1
             mask_near_degenerate[slice(min, max), slice(min, max)] = 1
+        return mask_near_degenerate
 
     def getEvolutionOperator(self, npola=1, curvature=None):
         """
