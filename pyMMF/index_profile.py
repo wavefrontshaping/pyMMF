@@ -302,7 +302,7 @@ class IndexProfile:
 
     def plot(self) -> None:
         """
-        Plot the index profile.
+        Plot the 2d index profile map.
 
         Returns
         -------
