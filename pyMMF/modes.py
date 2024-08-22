@@ -112,6 +112,7 @@ class Modes:
         This method rearranges the elements of `self.betas` and other associated lists
         (such as `self.u`, `self.w`, `self.m`, `self.l`, `self.profiles`, `self.modesList`, and `self.data`)
         based on the sorted order of `self.betas` in descending order.
+        Data is sorted in place.
 
         Parameters
         ----------
@@ -120,7 +121,8 @@ class Modes:
 
         Returns
         -------
-        None
+        idx: list
+            The indices of the sorted modes, in case the user wants to keep track of the sorting order.
 
         """
 
@@ -183,6 +185,8 @@ class Modes:
             self.modesList = [self.modesList[i] for i in idx]
         if self.data:
             self.data = [self.data[i] for i in idx]
+
+        return idx
 
     def getNearDegenerate(self, tol=1e-2):
         """
