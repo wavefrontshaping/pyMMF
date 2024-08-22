@@ -103,18 +103,73 @@ class Modes:
 
         return M
 
-    def sort(self):
+    def sort(self, fn=None):
         """
-        Sorts the modes based on the values of `self.betas` in descending order.
+        Sorts the modes based on the provided function `fn`.
+        If none provided, sort by the values of `self.betas` in descending order.
 
         This method rearranges the elements of `self.betas` and other associated lists
         (such as `self.u`, `self.w`, `self.m`, `self.l`, `self.profiles`, `self.modesList`, and `self.data`)
         based on the sorted order of `self.betas` in descending order.
 
-        Returns:
-            None
+        Parameters
+        ----------
+        fn : function or None, optional
+            The function used to sort the modes. Default is None.
+
+        Returns
+        -------
+        None
+
         """
-        idx = np.flip(np.argsort(self.betas), axis=0)
+
+        class mode:
+            m: int
+            l: int
+            beta: float
+            profile: np.array
+            index: int
+
+            def __init__(self, index, m, l, beta, profile):
+                self.m = m
+                self.l = l
+                self.beta = beta
+                self.profile = profile
+                self.index = index
+
+        class modes_iterable:
+            def __init__(self, modes):
+                self.modes = modes
+                self.idx = 0
+                self.M0 = modes.getModeMatrix()
+
+            def __iter__(self):
+                return self
+
+            def __next__(self):
+                if self.idx < self.modes.number:
+                    self.idx += 1
+                    return mode(
+                        self.idx - 1,
+                        self.modes.m[self.idx - 1],
+                        self.modes.l[self.idx - 1],
+                        self.modes.betas[self.idx - 1],
+                        self.M0[:, self.idx - 1],
+                    )
+
+                else:
+                    raise StopIteration
+
+        if fn is not None:
+            it = modes_iterable(modes_truth)
+
+            idx = [
+                m.index
+                for m in sorted(it, key=lambda x: x.m + np.sign(x.m) * 1e-2 * x.l)
+            ]
+        else:
+            idx = np.flip(np.argsort(self.betas), axis=0)
+
         self.betas = [self.betas[i] for i in idx]
         if self.u:
             self.u = [self.u[i] for i in idx]
