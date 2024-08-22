@@ -161,12 +161,9 @@ class Modes:
                     raise StopIteration
 
         if fn is not None:
-            it = modes_iterable(modes_truth)
+            it = modes_iterable(self)
 
-            idx = [
-                m.index
-                for m in sorted(it, key=lambda x: x.m + np.sign(x.m) * 1e-2 * x.l)
-            ]
+            idx = [m.index for m in sorted(it, key=fn)]
         else:
             idx = np.flip(np.argsort(self.betas), axis=0)
 
