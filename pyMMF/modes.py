@@ -154,6 +154,28 @@ class Modes:
         return groups
 
     def getNearDegenerateMask(self, tol=1e-2):
+        """
+        Generates a mask for near-degenerate modes.
+
+        Parameters:
+        - tol (float): Tolerance value for determining near-degeneracy.
+
+        Returns:
+        - mask_near_degenerate (ndarray): Mask for near-degenerate modes.
+
+        Description:
+        This method generates a mask for near-degenerate modes based on a given tolerance value.
+        It first identifies groups of near-degenerate modes using the `getNearDegenerate` method.
+        Then, it creates a square matrix of size `nmodes x nmodes`, where `nmodes` is the number of modes.
+        The elements of the matrix are initialized to zero.
+        For each group of near-degenerate modes, the corresponding submatrix in the mask is set to one.
+        The resulting mask is returned as a complex-valued ndarray.
+
+        Example usage:
+        ```
+        mask = getNearDegenerateMask(tol=1e-5)
+        ```
+        """
         degenerate_groups = self.getNearDegenerate(tol=tol)
         nmodes = self.number
         mask_near_degenerate = np.zeros([nmodes, nmodes], dtype=complex)
