@@ -33,4 +33,4 @@ dependencies = [
 Homepage = "https://www.wavefrontshaping.net"
 
 [tool.setuptools.packages.find]
-where = ["pyMMF", "pyMMF.solvers"]
+where = ["."]
