@@ -1,5 +1,17 @@
-mkdocs
-mkdocstrings[python]
-mkdocs-jupyter
-mkdocs-material[imaging]
-notebook==6.4.12
+docutils==0.16
+sphinx
+# recommonmark
+sphinx_material
+numpy 
+scipy
+matplotlib
+numba
+joblib
+nbsphinx==0.9.0
+nbconvert
+sphinx_copybutton
+sphinx_pyproject
+IPython
+m2r2
+mistune==0.8.4
+lxml_html_clean
