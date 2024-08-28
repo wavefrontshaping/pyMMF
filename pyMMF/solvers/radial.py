@@ -208,6 +208,8 @@ def solve_radial(indexProfile, wl, **options):
     if beta_min is None:
         beta_min = k0 * n_func(r_max0)
     beta_max = k0 * n_func(0)
+
+    logger.info(f"Searching for modes with beta_min={beta_min}, beta_max={beta_max}")
     delta_betas = np.linspace(0, beta_max - beta_min, N_beta_coarse)
 
     modes = Modes()
