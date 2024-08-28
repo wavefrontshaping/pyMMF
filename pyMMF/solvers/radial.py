@@ -196,6 +196,7 @@ def solve_radial(indexProfile, wl, **options):
     beta_tol = options.get("beta_tol", np.finfo(np.float64).eps)
     field_limit_tol = options.get("field_limit_tol", 1e-3)
     save_func = options.get("save_func", False)
+    beta_min = options.get("beta_min", None)
 
     k0 = 2.0 * np.pi / wl
 
@@ -204,7 +205,8 @@ def solve_radial(indexProfile, wl, **options):
 
     r = np.arange(0, r_max0 + dh, dh).astype(np.float64)
 
-    beta_min = k0 * n_func(r_max0)
+    if beta_min is None:
+        beta_min = k0 * n_func(r_max0)
     beta_max = k0 * n_func(0)
     delta_betas = np.linspace(0, beta_max - beta_min, N_beta_coarse)
 
