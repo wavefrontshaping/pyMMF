@@ -152,10 +152,12 @@ def scan_betas(m, dh, r, nr, beta_min, delta_betas, k0):
 
 
 def binary_search(func, min_val, max_val, sign, beta_tol=1e-12, field_limit_tol=1e-3):
-    max_val_incr_factor = 1.1
 
     if max_val - min_val < beta_tol:
         raise PrecisionError(min_val, max_val)
+
+    if np.sign(func(min_val)) == np.sign(func(max_val)):
+        raise ValueError("Field at min_val and max_val have the same sign.")
 
     converged = 0
     while not converged:
@@ -164,14 +166,9 @@ def binary_search(func, min_val, max_val, sign, beta_tol=1e-12, field_limit_tol=
                 func, min_val, max_val, xtol=beta_tol, full_output=True
             )
             converged = binfo.converged
-        except ValueError:
-            max_val *= max_val_incr_factor
-            logger.error(
-                f"Field at min_val={min_val} and max_val={max_val} have the same sign."
-            )
-            # raise CalculationStopException(
-            #     "Field at min_val and max_val have the same sign."
-            # )
+        except Exception as E:
+            logger.error(f"Unknown exception: {E}")
+            raise CalculationStopException(f"Unknown exception: {E}")
 
     fval = func(beta)
     if np.abs(fval) > field_limit_tol:
