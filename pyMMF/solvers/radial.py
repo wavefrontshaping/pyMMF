@@ -68,8 +68,8 @@ class SmallRmaxError(Exception):
 
 
 class CalculationStopException(Exception):
-    def __init__(self):
-        self.msg = "Calculation stops"
+    def __init__(self, msg):
+        self.msg = f"Calculation stops: {msg}"
         logger.error(self.msg)
         super().__init__(self.msg)
 
