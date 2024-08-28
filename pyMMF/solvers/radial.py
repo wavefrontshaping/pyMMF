@@ -168,9 +168,9 @@ def binary_search(func, min_val, max_val, sign, beta_tol=1e-12, field_limit_tol=
             logger.error(
                 f"Field at min_val={min_val} and max_val={max_val} have the same sign."
             )
-            raise CalculationStopException(
-                "Field at min_val and max_val have the same sign."
-            )
+            # raise CalculationStopException(
+            #     "Field at min_val and max_val have the same sign."
+            # )
         converged = binfo.converged
 
     fval = func(beta)
