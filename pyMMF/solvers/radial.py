@@ -163,6 +163,7 @@ def binary_search(func, min_val, max_val, sign, beta_tol=1e-12, field_limit_tol=
             beta, binfo = bisect(
                 func, min_val, max_val, xtol=beta_tol, full_output=True
             )
+            converged = binfo.converged
         except ValueError:
             max_val *= max_val_incr_factor
             logger.error(
@@ -171,7 +172,6 @@ def binary_search(func, min_val, max_val, sign, beta_tol=1e-12, field_limit_tol=
             # raise CalculationStopException(
             #     "Field at min_val and max_val have the same sign."
             # )
-        converged = binfo.converged
 
     fval = func(beta)
     if np.abs(fval) > field_limit_tol:
