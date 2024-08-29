@@ -157,7 +157,9 @@ def binary_search(func, min_val, max_val, sign, beta_tol=1e-12, field_limit_tol=
         raise PrecisionError(min_val, max_val)
 
     if np.sign(func(min_val)) == np.sign(func(max_val)):
-        raise ValueError("Field at min_val and max_val have the same sign.")
+        raise ValueError(
+            "Field at min_val and max_val have the same sign. Try increasing the value of r_max."
+        )
 
     converged = 0
     while not converged:
