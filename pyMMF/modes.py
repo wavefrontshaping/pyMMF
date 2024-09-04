@@ -25,6 +25,8 @@ class Modes:
     See Also
     --------
     pyMMF.propagationModeSolver
+
+
     """
 
     def __init__(self):
@@ -109,7 +111,7 @@ class Modes:
         Sorts the modes based on the provided function `fn`.
         If none provided, sort by the values of `self.betas` in descending order.
 
-        This method rearranges the elements of `self.betas` and other associated lists
+        Rearranges the elements of `self.betas` and other associated lists
         (such as `self.u`, `self.w`, `self.m`, `self.l`, `self.profiles`, `self.modesList`, and `self.data`)
         based on the sorted order of `self.betas` in descending order.
         Data is sorted in place.
@@ -123,6 +125,14 @@ class Modes:
         -------
         idx: list
             The indices of the sorted modes, in case the user wants to keep track of the sorting order.
+
+        Examples
+        --------
+        >>> # sort the modes based on the imaginary part of the propagation constant
+        >>> modes.sort()
+
+        >>> # sort the modes by inscreasing order of m, and for the same m, by increasing order of l
+        >>> idx = modes.sort(lambda x: x.m + np.sign(x.m) * 1e-2 * x.l)
 
         """
 
@@ -190,8 +200,28 @@ class Modes:
 
     def getNearDegenerate(self, tol=1e-2):
         """
-        Find the groups of near degenerate modes with a given tolerence.
-        Optionnaly sort the modes (not implemented).
+        Find the groups of near degenerate modes
+        with a given tolerence `tol` given in term of propagation constant expressed in 1/micrometer unit.
+
+        Parameters
+        ----------
+        tol : float
+            Tolerance value for determining near-degeneracy.
+
+        Returns
+        -------
+        groups : List[List[int]]
+            List of groups of near-degenerate modes, each represented as a list of indices.
+
+        See Also
+        --------
+        getNearDegenerateMask
+
+        Example
+        -------
+        >>> groups = getNearDegenerate(tol=1e-5)
+        >>> print(groups)
+        [[1], [2, 3], [4, 5, 6], [7, 8, 9, 10], [11, 12, 13, 14, 15]]
         """
         copy_betas = {i: b for i, b in enumerate(self.betas)}
         groups = []
@@ -212,26 +242,31 @@ class Modes:
 
     def getNearDegenerateMask(self, tol=1e-2):
         """
-        Generates a mask for near-degenerate modes.
-
-        Parameters:
-        - tol (float): Tolerance value for determining near-degeneracy.
-
-        Returns:
-        - mask_near_degenerate (ndarray): Mask for near-degenerate modes.
-
-        Description:
-        This method generates a mask for near-degenerate modes based on a given tolerance value.
+        Generates a mask for near-degenerate modes based on a given tolerance value
+        in term of propagation constant expressed in 1/micrometer unit.
         It first identifies groups of near-degenerate modes using the `getNearDegenerate` method.
         Then, it creates a square matrix of size `nmodes x nmodes`, where `nmodes` is the number of modes.
         The elements of the matrix are initialized to zero.
         For each group of near-degenerate modes, the corresponding submatrix in the mask is set to one.
         The resulting mask is returned as a complex-valued ndarray.
 
-        Example usage:
-        ```
-        mask = getNearDegenerateMask(tol=1e-5)
-        ```
+        Parameters
+        ----------
+        tol : float
+            Tolerance value for determining near-degeneracy.
+
+        Returns
+        -------
+        mask_near_degenerate : ndarray
+            Mask for near-degenerate modes.
+
+        See Also
+        --------
+        getNearDegenerate
+
+        Example
+        -------
+        >>> mask = getNearDegenerateMask(tol=1e-5)
         """
         degenerate_groups = self.getNearDegenerate(tol=tol)
         nmodes = self.number
@@ -393,6 +428,11 @@ class Modes:
         It returns then the evolution operator in the basis of the straight fiber modes.
         The calculation is different from directly solving the system for a bent fiber [#]_.
 
+        If **B** is the evolution operator of the fiber,
+        the transmission matrix (in the mode basis) **T** for a fiber length **l**
+        is computed using::
+            T = np.exp(1j * B * l)
+
         Parameters
         ----------
         distance : float
@@ -419,7 +459,7 @@ class Modes:
         """
         B = self.getEvolutionOperator(npola, curvature)
 
-        return expm(complex(0, 1) * B * distance)
+        return expm(1j * B * distance)
 
     def save(self, filename: str, save_indes_profile=False):
         """
@@ -494,8 +534,8 @@ class Modes:
         Modes
             The object loaded from the file.
 
-        Examples
-        --------
+        Example
+        -------
         >>> modes = Modes.fromFile("modes.pkl")
         """
         obj = cls()
