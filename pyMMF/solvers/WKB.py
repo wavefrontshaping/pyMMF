@@ -14,21 +14,84 @@ from ..logger import get_logger
 logger = get_logger(__name__)
 
 
-def solve_WKB(indexProfile, wl, **options):
-    degenerate_mode = options.get("degenerate_mode", "sin")
-    n_jobs = options.get("n_jobs", -2)
-    modes = findPropagationConstants(wl, indexProfile)
+def solve_WKB(indexProfile, wl, tol=1e-9, degenerate_mode="sin", n_jobs=-2):
+    r"""
+    Find the propagation constants of parabolic GRIN multimode fibers under the WKB approximation [#]_.
+    This approximation leads to inaccurate results for groups of modes close to the cutoff,
+    hence is not suitable when a limited number of modes is considered.
+    It is provided only for comparison.
+    The `IndexProfile` must be
+    initialized with the :meth:`initParabolicGRIN
+    <pyMMF.IndexProfile.initParabolicGRIN>` method.
+
+
+    Options
+    -------
+
+        tol : float, optional
+            tolerance on the propagation constant.
+            Default is 1e-9
+
+        degenerate_mode : string ('exp', or 'sin'), optional
+            Choice for degenerate subspaces.
+
+            - 'exp' return the orbital angular momentum modes,
+            for an azimuthal index m>0,
+            the azimuthal function is exp(i*-m*theta) and exp(i*m*theta)
+
+            - 'sin' return the linear polarized modes,
+            they have real values of the field
+            with an azimuthal function of sin(m*theta) and cos(m*theta) for m>0.
+
+            Default is 'exp'.
+
+        n_jobs : int, optional
+            number of parallel jobs to run.
+            Default is -2, which means using all processors.
+
+
+
+    Notes
+    -----
+
+        Propagation constants under the WKB approximation:
+
+        .. math::
+
+            \beta_{l,m} = \sqrt{k_o^2 n_1^2-2\alpha \left( |l|+2m+1\right)}
+
+        .. math::
+
+
+            \alpha = k_o n_1/b
+
+        with
+
+        .. math:: b = \frac{radius \times n_1}{NA}
+
+        Mode profiles under the WKB approximation:
+
+        .. math:: \psi_{l,m}(r, \phi) = A e^{- \frac{\alpha r^2}{2}}(\alpha r^2)^{|m|/2} L_l^{|m|}(\alpha r^2)e^{im\phi}
+
+        with :math:`L_l^{|m|}` the Laguerre polynomials
+
+        .. [#]  K. Okamoto, "Fundamentals of optical waveguides"
+                Academic Press,
+                2006
+
+    """
+    modes = findPropagationConstants(wl, indexProfile, tol=tol)
     modes = associateLPModeProfiles(
         modes, wl, indexProfile, degenerate_mode=degenerate_mode, n_jobs=n_jobs
     )
     return modes
 
 
-def findPropagationConstants(wl, indexProfile, tol=1e-9):
+def findPropagationConstants(wl, indexProfile, tol):
     r"""
     Find the propagation constants of parabolic GRIN multimode fibers under the WKB approximation [#]_.
     This approximation leads to inaccurate results for groups of modes close to the cutoff,
-    hence is not suitable when a limited number of mode is considered.
+    hence is not suitable when a limited number of modes is considered.
     It is provided only for comparison.
 
     Parameters
@@ -40,45 +103,9 @@ def findPropagationConstants(wl, indexProfile, tol=1e-9):
         indexProfile: IndexProfile object
             object that contains data about the transverse index profile.
 
-    Returns
-    -------
-
-        modes : Modes object
-            Object containing data about the modes.
-            Note that it does not fill the transverse profiles, only the data about the propagation constants
-            and the mode numbers.
-
-    See Also
-    --------
-
-        associateLPModeProfiles()
-
-    Notes
-    -----
-
-        Propagation constants under the WKB approximation:
-
-        .. math:: \beta_{l,m} = \sqrt{k_o^2 n_1^2-2\alpha \left( |l|+2m+1\right)}
-
-        .. math:: \alpha = k_o n_1/b
-
-        with
-
-        .. math:: b = \frac{radius \times n_1}{NA}
-
-        Mode profiles under the WKB approximation
-
-        .. math:: \psi_{l,m}(r, \phi) = A e^{- \frac{\alpha r^2}{2}}(\alpha r^2)^{|m|/2} L_l^{|m|}(\alpha r^2)e^{im\phi}
-
-        with
-
-        .. math:: L_l^{|m|}
-
-        the Laguerre polynomials
-
-        .. [#]  K. Okamoto, "Fundamentals of optical waveguides"
-                Academic Press,
-                2006
+        tol : float, optional
+            tolerance on the propagation constant.
+            Default is 1e-9
 
     """
     NA = indexProfile.NA

@@ -25,6 +25,11 @@ def solve_eig(
     """
     Find the first modes of a multimode fiber. The index profile has to be set.
     Returns a Modes structure containing the mode information.
+    This method is slow and requires a high resolution (so very slow)
+    to converge to the correct modes.
+    It is thus suitable for a low number of modes.
+    However, it is the more general method and can be used for any index profile,
+    even non-rotationally symmetric ones.
 
     Options
     -------

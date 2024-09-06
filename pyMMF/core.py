@@ -189,12 +189,17 @@ class propagationModeSolver:
 
                     - 'eig' solves the eigenvalue problem in the discretized space.
                     Slower and less precise, but allows for non-axisymmetric profiles and bend curvature.
+
                     :ref:`(more info  and additional options here) <pyMMF.solve-eig>`
 
                     - 'SI' solves numerically the analytical dispersion relation for step index fibers
                     and approximate modes to LP modes.
 
+                    :ref:`(more info  and additional options here) <pyMMF.solve-SI>`
+
                     - 'WKB' uses the WKB approximation for GRIN profiles.
+
+                    :ref:`(more info  and additional options here) <pyMMF.solve-WKB>`
 
                     - 'default' tries to find the optimal solver for the given index profile.
                 Default is 'default' ;)

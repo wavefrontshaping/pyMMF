@@ -205,12 +205,15 @@ def solve_radial(
     -------
     degenerate_mode : string ('exp', or 'sin'), optional
         Choice for degenerate subspaces.
+
         - 'exp' return the orbital angular momentum modes,
         for an azimuthal index m>0,
         the azimuthal function is exp(i*-m*theta) and exp(i*m*theta)
+
         - 'sin' return the linear polarized modes,
         they have real values of the field
         with an azimuthal function of sin(m*theta) and cos(m*theta) for m>0.
+
         Default is 'exp'.
     min_radius_bc : float
         Minimum radius for the boundary condition in units of the radius of the fiber set in the index profile.

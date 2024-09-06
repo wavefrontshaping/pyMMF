@@ -16,9 +16,56 @@ logger = get_logger(__name__)
 from joblib import Parallel, delayed
 
 
-def solve_SI(indexProfile, wl, **options):
-    degenerate_mode = options.get("degenerate_mode", "sin")
-    n_jobs = options.get("n_jobs", -2)
+def solve_SI(indexProfile, wl, tol=1e-9, degenerate_mode="sin", n_jobs=-2):
+    """
+    Find the propagation constants of a step index fiber by numerically finding the solution of the
+    scalar dispersion relation
+    then associate the analytic formulation for the mode profiles [#]_ [#]_.
+    The `IndexProfile` must be
+    initialized with the :meth:`initStepIndex
+    <pyMMF.IndexProfile.initStepIndex>` method.
+
+
+
+
+    Options
+    -------
+
+        tol : float, optional
+            tolerance on the propagation constant.
+            Default is 1e-9
+
+        degenerate_mode : string ('exp', or 'sin'), optional
+            Choice for degenerate subspaces.
+
+            - 'exp' return the orbital angular momentum modes,
+            for an azimuthal index m>0,
+            the azimuthal function is exp(i*-m*theta) and exp(i*m*theta)
+
+            - 'sin' return the linear polarized modes,
+            they have real values of the field
+            with an azimuthal function of sin(m*theta) and cos(m*theta) for m>0.
+
+            Default is 'exp'.
+
+        n_jobs : int, optional
+            number of parallel jobs to run.
+            Default is -2, which means using all processors.
+
+    Notes
+    -----
+
+    .. [#]  K. Okamoto, "Fundamentals of optical waveguides"
+            Academic Press,
+            2006
+
+    .. [#]  S. M. Popoff, "Modes of step index multimode fibers"
+            http://wavefrontshaping.net/index.php/component/content/article/68-community/tutorials/multimode-fibers/118-modes-of-step-index-multimode-fibers
+
+    """
+
+    # degenerate_mode = options.get("degenerate_mode", "sin")
+    # n_jobs = options.get("n_jobs", -2)
     modes = findPropagationConstants(wl, indexProfile)
     modes = associateLPModeProfiles(
         modes, indexProfile, degenerate_mode=degenerate_mode, n_jobs=n_jobs
@@ -42,6 +89,10 @@ def findPropagationConstants(wl, indexProfile, tol=1e-9):
 
         indexProfile: IndexProfile object
             object that contains data about the transverse index profile.
+
+        tol : float, optional
+            tolerance on the propagation constant.
+            Default is 1e-9
 
     Returns
     -------
