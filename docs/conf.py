@@ -14,6 +14,7 @@ from recommonmark.transform import AutoStructify
 from sphinx_pyproject import SphinxConfig
 import sphinx_material
 
+sys.path.insert(0, os.path.abspath("./sphinx_ext"))
 
 # -- Project information -----------------------------------------------------
 
@@ -34,15 +35,19 @@ version
 
 extensions = [
     "sphinx.ext.autodoc",
-    "sphinx.ext.napoleon",
+    # "sphinx.ext.napoleon",
     "sphinx.ext.autosummary",
     "sphinx.ext.viewcode",
+    "sphinx.ext.mathjax",
     # "recommonmark",
-    "m2r2",
+    # "m2r2",
+    "myst_parser",
     "sphinx.ext.autosectionlabel",
     "nbsphinx",
     "sphinx_copybutton",
     "sphinx_togglebutton",
+    "custom",
+    "numpydoc",
     # "myst_parser",
 ]
 
@@ -57,9 +62,10 @@ autodoc_typehints = "description"
 sphinx_togglebutton_selector = ".nboutput, .nbinput"
 
 # Napoleon settings
-napoleon_google_docstring = False
-napoleon_numpy_docstring = True
+# napoleon_google_docstring = False
+# napoleon_numpy_docstring = True
 
+mathjax_path = "_static/scipy-mathjax/MathJax.js?config=scipy-mathjax"
 
 # -- Options for HTML output -------------------------------------------------
 

@@ -238,7 +238,7 @@ def solve_radial_legacy(indexProfile, wl, **options):
                 n_search = nr[r <= r_max]
 
                 try:
-                    #'Searching for beta value that satisfies the zero condition at r={r_max/radius:.3f}a'
+                    # 'Searching for beta value that satisfies the zero condition at r={r_max/radius:.3f}a'
                     def func_fast(beta):
                         f = get_field_fast(m, dh, r_search, n_search, beta, k0, radius)
                         return f[-1] / np.max(np.abs(f))

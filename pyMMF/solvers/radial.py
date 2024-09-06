@@ -180,27 +180,110 @@ def binary_search(func, min_val, max_val, sign, beta_tol=1e-12, field_limit_tol=
     return beta, binfo
 
 
-def solve_radial(indexProfile, wl, **options):
+def solve_radial(
+    indexProfile,
+    wl,
+    degenerate_mode=DEFAULT_DEGENERATE_MODE,
+    min_radius_bc=MIN_RADIUS_BC_COEFF_DEFAULT,
+    change_bc_radius_step=CHANGE_BC_RADIUS_STEP_DEFAULT,
+    N_beta_coarse=N_BETA_COARSE_DEFAULT,
+    dh=None,
+    beta_tol=None,
+    field_limit_tol=1e-3,
+    beta_min=None,
+    save_func=False,
+):
+    """
+
+    Solves the scalar wave equation for an axisymmetric index profile
+    define by a radial function.
+    The `IndexProfile` object provided must be
+    initialized with the :meth:`initFromRadialFunction
+    <pyMMF.IndexProfile.initFromRadialFunction>` method.
+
+    Options
+    -------
+    degenerate_mode : string ('exp', or 'sin'), optional
+        Choice for degenerate subspaces.
+        - 'exp' return the orbital angular momentum modes,
+        for an azimuthal index m>0,
+        the azimuthal function is exp(i*-m*theta) and exp(i*m*theta)
+        - 'sin' return the linear polarized modes,
+        they have real values of the field
+        with an azimuthal function of sin(m*theta) and cos(m*theta) for m>0.
+        Default is 'exp'.
+    min_radius_bc : float
+        Minimum radius for the boundary condition in units of the radius of the fiber set in the index profile.
+        The algorithm will try to find a solution of the field mode profile that vanishes at this radius.
+        If not successfull, it will multiply this maximum radius by `change_bc_radius_step` and try again.
+        Default is 4.
+    change_bc_radius_step : float
+        Factor to change the boundary condition radius
+        when not successfull reaching the vanishing boundary condition
+        equalt to zero at `min_radius_bc`.
+        Set the next radius to `r_max = r_max * change_bc_radius_step`.
+        Default is 0.9.
+    N_beta_coarse : int
+        Number of beta values in the initial rought scan for each radial number `l`.
+        Before trying to find the beta value that satisfies the boundary condition,
+        we scan the range of betas admissible for propagating modes
+        to find the changes of the sign of the farthest radial point.
+        It gives the number of modes and initial guesses for the beta values.
+        Default is 1_000.
+    dh : float or None
+        Spatial resolution.
+        Note that the algorithm find the solution of a 1D problem,
+        resolution can be increased to improve the accuracy of the solution
+        with much less computational cost than the 2D problem.
+        Default is None, it fixes the value to `indexProfile.areaSize / indexProfile.npoints`.
+    beta_tol : float or None
+        Tolerance for the beta value.
+        Default is  is None, it fixes the value to `np.finfo(np.float64).eps`.
+    field_limit_tol : float
+        Tolerance for the field limit.
+        If the field at `r_max` is below this value, the field is considered to be zero,
+        and the boundary condition is considered to be met.
+        Default is 1e-3.
+    beta_min : float or None
+        Minimum beta value considered in the search.
+        Changing this value can return non-propagating modes.
+        Default is None, it set the values to `2*np.pi/wl * n_func(r_max0)`.
+        Note that for a index profile that does not monotonically decrease with the radius,
+        this value can lead to the algorithm to miss some propagating modes.
+    save_func : bool
+        Save the radial and azimuthal functions.
+        If try, it stores the results in the `data` attribute of the `Modes` object.
+        Fields are:
+        - "radial_func": the extrapolated radial function,
+        - "r_max": the maximum radius used for the search,
+        - "norm": the normalization factor of the radial function,
+        - "azimuthal_func": the azimuthal function.
+        Default is False.
+    """
     t0 = time.time()
 
-    degenerate_mode = options.get("degenerate_mode", DEFAULT_DEGENERATE_MODE)
+    # degenerate_mode = options.get("degenerate_mode", DEFAULT_DEGENERATE_MODE)
     phi_funcs = EXP_PHASE_FUNCS if degenerate_mode == "exp" else SIN_PHASE_FUNCS
-    min_radius_bc = options.get("min_radius_bc", MIN_RADIUS_BC_COEFF_DEFAULT)
-    change_bc_radius_step = options.get(
-        "change_bc_radius_step", CHANGE_BC_RADIUS_STEP_DEFAULT
-    )
-    N_beta_coarse = options.get("N_beta_coarse", N_BETA_COARSE_DEFAULT)
-    r_max0 = options.get("r_max", np.max(indexProfile.R))
-    dh = options.get("dh", indexProfile.areaSize / indexProfile.npoints)
-    beta_tol = options.get("beta_tol", np.finfo(np.float64).eps)
-    field_limit_tol = options.get("field_limit_tol", 1e-3)
-    save_func = options.get("save_func", False)
-    beta_min = options.get("beta_min", None)
+    # min_radius_bc = options.get("min_radius_bc", MIN_RADIUS_BC_COEFF_DEFAULT)
+    # change_bc_radius_step = options.get(
+    #     "change_bc_radius_step", CHANGE_BC_RADIUS_STEP_DEFAULT
+    # )
+    # N_beta_coarse = options.get("N_beta_coarse", N_BETA_COARSE_DEFAULT)
+    # r_max0 = options.get("r_max", np.max(indexProfile.R))
+    dh = dh if dh is not None else indexProfile.areaSize / indexProfile.npoints
+    # dh = options.get("dh", indexProfile.areaSize / indexProfile.npoints)
+    beta_tol = beta_tol if beta_tol is not None else np.finfo(np.float64).eps
+    # beta_tol = options.get("beta_tol", np.finfo(np.float64).eps)
+    # field_limit_tol = options.get("field_limit_tol", 1e-3)
+    # save_func = options.get("save_func", False)
+    # beta_min = options.get("beta_min", None)
 
     k0 = 2.0 * np.pi / wl
 
     n_func = indexProfile.radialFunc
     radius = indexProfile.a
+
+    r_max0 = np.max(indexProfile.R) if r_max is None else r_max
 
     r = np.arange(0, r_max0 + dh, dh).astype(np.float64)
 
