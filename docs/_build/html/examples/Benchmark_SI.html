@@ -1,0 +1,879 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Straight step index fibers &#8212; pyMMF v0.7</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=407ae711" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'examples/Benchmark_SI';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Square fiber using the 2D Eigen-problem solver" href="Square_fiber.html" />
+    <link rel="prev" title="Graded index fiber using the radial solver" href="RadialSolverGRIN.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">pyMMF v0.7</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../readme_link.html">
+    pyMMF
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../examples.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../changes_link.html">
+    Release notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/wavefrontshaping/pymmf" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/WFShaping" title="X" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-twitter fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">X</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://wavefrontshaping.net" title="wavefrontshaping.net" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-link fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">wavefrontshaping.net</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../readme_link.html">
+    pyMMF
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../examples.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../changes_link.html">
+    Release notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/wavefrontshaping/pymmf" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/WFShaping" title="X" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-twitter fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">X</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://wavefrontshaping.net" title="wavefrontshaping.net" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-link fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">wavefrontshaping.net</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="RadialSolverGRIN.html">Graded index fiber using the radial solver</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Straight step index fibers</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="Square_fiber.html">Square fiber using the 2D Eigen-problem solver</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../examples.html" class="nav-link">Examples</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">Straight...</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="Straight-step-index-fibers">
+<h1>Straight step index fibers<a class="headerlink" href="#Straight-step-index-fibers" title="Link to this heading">#</a></h1>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pyMMF</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="o">%</span><span class="k">matplotlib</span> inline
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">rc</span>
+<span class="n">rc</span><span class="p">(</span><span class="s1">&#39;figure&#39;</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">18</span><span class="p">,</span><span class="mi">9</span><span class="p">))</span>
+<span class="n">rc</span><span class="p">(</span><span class="s1">&#39;text&#39;</span><span class="p">,</span> <span class="n">usetex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">display</span><span class="p">,</span> <span class="n">Math</span>
+</pre></div>
+</div>
+</div>
+<section id="1.-Fiber-parameters">
+<h2>1. Fiber parameters<a class="headerlink" href="#1.-Fiber-parameters" title="Link to this heading">#</a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">## Parameters</span>
+<span class="n">NA</span> <span class="o">=</span> <span class="mf">0.15</span>
+<span class="n">radius</span> <span class="o">=</span> <span class="mf">10.</span> <span class="c1"># in microns</span>
+<span class="n">areaSize</span> <span class="o">=</span> <span class="mf">3.5</span><span class="o">*</span><span class="n">radius</span> <span class="c1"># calculate the field on an area larger than the diameter of the fiber</span>
+<span class="n">npoints</span> <span class="o">=</span> <span class="mi">2</span><span class="o">**</span><span class="mi">8</span> <span class="c1"># resolution of the window</span>
+<span class="n">n1</span> <span class="o">=</span> <span class="mf">1.45</span>
+<span class="n">wl</span> <span class="o">=</span> <span class="mf">0.6328</span> <span class="c1"># wavelength in microns</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="2.-Compute-the-mode-with-three-different-solvers">
+<h2>2. Compute the mode with three different solvers<a class="headerlink" href="#2.-Compute-the-mode-with-three-different-solvers" title="Link to this heading">#</a></h2>
+<section id="2.1-Index-profile">
+<h3>2.1 Index profile<a class="headerlink" href="#2.1-Index-profile" title="Link to this heading">#</a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create the fiber object</span>
+<span class="n">profile</span> <span class="o">=</span> <span class="n">pyMMF</span><span class="o">.</span><span class="n">IndexProfile</span><span class="p">(</span><span class="n">npoints</span> <span class="o">=</span> <span class="n">npoints</span><span class="p">,</span> <span class="n">areaSize</span> <span class="o">=</span> <span class="n">areaSize</span><span class="p">)</span>
+
+<span class="c1"># Initialize the index profile</span>
+<span class="n">profile</span><span class="o">.</span><span class="n">initStepIndex</span><span class="p">(</span><span class="n">n1</span><span class="o">=</span><span class="n">n1</span><span class="p">,</span><span class="n">a</span><span class="o">=</span><span class="n">radius</span><span class="p">,</span><span class="n">NA</span><span class="o">=</span><span class="n">NA</span><span class="p">)</span>
+
+<span class="c1"># Instantiate the solver</span>
+<span class="n">solver</span> <span class="o">=</span> <span class="n">pyMMF</span><span class="o">.</span><span class="n">propagationModeSolver</span><span class="p">()</span>
+
+<span class="c1"># Set the profile to the solver</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">setIndexProfile</span><span class="p">(</span><span class="n">profile</span><span class="p">)</span>
+
+<span class="c1"># Set the wavelength</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">setWL</span><span class="p">(</span><span class="n">wl</span><span class="p">)</span>
+
+<span class="c1"># Estimate the number of modes for a graded index fiber</span>
+<span class="n">Nmodes_estim</span> <span class="o">=</span> <span class="n">pyMMF</span><span class="o">.</span><span class="n">estimateNumModesSI</span><span class="p">(</span><span class="n">wl</span><span class="p">,</span><span class="n">radius</span><span class="p">,</span><span class="n">NA</span><span class="p">,</span><span class="n">pola</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Estimated number of modes using the V number = </span><span class="si">{</span><span class="n">Nmodes_estim</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+2024-07-16 12:52:07,712 - pyMMF.core [DEBUG  ]  Debug mode ON.
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;function IndexProfile.initStepIndex.&lt;locals&gt;.radialFunc at 0x7307779b2a20&gt;
+Estimated number of modes using the V number = 56
+</pre></div></div>
+</div>
+</section>
+<section id="2.2-Semi-analytical-solution:-SI-solver">
+<h3>2.2 Semi-analytical solution: <code class="docutils literal notranslate"><span class="pre">SI</span></code> solver<a class="headerlink" href="#2.2-Semi-analytical-solution:-SI-solver" title="Link to this heading">#</a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">modes_semianalytical</span> <span class="o">=</span> <span class="n">solver</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;SI&#39;</span><span class="p">,</span> <span class="n">curvature</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+2024-07-16 12:52:07,718 - pyMMF.solv [INFO   ]  Finding the propagation constant of step index fiber by numerically solving the dispersion relation.
+2024-07-16 12:52:08,413 - pyMMF.solv [INFO   ]  Found 59 modes in 0.69 seconds.
+2024-07-16 12:52:08,413 - pyMMF.solv [INFO   ]  Finding analytical LP mode profiles associated to the propagation constants.
+2024-07-16 12:52:11,905 - pyMMF.solv [INFO   ]  Found 59 LP mode profiles in 0.1 minutes.
+2024-07-16 12:52:11,906 - pyMMF.core [DEBUG  ]  Mode data stored in memory.
+</pre></div></div>
+</div>
+</section>
+<section id="2.3-Solving-the-2d-Eigenvalue-solver:-eig-solver-(slow)">
+<h3>2.3 Solving the 2d Eigenvalue solver: <code class="docutils literal notranslate"><span class="pre">eig</span></code> solver (slow)<a class="headerlink" href="#2.3-Solving-the-2d-Eigenvalue-solver:-eig-solver-(slow)" title="Link to this heading">#</a></h3>
+<p>See the <a class="reference external" href="https://www.wavefrontshaping.net/post/id/3">tutorial</a> for more information.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">modes_eig</span> <span class="o">=</span> <span class="n">solver</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">nmodesMax</span><span class="o">=</span><span class="n">Nmodes_estim</span><span class="o">+</span><span class="mi">10</span><span class="p">,</span>
+                         <span class="n">boundary</span> <span class="o">=</span> <span class="s1">&#39;close&#39;</span><span class="p">,</span>
+                         <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;eig&#39;</span><span class="p">,</span>
+                         <span class="n">curvature</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                         <span class="n">propag_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+2024-07-16 12:52:11,913 - pyMMF.solv [INFO   ]  Solving the spatial eigenvalue problem for mode finding.
+2024-07-16 12:52:11,914 - pyMMF.solv [INFO   ]  Use close boundary condition.
+2024-07-16 12:54:15,920 - pyMMF.solv [INFO   ]  Solver found 59 modes is 124.01 seconds.
+2024-07-16 12:54:15,927 - pyMMF.core [DEBUG  ]  Mode data stored in memory.
+</pre></div></div>
+</div>
+</section>
+<section id="2.4-Finding-the-1d-radial-solution:-radial-solver-(fast,-more-precise)">
+<h3>2.4 Finding the 1d radial solution: <code class="docutils literal notranslate"><span class="pre">radial</span></code> solver (fast, more precise)<a class="headerlink" href="#2.4-Finding-the-1d-radial-solution:-radial-solver-(fast,-more-precise)" title="Link to this heading">#</a></h3>
+<p>See the <a class="reference external" href="https://www.wavefrontshaping.net/post/id/66">tutorial</a> and the article <a class="reference external" href="https://arxiv.org/abs/2010.14813">Learning and avoiding disorder in multimode fibers</a> for more information.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">modes_radial</span> <span class="o">=</span> <span class="n">solver</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;radial&#39;</span><span class="p">,</span>
+                         <span class="n">propag_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                         <span class="n">N_beta_coarse</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mf">1e3</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+2024-07-16 12:54:15,955 - pyMMF.solv [INFO   ]  Found 5 radial mode(s) for m=0
+2024-07-16 12:54:15,956 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 1
+2024-07-16 12:54:15,961 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 2
+2024-07-16 12:54:15,964 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 3
+2024-07-16 12:54:15,968 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 4
+2024-07-16 12:54:15,972 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 5
+2024-07-16 12:54:15,981 - pyMMF.solv [INFO   ]  Found 4 radial mode(s) for m=1
+2024-07-16 12:54:15,981 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 1
+2024-07-16 12:54:15,987 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 2
+2024-07-16 12:54:15,992 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 3
+2024-07-16 12:54:15,997 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 4
+2024-07-16 12:54:16,010 - pyMMF.solv [INFO   ]  Found 4 radial mode(s) for m=2
+2024-07-16 12:54:16,011 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 1
+2024-07-16 12:54:16,016 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 2
+2024-07-16 12:54:16,021 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 3
+2024-07-16 12:54:16,026 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 4
+2024-07-16 12:54:16,036 - pyMMF.solv [INFO   ]  Found 4 radial mode(s) for m=3
+2024-07-16 12:54:16,037 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 1
+2024-07-16 12:54:16,042 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 2
+2024-07-16 12:54:16,047 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 3
+2024-07-16 12:54:16,052 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 4
+2024-07-16 12:54:16,062 - pyMMF.solv [INFO   ]  Found 3 radial mode(s) for m=4
+2024-07-16 12:54:16,063 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 1
+2024-07-16 12:54:16,068 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 2
+2024-07-16 12:54:16,074 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 3
+2024-07-16 12:54:16,084 - pyMMF.solv [INFO   ]  Found 3 radial mode(s) for m=5
+2024-07-16 12:54:16,085 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 1
+2024-07-16 12:54:16,090 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 2
+2024-07-16 12:54:16,096 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 3
+2024-07-16 12:54:16,109 - pyMMF.solv [INFO   ]  Found 2 radial mode(s) for m=6
+2024-07-16 12:54:16,110 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 1
+2024-07-16 12:54:16,122 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 2
+2024-07-16 12:54:16,143 - pyMMF.solv [INFO   ]  Found 2 radial mode(s) for m=7
+2024-07-16 12:54:16,144 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 1
+2024-07-16 12:54:16,149 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 2
+2024-07-16 12:54:16,160 - pyMMF.solv [INFO   ]  Found 2 radial mode(s) for m=8
+2024-07-16 12:54:16,161 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 1
+2024-07-16 12:54:16,166 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 2
+2024-07-16 12:54:16,185 - pyMMF.solv [INFO   ]  Found 1 radial mode(s) for m=9
+2024-07-16 12:54:16,186 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 1
+2024-07-16 12:54:16,202 - pyMMF.solv [INFO   ]  Found 1 radial mode(s) for m=10
+2024-07-16 12:54:16,202 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 1
+2024-07-16 12:54:16,219 - pyMMF.solv [INFO   ]  Found 1 radial mode(s) for m=11
+2024-07-16 12:54:16,219 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 1
+2024-07-16 12:54:16,231 - pyMMF.solv [INFO   ]  Found 0 radial mode(s) for m=12
+2024-07-16 12:54:16,232 - pyMMF.solv [INFO   ]  Solver found 59 modes is 0.30 seconds.
+2024-07-16 12:54:16,233 - pyMMF.core [DEBUG  ]  Mode data stored in memory.
+</pre></div></div>
+</div>
+</section>
+</section>
+<section id="3.-Comparing-results">
+<h2>3. Comparing results<a class="headerlink" href="#3.-Comparing-results" title="Link to this heading">#</a></h2>
+<section id="3.1-Dispersion">
+<h3>3.1 Dispersion<a class="headerlink" href="#3.1-Dispersion" title="Link to this heading">#</a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Sort the modes</span>
+<span class="n">modes_eig</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+<span class="n">modes_semianalytical</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+<span class="n">modes_radial</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+
+<span class="n">modes</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">modes</span><span class="p">[</span><span class="s1">&#39;SA&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;betas&#39;</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">modes_semianalytical</span><span class="o">.</span><span class="n">betas</span><span class="p">),</span><span class="s1">&#39;profiles&#39;</span><span class="p">:</span><span class="n">modes_semianalytical</span><span class="o">.</span><span class="n">profiles</span><span class="p">}</span>
+<span class="n">modes</span><span class="p">[</span><span class="s1">&#39;eig&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;betas&#39;</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">modes_eig</span><span class="o">.</span><span class="n">betas</span><span class="p">),</span><span class="s1">&#39;profiles&#39;</span><span class="p">:</span><span class="n">modes_eig</span><span class="o">.</span><span class="n">profiles</span><span class="p">}</span>
+<span class="n">modes</span><span class="p">[</span><span class="s1">&#39;radial&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;betas&#39;</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">modes_radial</span><span class="o">.</span><span class="n">betas</span><span class="p">),</span><span class="s1">&#39;profiles&#39;</span><span class="p">:</span><span class="n">modes_radial</span><span class="o">.</span><span class="n">profiles</span><span class="p">}</span>
+
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">();</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="n">modes_eig</span><span class="o">.</span><span class="n">betas</span><span class="p">),</span>
+         <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Numerical simulations (eigenvalue solver)&#39;</span><span class="p">,</span>
+         <span class="n">linewidth</span><span class="o">=</span><span class="mf">2.</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="n">modes_semianalytical</span><span class="o">.</span><span class="n">betas</span><span class="p">),</span>
+         <span class="s1">&#39;r--&#39;</span><span class="p">,</span>
+         <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Semi-analytical&#39;</span><span class="p">,</span>
+         <span class="n">linewidth</span><span class="o">=</span><span class="mf">2.</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="n">modes_radial</span><span class="o">.</span><span class="n">betas</span><span class="p">),</span>
+         <span class="s1">&#39;go&#39;</span><span class="p">,</span>
+         <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Numerical simulations (radial solver)&#39;</span><span class="p">,</span>
+         <span class="n">linewidth</span><span class="o">=</span><span class="mf">2.</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">fontsize</span> <span class="o">=</span> <span class="mi">20</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">yticks</span><span class="p">(</span><span class="n">fontsize</span> <span class="o">=</span> <span class="mi">20</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Semi-analytical VS numerical simulations&#39;</span> <span class="p">,</span><span class="n">fontsize</span> <span class="o">=</span> <span class="mi">30</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Propagation constant $\beta$ (in $\mu$m$^{-1}$)&#39;</span><span class="p">,</span> <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">25</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Mode index&#39;</span><span class="p">,</span> <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">25</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span> <span class="o">=</span> <span class="mi">22</span><span class="p">,</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper right&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_Benchmark_SI_15_0.png" src="../_images/examples_Benchmark_SI_15_0.png" />
+</div>
+</div>
+</section>
+<section id="2.2-Comparing-numerical-solutions-to-LP-modes">
+<h3>2.2 Comparing numerical solutions to LP modes<a class="headerlink" href="#2.2-Comparing-numerical-solutions-to-LP-modes" title="Link to this heading">#</a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">imode</span> <span class="o">=</span> <span class="mi">15</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">131</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">modes</span><span class="p">[</span><span class="s1">&#39;SA&#39;</span><span class="p">][</span><span class="s1">&#39;profiles&#39;</span><span class="p">][</span><span class="n">imode</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">([</span><span class="n">npoints</span><span class="p">]</span><span class="o">*</span><span class="mi">2</span><span class="p">)))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Ideal LP mode (SI solver)&quot;</span><span class="p">,</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">25</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">132</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">modes</span><span class="p">[</span><span class="s1">&#39;eig&#39;</span><span class="p">][</span><span class="s1">&#39;profiles&#39;</span><span class="p">][</span><span class="n">imode</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">([</span><span class="n">npoints</span><span class="p">]</span><span class="o">*</span><span class="mi">2</span><span class="p">)))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Eig solver solution&quot;</span><span class="p">,</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">25</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">133</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">modes</span><span class="p">[</span><span class="s1">&#39;radial&#39;</span><span class="p">][</span><span class="s1">&#39;profiles&#39;</span><span class="p">][</span><span class="n">imode</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">([</span><span class="n">npoints</span><span class="p">]</span><span class="o">*</span><span class="mi">2</span><span class="p">)))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Radial solver solution&quot;</span><span class="p">,</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">25</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_Benchmark_SI_17_0.png" src="../_images/examples_Benchmark_SI_17_0.png" />
+</div>
+</div>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="RadialSolverGRIN.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Graded index fiber using the radial solver</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="Square_fiber.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Square fiber using the 2D Eigen-problem solver</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#1.-Fiber-parameters">1. Fiber parameters</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.-Compute-the-mode-with-three-different-solvers">2. Compute the mode with three different solvers</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.1-Index-profile">2.1 Index profile</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.2-Semi-analytical-solution:-SI-solver">2.2 Semi-analytical solution: <code class="docutils literal notranslate"><span class="pre">SI</span></code> solver</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.3-Solving-the-2d-Eigenvalue-solver:-eig-solver-(slow)">2.3 Solving the 2d Eigenvalue solver: <code class="docutils literal notranslate"><span class="pre">eig</span></code> solver (slow)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.4-Finding-the-1d-radial-solution:-radial-solver-(fast,-more-precise)">2.4 Finding the 1d radial solution: <code class="docutils literal notranslate"><span class="pre">radial</span></code> solver (fast, more precise)</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#3.-Comparing-results">3. Comparing results</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#3.1-Dispersion">3.1 Dispersion</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.2-Comparing-numerical-solutions-to-LP-modes">2.2 Comparing numerical solutions to LP modes</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../_sources/examples/Benchmark_SI.ipynb.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, Sebastien M. Popoff and Pavel Gostev.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.0.2.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

@@ -1,0 +1,25 @@
+﻿pyMMF.propagationModeSolver
+===========================
+
+.. currentmodule:: pyMMF
+
+.. autoclass:: propagationModeSolver
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~propagationModeSolver.__init__
+      ~propagationModeSolver.setIndexProfile
+      ~propagationModeSolver.setPoisson
+      ~propagationModeSolver.setWL
+      ~propagationModeSolver.solve
+   
+   
+
+   
+   
+   

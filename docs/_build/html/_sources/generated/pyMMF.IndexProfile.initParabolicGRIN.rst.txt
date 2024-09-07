@@ -1,0 +1,6 @@
+﻿pyMMF.IndexProfile.initParabolicGRIN
+====================================
+
+.. currentmodule:: pyMMF
+
+.. automethod:: IndexProfile.initParabolicGRIN

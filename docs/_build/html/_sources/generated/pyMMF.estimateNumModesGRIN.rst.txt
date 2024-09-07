@@ -1,0 +1,6 @@
+﻿pyMMF.estimateNumModesGRIN
+==========================
+
+.. currentmodule:: pyMMF
+
+.. autofunction:: estimateNumModesGRIN

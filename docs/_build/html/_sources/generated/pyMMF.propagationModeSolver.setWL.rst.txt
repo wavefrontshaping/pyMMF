@@ -1,0 +1,6 @@
+﻿pyMMF.propagationModeSolver.setWL
+=================================
+
+.. currentmodule:: pyMMF
+
+.. automethod:: propagationModeSolver.setWL

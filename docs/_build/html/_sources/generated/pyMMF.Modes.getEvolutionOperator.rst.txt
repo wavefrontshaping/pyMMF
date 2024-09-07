@@ -1,0 +1,6 @@
+﻿pyMMF.Modes.getEvolutionOperator
+================================
+
+.. currentmodule:: pyMMF
+
+.. automethod:: Modes.getEvolutionOperator

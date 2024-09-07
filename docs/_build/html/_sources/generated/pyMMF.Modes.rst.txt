@@ -1,0 +1,31 @@
+﻿pyMMF.Modes
+===========
+
+.. currentmodule:: pyMMF
+
+.. autoclass:: Modes
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~Modes.__init__
+      ~Modes.fromFile
+      ~Modes.getCurvedModes
+      ~Modes.getEvolutionOperator
+      ~Modes.getModeMatrix
+      ~Modes.getNearDegenerate
+      ~Modes.getNearDegenerateMask
+      ~Modes.getPropagationMatrix
+      ~Modes.load
+      ~Modes.save
+      ~Modes.sort
+   
+   
+
+   
+   
+   

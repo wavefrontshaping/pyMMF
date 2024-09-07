@@ -1,0 +1,6 @@
+﻿pyMMF.propagationModeSolver.solve
+=================================
+
+.. currentmodule:: pyMMF
+
+.. automethod:: propagationModeSolver.solve

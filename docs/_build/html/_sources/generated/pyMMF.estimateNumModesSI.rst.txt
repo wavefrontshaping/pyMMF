@@ -1,0 +1,6 @@
+﻿pyMMF.estimateNumModesSI
+========================
+
+.. currentmodule:: pyMMF
+
+.. autofunction:: estimateNumModesSI

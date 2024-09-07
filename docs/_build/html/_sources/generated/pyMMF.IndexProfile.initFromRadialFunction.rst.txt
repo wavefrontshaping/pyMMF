@@ -1,0 +1,6 @@
+﻿pyMMF.IndexProfile.initFromRadialFunction
+=========================================
+
+.. currentmodule:: pyMMF
+
+.. automethod:: IndexProfile.initFromRadialFunction

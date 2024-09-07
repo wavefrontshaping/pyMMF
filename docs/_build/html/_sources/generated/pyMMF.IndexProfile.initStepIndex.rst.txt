@@ -1,0 +1,6 @@
+﻿pyMMF.IndexProfile.initStepIndex
+================================
+
+.. currentmodule:: pyMMF
+
+.. automethod:: IndexProfile.initStepIndex

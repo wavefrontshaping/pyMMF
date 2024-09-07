@@ -1,0 +1,6 @@
+﻿pyMMF.IndexProfile.initFromArray
+================================
+
+.. currentmodule:: pyMMF
+
+.. automethod:: IndexProfile.initFromArray

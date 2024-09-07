@@ -1,0 +1,6 @@
+﻿pyMMF.propagationModeSolver.setIndexProfile
+===========================================
+
+.. currentmodule:: pyMMF
+
+.. automethod:: propagationModeSolver.setIndexProfile

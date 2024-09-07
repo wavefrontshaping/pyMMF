@@ -1,0 +1,745 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>pyMMF &#8212; pyMMF v0.7</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=407ae711" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'readme_link';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Examples" href="examples.html" />
+    <link rel="prev" title="pyMMF" href="index.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">pyMMF v0.7</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#">
+    pyMMF
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="examples.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="changes_link.html">
+    Release notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/wavefrontshaping/pymmf" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/WFShaping" title="X" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-twitter fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">X</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://wavefrontshaping.net" title="wavefrontshaping.net" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-link fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">wavefrontshaping.net</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#">
+    pyMMF
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="examples.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="changes_link.html">
+    Release notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/wavefrontshaping/pymmf" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/WFShaping" title="X" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-twitter fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">X</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://wavefrontshaping.net" title="wavefrontshaping.net" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-link fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">wavefrontshaping.net</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">pyMMF</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="pymmf">
+<h1>pyMMF<a class="headerlink" href="#pymmf" title="Link to this heading">#</a></h1>
+<section id="presentation">
+<h2>Presentation<a class="headerlink" href="#presentation" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">pyMMF</span></code> is a Python package for fast simulation light propagation inside multimode fibers.
+Its main feature is to numerically find the propagation modes profiles and the corresponding propagation constants
+of multimode fibers of (almost) arbitrary index profiles.</p>
+<p><code class="docutils literal notranslate"><span class="pre">pyMMF</span></code> uses on some approximations.
+The main one is that is solve the scalar problem,
+which is not a big issues with low numerical aperture systems such as fibers, but does not take into account effect of spin orbital coupling.</p>
+<p>This module is not designed to compete with commercially available software in term of accuracy, it aims at quickly simulating realistic transmission matrices of short sections of fiber.
+However, comparison with FDTD simulation shows a good agrement.</p>
+<section id="features">
+<h3>Features<a class="headerlink" href="#features" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Computes mode profile and propagation constants for a given index profile,</p></li>
+<li><p>Gives acces to the transmission matrix and propagation operator for a given wavelength and fiber length,</p></li>
+<li><p>Simulate effect of bending</p></li>
+</ul>
+</section>
+<section id="contributions">
+<h3>Contributions<a class="headerlink" href="#contributions" title="Link to this heading">#</a></h3>
+<p>This code is written and maintained by S. M. Popoff</p>
+<p>I thank contributions from Pavel Gostev <a class="reference external" href="https://github.com/vongostev/pyMMF">vongostev/pyMMF</a>:</p>
+<ol class="arabic simple">
+<li><p>Semianalytical solver has parallelized by joblib, thanks to which its performance has increased dramatically on thick fibers.</p></li>
+<li><p>Stability of fast radial solver increased, specifically on thick fibers and small wavelengths.</p></li>
+</ol>
+</section>
+<section id="citing-the-code">
+<h3>Citing the code<a class="headerlink" href="#citing-the-code" title="Link to this heading">#</a></h3>
+<p>If the code was helpful to your work, please consider citing it:</p>
+<p><a class="reference external" href="https://zenodo.org/badge/latestdoi/148702831"><img alt="DOI" src="https://zenodo.org/badge/148702831.svg" /></a></p>
+</section>
+<section id="online-mode-predictions">
+<h3>Online mode predictions<a class="headerlink" href="#online-mode-predictions" title="Link to this heading">#</a></h3>
+<p>Test <code class="docutils literal notranslate"><span class="pre">pyMMF</span></code> on <a class="reference external" href="https://replicate.com/wavefrontshaping/pymmf">Replicate</a></p>
+</section>
+</section>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Link to this heading">#</a></h2>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com/wavefrontshaping/pyMMF.git
+</pre></div>
+</div>
+<p>or</p>
+<p>Download the file and execute the following command.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>.
+</pre></div>
+</div>
+</section>
+<section id="how-does-it-work">
+<h2>How does it work?<a class="headerlink" href="#how-does-it-work" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">pyMMF</span></code> proposes different solvers to find the propagation constants and mode profiles of multimode optical fibers.
+They solve the the transverse part of the <strong>scalar</strong> propagation equation.</p>
+<section id="semi-analytical-solver-for-step-index">
+<h3>Semi-analytical solver for step-index<a class="headerlink" href="#semi-analytical-solver-for-step-index" title="Link to this heading">#</a></h3>
+<p>Ideal step-index fibers allow anlytical dispersion relations and mode profile expressions.
+This solver numericaly solves this relation dispersion and compute the modes using the analytical formula of the modes.
+It is only valid for ideal step-index fibers.</p>
+<p>Use <code class="docutils literal notranslate"><span class="pre">solver.solve(mode</span> <span class="pre">=</span> <span class="pre">'SI',</span> <span class="pre">...)</span></code></p>
+</section>
+<section id="radial-solver">
+<h3>Radial solver<a class="headerlink" href="#radial-solver" title="Link to this heading">#</a></h3>
+<p>Solver for fibers with an axisymmetric index profile defined by a radial function,
+e.g. graded index fibers.
+It solves the 1D problem using the finite difference recursive scheme for Riccati’s equations.
+It allows finding accurately and quickly the mode profiles and propagation constants for fibers
+when the index profiles only depends on the radial coordinate.</p>
+<p>More details here:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://www.wavefrontshaping.net/post/id/66">Fast numerical estimations of axisymmetric multimode fibers modes</a></p></li>
+</ul>
+<p>Use <code class="docutils literal notranslate"><span class="pre">solver.solve(mode</span> <span class="pre">=</span> <span class="pre">'radial',</span> <span class="pre">...)</span></code></p>
+</section>
+<section id="eigenvalue-solver">
+<h3>Eigenvalue solver<a class="headerlink" href="#eigenvalue-solver" title="Link to this heading">#</a></h3>
+<p>It finds the modes by numerically finding the eigenvalues of the transverse operator represented as a large but sparse matrix on a square mesh.
+The eigenvectors represent the mode profiles and the eigenvalues give the corresponding propagation constants.
+The solver needs to know how many modes you want to compute, if the number set is higher than the number of propagationg modes, it will only returns the propagating modes.
+This solver is slower and requires finer discretisations compared to the radial solver, but it allows using arbitrary,
+and in particular non-axisymmetric, index profiles.
+It also allows introducing bending to the fiber and finding the modes of the perturbed fiber.</p>
+<p>More detailed explanations can be found is this two-part tutorial:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://www.wavefrontshaping.net/post/id/3">Finding modes of straight fibers</a></p></li>
+<li><p><a class="reference external" href="https://www.wavefrontshaping.net/post/id/4">Finding modes of bent fibers</a></p></li>
+</ul>
+<p>Use <code class="docutils literal notranslate"><span class="pre">solver.solve(mode</span> <span class="pre">=</span> <span class="pre">'eig',</span> <span class="pre">...)</span></code></p>
+</section>
+<section id="wkb-solver">
+<h3>WKB solver<a class="headerlink" href="#wkb-solver" title="Link to this heading">#</a></h3>
+<p>Find the propagation constants of parabolic GRIN multimode fibers under the WKB (Wentzel–Kramers–Brillouin) approximation [1]_.
+This approximation leads to inaccurate results for modes close to the cutoff,
+which can be a significant proportion of the modes for typical fibers.
+It is provided only for comparison.</p>
+</section>
+</section>
+<section id="a-simple-example">
+<h2>A simple example<a class="headerlink" href="#a-simple-example" title="Link to this heading">#</a></h2>
+<p><strong>Finding the modes of a graded index fiber (GRIN)</strong></p>
+<section id="preambule">
+<h3>Preambule<a class="headerlink" href="#preambule" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pyMMF</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+</pre></div>
+</div>
+</section>
+<section id="parameters">
+<h3>Parameters<a class="headerlink" href="#parameters" title="Link to this heading">#</a></h3>
+<p>We first set the parameters of the fiber we want to simulate.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">NA</span> <span class="o">=</span> <span class="mf">0.275</span>
+<span class="n">radius</span> <span class="o">=</span> <span class="mi">7</span> <span class="c1"># in microns</span>
+<span class="n">areaSize</span> <span class="o">=</span> <span class="mf">2.5</span><span class="o">*</span><span class="n">radius</span> <span class="c1"># calculate the field on an area larger than the diameter of the fiber</span>
+<span class="n">npoints</span> <span class="o">=</span> <span class="mi">2</span><span class="o">**</span><span class="mi">7</span> <span class="c1"># resolution of the window</span>
+<span class="n">n1</span> <span class="o">=</span> <span class="mf">1.45</span>
+<span class="n">wl</span> <span class="o">=</span> <span class="mf">0.6328</span> <span class="c1"># wavelength in microns</span>
+<span class="n">curvature</span> <span class="o">=</span> <span class="kc">None</span>
+</pre></div>
+</div>
+</section>
+<section id="index-profile">
+<h3>Index profile<a class="headerlink" href="#index-profile" title="Link to this heading">#</a></h3>
+<p>We first create the fiber object</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">profile</span> <span class="o">=</span> <span class="n">pyMMF</span><span class="o">.</span><span class="n">IndexProfile</span><span class="p">(</span><span class="n">npoints</span> <span class="o">=</span> <span class="n">npoints</span><span class="p">,</span> <span class="n">areaSize</span> <span class="o">=</span> <span class="n">areaSize</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We use the helper function that generates a parabolic index profile:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">profile</span><span class="o">.</span><span class="n">initParabolicGRIN</span><span class="p">(</span><span class="n">n1</span><span class="o">=</span><span class="n">n1</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="n">radius</span><span class="p">,</span> <span class="n">NA</span><span class="o">=</span><span class="n">NA</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We then give the profile and the wavelength to the solver</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">solver</span> <span class="o">=</span> <span class="n">pyMMF</span><span class="o">.</span><span class="n">propagationModeSolver</span><span class="p">()</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">setIndexProfile</span><span class="p">(</span><span class="n">profile</span><span class="p">)</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">setWL</span><span class="p">(</span><span class="n">wl</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="run-the-solver">
+<h3>Run the solver<a class="headerlink" href="#run-the-solver" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">modes</span> <span class="o">=</span> <span class="n">solver</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;radial&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="results">
+<h3>Results<a class="headerlink" href="#results" title="Link to this heading">#</a></h3>
+<p>Ask for the number of propagating modes found by the solver (other modes are discarded).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Nmodes</span> <span class="o">=</span> <span class="n">modes</span><span class="o">.</span><span class="n">number</span>
+</pre></div>
+</div>
+<p>Display the profile of a mode</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">m</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">121</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="n">modes</span><span class="o">.</span><span class="n">profiles</span><span class="p">[</span><span class="n">m</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">([</span><span class="n">npoints</span><span class="p">]</span><span class="o">*</span><span class="mi">2</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">122</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">imag</span><span class="p">(</span><span class="n">modes</span><span class="o">.</span><span class="n">profiles</span><span class="p">[</span><span class="n">m</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">([</span><span class="n">npoints</span><span class="p">]</span><span class="o">*</span><span class="mi">2</span><span class="p">))</span>
+</pre></div>
+</div>
+</section>
+<section id="other-examples">
+<h3>Other examples<a class="headerlink" href="#other-examples" title="Link to this heading">#</a></h3>
+<p>Other examples are provided as notebooks in the <a class="reference internal" href="#example"><span class="xref myst">doc/examples</span></a> folder.</p>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="index.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">pyMMF</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="examples.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Examples</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#presentation">Presentation</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#features">Features</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#contributions">Contributions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#citing-the-code">Citing the code</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#online-mode-predictions">Online mode predictions</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation">Installation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-does-it-work">How does it work?</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#semi-analytical-solver-for-step-index">Semi-analytical solver for step-index</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#radial-solver">Radial solver</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#eigenvalue-solver">Eigenvalue solver</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#wkb-solver">WKB solver</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a-simple-example">A simple example</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#preambule">Preambule</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#parameters">Parameters</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#index-profile">Index profile</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#run-the-solver">Run the solver</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#results">Results</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#other-examples">Other examples</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="_sources/readme_link.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, Sebastien M. Popoff and Pavel Gostev.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.0.2.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
