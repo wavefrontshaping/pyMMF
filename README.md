@@ -148,16 +148,21 @@ To be safe, we ask for a bit more than the estimated number of modes previously 
 ##### 2d eigenvalue solver
 
 ```python
-modes = solver.solve(nmodesMax=NmodesMax+10,
-boundary = 'close',
-mode = 'eig',
-curvature = curvature)
+solver_options = {
+    'nmodesMax' : NmodesMax+10,
+    'boundary' : 'close',
+}
+
+modes = solver.solve(
+    solver = 'eig',
+    curvature = curvature,
+    options = solver_options)
 ```
 
 ##### Radial solver
 
 ```python
-modes = solver.solve(mode = 'radial')
+modes = solver.solve(solver = 'radial')
 ```
 
 #### Results
@@ -181,50 +186,5 @@ plt.imshow(np.imag(modes.profiles[m]).reshape([npoints]*2))
 
 ### Other examples
 
-Other examples are provided as notebooks in the [example](example) folder.
+Other examples are provided as notebooks in the [docs/examples](docs/examples) folder.
 
-## Release notes
-
-### 0.6
-
-#### Bug correction
-
-- solve issue with optimized (scipy bisect) radial solver (see [PR #8](../../pull/8))
-
-#### Changes
-
-- switch radial solvers: `radial` corresponds now to the corrected optimized radial solver using scipy for bisect search, `radial_legacy` is the old one
-- Store radial and azimuthal functions of the modes in the `radial` solver in `modes0.data[<ind_mode>]['radial_func']` and `modes0.data[<ind_mode>]['azimuthal_func']`, can be used to apply to your mesh, e.g.:
-
-```python
-modes = solver.solve(mode='radial_test', ...)
-X, Y = np.meshgrid(...)
-TH = np.arctan2(Y, X)
-R = np.sqrt(X**2 + Y**2)
-ind_mode = 0
-psi_r = modes.data[ind_mode]['radial_func'](R)
-psi_theta = modes.data[ind_mode]['azimuthal_func'](TH)
-plt.figure()
-plt.imshow(np.real(R*TH))
-```
-
-- in the radial solver, argument `min_radius_bc` is now in units of wavelength, defaults to 4.
-
-### 0.5
-
-#### Changes
-
-- Radial solver performance improvements (Pavel Gostev)
-- Semi-analytical solver performance improvements (Pavel Gostev)
-- Improved documentation
-- Add Jupyter notebook examples
-
-### 0.4
-
-#### Changes:
-
-- added Ricatti solver for axisymmetric index profiles
-
-### 0.1
-
-- First public version
