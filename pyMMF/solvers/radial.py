@@ -187,6 +187,7 @@ def solve_radial(
     min_radius_bc=MIN_RADIUS_BC_COEFF_DEFAULT,
     change_bc_radius_step=CHANGE_BC_RADIUS_STEP_DEFAULT,
     N_beta_coarse=N_BETA_COARSE_DEFAULT,
+    r_max=None,
     dh=None,
     beta_tol=None,
     field_limit_tol=1e-3,
@@ -215,45 +216,49 @@ def solve_radial(
         with an azimuthal function of sin(m*theta) and cos(m*theta) for m>0.
 
         Default is 'exp'.
-    min_radius_bc : float
+    min_radius_bc : float, optional
         Minimum radius for the boundary condition in units of the radius of the fiber set in the index profile.
         The algorithm will try to find a solution of the field mode profile that vanishes at this radius.
         If not successfull, it will multiply this maximum radius by `change_bc_radius_step` and try again.
         Default is 4.
-    change_bc_radius_step : float
+    change_bc_radius_step : float, optional
         Factor to change the boundary condition radius
         when not successfull reaching the vanishing boundary condition
         equalt to zero at `min_radius_bc`.
         Set the next radius to `r_max = r_max * change_bc_radius_step`.
         Default is 0.9.
-    N_beta_coarse : int
+    N_beta_coarse : int, optional
         Number of beta values in the initial rought scan for each radial number `l`.
         Before trying to find the beta value that satisfies the boundary condition,
         we scan the range of betas admissible for propagating modes
         to find the changes of the sign of the farthest radial point.
         It gives the number of modes and initial guesses for the beta values.
         Default is 1_000.
-    dh : float or None
+    r_max : float or None, optional
+        Maximum radius for the search.
+        Default is None, it fixes the value to `np.max(indexProfile.R)`
+        i.e. the maximum radius of the index profile map.
+    dh : float or None, optional
         Spatial resolution.
         Note that the algorithm find the solution of a 1D problem,
         resolution can be increased to improve the accuracy of the solution
         with much less computational cost than the 2D problem.
         Default is None, it fixes the value to `indexProfile.areaSize / indexProfile.npoints`.
-    beta_tol : float or None
+    beta_tol : float or None, optional
         Tolerance for the beta value.
         Default is  is None, it fixes the value to `np.finfo(np.float64).eps`.
-    field_limit_tol : float
+    field_limit_tol : float, optional
         Tolerance for the field limit.
         If the field at `r_max` is below this value, the field is considered to be zero,
         and the boundary condition is considered to be met.
         Default is 1e-3.
-    beta_min : float or None
+    beta_min : float or None, optional
         Minimum beta value considered in the search.
         Changing this value can return non-propagating modes.
         Default is None, it set the values to `2*np.pi/wl * n_func(r_max0)`.
         Note that for a index profile that does not monotonically decrease with the radius,
         this value can lead to the algorithm to miss some propagating modes.
-    save_func : bool
+    save_func : bool, optional
         Save the radial and azimuthal functions.
         If try, it stores the results in the `data` attribute of the `Modes` object.
         Fields are:
