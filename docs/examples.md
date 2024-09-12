@@ -39,3 +39,16 @@ using the `eig2D` solver.
 
     examples/Square_fiber.ipynb
 ```
+
+## Example 4
+
+Comparing the results from the different solver for a graded index fiber 
+with the results from FDTD simulations.
+
+```eval_rst
+.. toctree::
+    :maxdepth: 2
+    :caption: Contents:
+
+    examples/benchmark_GRIN_comsol.ipynb
+```

@@ -306,7 +306,7 @@ class Modes:
 
         See Also
         --------
-        getPropagationMatrix()
+        getPropagationMatrix
 
         References
         ----------
