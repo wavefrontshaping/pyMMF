@@ -217,8 +217,8 @@ class Modes:
         --------
         getNearDegenerateMask
 
-        Example
-        -------
+        Examples
+        --------
         >>> groups = getNearDegenerate(tol=1e-5)
         >>> print(groups)
         [[1], [2, 3], [4, 5, 6], [7, 8, 9, 10], [11, 12, 13, 14, 15]]
@@ -264,8 +264,8 @@ class Modes:
         --------
         getNearDegenerate
 
-        Example
-        -------
+        Examples
+        --------
         >>> mask = getNearDegenerateMask(tol=1e-5)
         """
         degenerate_groups = self.getNearDegenerate(tol=tol)
@@ -534,8 +534,8 @@ class Modes:
         Modes
             The object loaded from the file.
 
-        Example
-        -------
+        Examples
+        --------
         >>> modes = Modes.fromFile("modes.pkl")
         """
         obj = cls()

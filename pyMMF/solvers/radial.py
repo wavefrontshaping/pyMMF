@@ -208,12 +208,12 @@ def solve_radial(
         Choice for degenerate subspaces.
 
         - 'exp' return the orbital angular momentum modes,
-        for an azimuthal index m>0,
-        the azimuthal function is exp(i*-m*theta) and exp(i*m*theta)
+          for an azimuthal index m>0,
+          the azimuthal function is exp(i*-m*theta) and exp(i*m*theta)
 
         - 'sin' return the linear polarized modes,
-        they have real values of the field
-        with an azimuthal function of sin(m*theta) and cos(m*theta) for m>0.
+          they have real values of the field
+          with an azimuthal function of sin(m*theta) and cos(m*theta) for m>0.
 
         Default is 'exp'.
     min_radius_bc : float, optional
@@ -266,6 +266,7 @@ def solve_radial(
         - "r_max": the maximum radius used for the search,
         - "norm": the normalization factor of the radial function,
         - "azimuthal_func": the azimuthal function.
+
         Default is False.
     """
     t0 = time.time()

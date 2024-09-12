@@ -39,12 +39,12 @@ def solve_SI(indexProfile, wl, tol=1e-9, degenerate_mode="sin", n_jobs=-2):
             Choice for degenerate subspaces.
 
             - 'exp' return the orbital angular momentum modes,
-            for an azimuthal index m>0,
-            the azimuthal function is exp(i*-m*theta) and exp(i*m*theta)
+              for an azimuthal index m>0,
+              the azimuthal function is exp(i*-m*theta) and exp(i*m*theta)
 
             - 'sin' return the linear polarized modes,
-            they have real values of the field
-            with an azimuthal function of sin(m*theta) and cos(m*theta) for m>0.
+              they have real values of the field
+              with an azimuthal function of sin(m*theta) and cos(m*theta) for m>0.
 
             Default is 'exp'.
 

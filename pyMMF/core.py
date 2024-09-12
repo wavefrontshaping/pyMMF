@@ -182,26 +182,27 @@ class propagationModeSolver:
                 solver to be used.Type of solver.  Should be one of
 
                     - 'radial' solves the 1D radial wave equation for axisymmetric profiles.
-                    It requires the profile to be defined by a radial function
-                    with the :meth:`initFromRadialFunction<pyMMF.IndexProfile.initFromRadialFunction>` method.
+                      It requires the profile to be defined by a radial function
+                      with the :meth:`initFromRadialFunction<pyMMF.IndexProfile.initFromRadialFunction>` method.
 
-                    :ref:`(more info  and additional options here) <pyMMF.solve-radial>`
+                      :ref:`(more info  and additional options here) <pyMMF.solve-radial>`
 
                     - 'eig' solves the eigenvalue problem in the discretized space.
-                    Slower and less precise, but allows for non-axisymmetric profiles and bend curvature.
+                      Slower and less precise, but allows for non-axisymmetric profiles and bend curvature.
 
-                    :ref:`(more info  and additional options here) <pyMMF.solve-eig>`
+                      :ref:`(more info  and additional options here) <pyMMF.solve-eig>`
 
                     - 'SI' solves numerically the analytical dispersion relation for step index fibers
-                    and approximate modes to LP modes.
+                      and approximate modes to LP modes.
 
-                    :ref:`(more info  and additional options here) <pyMMF.solve-SI>`
+                      :ref:`(more info  and additional options here) <pyMMF.solve-SI>`
 
                     - 'WKB' uses the WKB approximation for GRIN profiles.
 
-                    :ref:`(more info  and additional options here) <pyMMF.solve-WKB>`
+                      :ref:`(more info  and additional options here) <pyMMF.solve-WKB>`
 
                     - 'default' tries to find the optimal solver for the given index profile.
+
                 Default is 'default' ;)
 
             options: dict

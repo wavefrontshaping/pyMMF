@@ -108,8 +108,8 @@ class IndexProfile:
         -------
         None
 
-        Example
-        -------
+        Examples
+        --------
         Square fiber index profile::
 
             import numpy as np
@@ -146,8 +146,8 @@ class IndexProfile:
         -------
         None
 
-        Example
-        -------
+        Examples
+        --------
         Ring core fiber index profile::
 
             import numpy as np
@@ -171,7 +171,6 @@ class IndexProfile:
 
         """
         self.radialFunc = nr
-        print(self.radialFunc)
         self.n = np.fromiter((nr(i) for i in self.R.reshape([-1])), np.float32)
         self.n = self.n.reshape(self.R.shape)
 
@@ -209,8 +208,8 @@ class IndexProfile:
         -------
         None
 
-        Example
-        -------
+        Examples
+        --------
         Parabolic GRIN fiber::
         
             import pyMMF
@@ -236,9 +235,6 @@ class IndexProfile:
                 else n2
             )
 
-        print("*" * 80)
-        print(radialFunc)
-
         self.initFromRadialFunction(radialFunc)
 
     def initStepIndex(self, n1: float, a: float, NA: float) -> None:
@@ -258,8 +254,8 @@ class IndexProfile:
         -------
         None
 
-        Example
-        -------
+        Examples
+        --------
         ::
 
             import pyMMF
@@ -333,8 +329,8 @@ class IndexProfile:
         -------
         None
 
-        Example
-        -------
+        Examples
+        --------
         ::
 
             import pyMMF
@@ -414,8 +410,8 @@ class IndexProfile:
         IndexProfile
             The index profile loaded from the file.
 
-        Example
-        -------
+        Examples
+        --------
         ::
 
             import pyMMF

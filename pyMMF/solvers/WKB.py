@@ -20,66 +20,63 @@ def solve_WKB(indexProfile, wl, tol=1e-9, degenerate_mode="sin", n_jobs=-2):
     This approximation leads to inaccurate results for groups of modes close to the cutoff,
     hence is not suitable when a limited number of modes is considered.
     It is provided only for comparison.
-    The `IndexProfile` must be
-    initialized with the :meth:`initParabolicGRIN
+    The `IndexProfile` must be initialized with the :meth:`initParabolicGRIN
     <pyMMF.IndexProfile.initParabolicGRIN>` method.
-
 
     Options
     -------
 
-        tol : float, optional
-            tolerance on the propagation constant.
-            Default is 1e-9
+    tol : float, optional
+        Tolerance on the propagation constant.
+        Default is 1e-9.
 
-        degenerate_mode : string ('exp', or 'sin'), optional
-            Choice for degenerate subspaces.
+    degenerate_mode : {'exp', 'sin'}, optional
+        Choice for degenerate subspaces.
 
-            - 'exp' return the orbital angular momentum modes,
-            for an azimuthal index m>0,
-            the azimuthal function is exp(i*-m*theta) and exp(i*m*theta)
+        - `'exp'`: returns the orbital angular momentum modes.
+          For an azimuthal index \(m > 0\), the azimuthal function is
+          \(\exp(i \cdot -m \cdot \theta)\) and \(\exp(i \cdot m \cdot \theta)\).
 
-            - 'sin' return the linear polarized modes,
-            they have real values of the field
-            with an azimuthal function of sin(m*theta) and cos(m*theta) for m>0.
+        - `'sin'`: returns the linearly polarized modes.
+          These modes have real-valued fields with azimuthal functions
+          \(\sin(m \cdot \theta)\) and \(\cos(m \cdot \theta)\) for \(m > 0\).
 
-            Default is 'exp'.
+        Default is `'exp'`.
 
-        n_jobs : int, optional
-            number of parallel jobs to run.
-            Default is -2, which means using all processors.
-
-
+    n_jobs : int, optional
+        Number of parallel jobs to run.
+        Default is -2, which means using all available processors.
 
     Notes
     -----
 
-        Propagation constants under the WKB approximation:
+    Propagation constants under the WKB approximation:
 
-        .. math::
+    .. math::
 
-            \beta_{l,m} = \sqrt{k_o^2 n_1^2-2\alpha \left( |l|+2m+1\right)}
+        \beta_{l,m} = \sqrt{k_o^2 n_1^2 - 2\alpha \left( |l| + 2m + 1 \right)}
 
-        .. math::
+    .. math::
 
+        \alpha = \frac{k_o n_1}{b}
 
-            \alpha = k_o n_1/b
+    with
 
-        with
+    .. math::
 
-        .. math:: b = \frac{radius \times n_1}{NA}
+        b = \frac{ \text{radius} \times n_1 }{ \text{NA} }
 
-        Mode profiles under the WKB approximation:
+    Mode profiles under the WKB approximation:
 
-        .. math:: \psi_{l,m}(r, \phi) = A e^{- \frac{\alpha r^2}{2}}(\alpha r^2)^{|m|/2} L_l^{|m|}(\alpha r^2)e^{im\phi}
+    .. math::
 
-        with :math:`L_l^{|m|}` the Laguerre polynomials
+        \psi_{l,m}(r, \phi) = A e^{- \frac{\alpha r^2}{2}} (\alpha r^2)^{|m|/2} L_l^{|m|}(\alpha r^2) e^{im\phi}
 
-        .. [#]  K. Okamoto, "Fundamentals of optical waveguides"
-                Academic Press,
-                2006
+    where :math:`L_l^{|m|}` are the Laguerre polynomials.
 
+    .. [#] K. Okamoto, "Fundamentals of Optical Waveguides," Academic Press, 2006.
     """
+
     modes = findPropagationConstants(
         wl, indexProfile, tol=tol, degenerate_mode=degenerate_mode
     )
@@ -169,13 +166,18 @@ def calc_mode(modes, idx, degenerate_mode, R, TH, a, alpha):
     aR2 = alpha * R.ravel() ** 2
 
     phase = m * TH.ravel()
-    psi = 0
+    # psi = 0
+
+    degenerated = False
+    if (m, l) in zip(modes.m[:idx], modes.l[:idx]):
+        degenerated = True
 
     # Non-zero transverse component
     if degenerate_mode == "sin":
         # two pi/2 rotated degenerate modes for m < 0
-        psi = np.pi / 2 if m < 0 else 0
-        phase_mult = np.cos(phase + psi)
+        # psi = np.pi / 2 if m < 0 else 0
+        # phase_mult = np.cos(phase + psi)
+        phase_mult = np.sin(phase) if degenerated else np.cos(phase)
 
     elif degenerate_mode == "exp":
         # noticably faster than writing exp(1j*phase)
