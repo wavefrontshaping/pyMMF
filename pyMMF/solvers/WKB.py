@@ -80,14 +80,16 @@ def solve_WKB(indexProfile, wl, tol=1e-9, degenerate_mode="sin", n_jobs=-2):
                 2006
 
     """
-    modes = findPropagationConstants(wl, indexProfile, tol=tol)
+    modes = findPropagationConstants(
+        wl, indexProfile, tol=tol, degenerate_mode=degenerate_mode
+    )
     modes = associateLPModeProfiles(
         modes, wl, indexProfile, degenerate_mode=degenerate_mode, n_jobs=n_jobs
     )
     return modes
 
 
-def findPropagationConstants(wl, indexProfile, tol):
+def findPropagationConstants(wl, indexProfile, tol, degenerate_mode):
     r"""
     Find the propagation constants of parabolic GRIN multimode fibers under the WKB approximation [#]_.
     This approximation leads to inaccurate results for groups of modes close to the cutoff,
@@ -133,11 +135,24 @@ def findPropagationConstants(wl, indexProfile, tol):
             )
             if beta_current < beta_min or beta_current > beta_max:
                 break
-            degeneracy = 1 if m == 0 else 2
-            modes.betas.extend([beta_current] * degeneracy)
-            modes.number += degeneracy
-            modes.m.extend([m] * degeneracy)
-            modes.l.extend([l] * degeneracy)
+            # degeneracy = 1 if m == 0 else 2
+            # modes.betas.extend([beta_current] * degeneracy)
+            # modes.number += degeneracy
+            # modes.m.extend([m] * degeneracy)
+            # modes.l.extend([l] * degeneracy)
+            modes.betas.extend([beta_current])
+            modes.number += 1
+            modes.m.extend([m])
+            modes.l.extend([l])
+
+            if not m == 0:
+                # degenerate mode
+                modes.betas.extend([beta_current])
+                modes.number += 1
+                other_m = -m if degenerate_mode == "exp" else m
+                modes.m.extend([other_m])
+                modes.l.extend([l])
+
             m += 1
         if m == 0:
             # if we stopped with m = 0, there is no more modes
@@ -159,7 +174,7 @@ def calc_mode(modes, idx, degenerate_mode, R, TH, a, alpha):
     # Non-zero transverse component
     if degenerate_mode == "sin":
         # two pi/2 rotated degenerate modes for m < 0
-        psi = np.pi / 2 if m[idx] < 0 else 0
+        psi = np.pi / 2 if m < 0 else 0
         phase_mult = np.cos(phase + psi)
 
     elif degenerate_mode == "exp":
@@ -196,6 +211,7 @@ def associateLPModeProfiles(modes, wl, indexProfile, degenerate_mode="sin", n_jo
     logger.info(
         "Finding analytical LP mode profiles associated to the propagation constants."
     )
+    logger.info(f"modes = {modes.number}")
     t0 = time.time()
 
     # for exp modes, we have +m and -m for degenerate modes
@@ -207,11 +223,17 @@ def associateLPModeProfiles(modes, wl, indexProfile, degenerate_mode="sin", n_jo
 
     R[R < np.finfo(np.float32).eps] = np.finfo(np.float32).eps
 
-    modes.profiles = Parallel(n_jobs=n_jobs)(
-        delayed(calc_mode)(modes, idx, degenerate_mode, R, TH, a, alpha)
+    # modes.profiles = Parallel(n_jobs=n_jobs)(
+    #     delayed(calc_mode)(modes, idx, degenerate_mode, R, TH, a, alpha)
+    #     for idx in range(modes.number)
+    # )
+    modes.profiles = [
+        calc_mode(modes, idx, degenerate_mode, R, TH, a, alpha)
         for idx in range(modes.number)
-    )
-    modes.sort()
+    ]
+    # sort bu decreasing values of betas,
+    # in case of degenerate modes, the one with m>0 is first
+    modes.sort(lambda mode: (-mode.beta, -mode.m))
 
     logger.info(
         "Found %g LP mode profiles in %0.1f minutes."
