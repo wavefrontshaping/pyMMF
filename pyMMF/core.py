@@ -233,10 +233,10 @@ class propagationModeSolver:
             logger.error("Wrong type of data for curvature.")
             raise (ValueError("Wrong type of data for curvature."))
 
-        if mode == "default":
-            mode = self.indexProfile.getOptimalSolver(curvature)
+        if solver == "default":
+            solver = self.indexProfile.getOptimalSolver(curvature)
 
-        if mode == "SI":
+        if solver == "SI":
             if not (self.indexProfile.type == "SI"):
                 logger.error("SI solver only available for step-index profiles")
                 raise AssertionError
@@ -246,7 +246,7 @@ class propagationModeSolver:
                 )
                 raise AssertionError
             modes = solve_SI(self.indexProfile, self.wl, **options)
-        elif mode == "radial":
+        elif solver == "radial":
             if self.indexProfile.radialFunc is None:
                 logger.error(
                     "radial solver only available for axisymmetric profiles defined by a radial function"
@@ -254,7 +254,7 @@ class propagationModeSolver:
                 raise AssertionError
             modes = solve_radial(self.indexProfile, self.wl, **options)
 
-        elif mode == "radial_legacy":
+        elif solver == "radial_legacy":
             if self.indexProfile.radialFunc is None:
                 logger.error(
                     "radial solver only available for axisymmetric profiles defined by a radial function (legacy)"
@@ -262,14 +262,14 @@ class propagationModeSolver:
                 raise AssertionError
             modes = solve_radial_test(self.indexProfile, self.wl, **options)
 
-        elif mode == "eig":
+        elif solver == "eig":
             modes = solve_eig(
                 indexProfile=self.indexProfile,
                 wl=self.wl,
                 curvature=curvature,
                 **options,
             )
-        elif mode == "WKB":
+        elif solver == "WKB":
             if self.indexProfile.type != "GRIN":
                 logger.error("WKB solver only available for parabolic GRIN profiles")
                 raise AssertionError
