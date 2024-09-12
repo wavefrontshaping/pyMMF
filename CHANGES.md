@@ -5,13 +5,16 @@
 ### New features 
 
 - Add documentation
-- Add tests
-- Add `save` and `load` methods for `IndexProfile` and `Mode` classes
+- Add unit tests 
+- Add `save` and `load` methods to `Mode` classe
+- Add `plot`, `save` and `load` methods to `IndexProfile`  classe
 - Add `beta_min` option for radial solver to return non-propagating or missing modes
+  
 
 
 ### Changes
-- `propagationModeSolver.solve` now take solver specific options as a `options` dictionnary 
+- `propagationModeSolver.solve` now take solver specific options as a `options` dictionnary.
+**Warning**: this breaks code retrocompability.
 
 
 ## 0.6
