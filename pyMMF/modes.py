@@ -431,7 +431,7 @@ class Modes:
         If **B** is the evolution operator of the fiber,
         the transmission matrix (in the mode basis) **T** for a fiber length **l**
         is computed using::
-            T = np.exp(1j * B * l)
+        T = np.exp(1j * B * l)
 
         Parameters
         ----------

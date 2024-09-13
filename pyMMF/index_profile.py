@@ -182,15 +182,15 @@ class IndexProfile:
 
         \[
         \begin{eqnarray} 
-            n(r) &=& \sqrt{n_1^2  \left[1 - 2  (r / a)^\alpha  \Delta n \right]} \quad  \forall \, r \leq a \\
-            n(r) &=& n_2 \quad \forall \, r > a
+        n(r) &=& \sqrt{n_1^2  \left[1 - 2  (r / a)^\alpha  \Delta n \right]} \quad  \forall \, r \leq a \\
+        n(r) &=& n_2 \quad \forall \, r > a
         \end{eqnarray}
         \]
 
         with 
 
         \[
-            \Delta n = \frac{NA^2}{2 n_1^2}
+        \Delta n = \frac{NA^2}{2 n_1^2}
         \]
 
         Parameters
@@ -341,7 +341,7 @@ class IndexProfile:
             profile.save("index_profile.pkl")
 
         """
-        dict_to_save = self.to_dict()
+        dict_to_save = self._to_dict()
         # Save the dictionary to a file
         with open(filename, "wb") as f:
             pickle.dump(dict_to_save, f)
@@ -365,11 +365,11 @@ class IndexProfile:
             data_dict = filename
         elif isinstance(filename, str):
             data_dict = np.load(filename, allow_pickle=True)
-        data = self.from_dict(data_dict)
+        data = self._from_dict(data_dict)
         for key, value in data.items():
             setattr(self, key, value)
 
-    def to_dict(self):
+    def _to_dict(self):
         data_dict = self.__dict__.copy()
         data_dict.pop("radialFunc")
 
@@ -383,7 +383,7 @@ class IndexProfile:
         )
         return data_dict
 
-    def from_dict(self, data_dict):
+    def _from_dict(self, data_dict):
 
         radialFunc = interp1d(
             data_dict["radial_func_r_vec"],
