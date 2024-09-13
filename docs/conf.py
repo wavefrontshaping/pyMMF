@@ -52,7 +52,16 @@ extensions = [
 ]
 
 templates_path = ["_templates"]
-exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "venv", "**.ipynb_checkpoints"]
+exclude_patterns = [
+    "_build",
+    "Thumbs.db",
+    ".DS_Store",
+    "venv",
+    "**.ipynb_checkpoints",
+    "test*.ipynb",
+]
+
+autosummary_generate = True
 
 autodoc_default_options = {
     "members": True,

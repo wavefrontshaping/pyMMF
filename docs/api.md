@@ -1,6 +1,5 @@
 # API Reference
 
-## Classes
 
 ```eval_rst
 Classes
@@ -13,8 +12,18 @@ Classes
    pyMMF.propagationModeSolver
    pyMMF.Modes
 
+
+Helper functions
+----------------
+
+.. autosummary::
+   :toctree: generated/
+
+   pyMMF.estimateNumModesSI
+   pyMMF.estimateNumModesGRIN
+
 ```
-## `IndexProfile` class
+<!-- ## `IndexProfile` class
 
 ```eval_rst
 Methods
@@ -26,6 +35,12 @@ Methods
    pyMMF.IndexProfile.initParabolicGRIN
    pyMMF.IndexProfile.initStepIndex
    pyMMF.IndexProfile.initFromRadialFunction
+   pyMMF.IndexProfile.fromFile
+   pyMMF.IndexProfile.load
+   pyMMF.IndexProfile.save
+   pyMMF.IndexProfile.plot
+   pyMMF.IndexProfile.getOptimalSolver
+
 
 
 
@@ -36,27 +51,30 @@ Methods
 ```eval_rst
 Methods
 -------
-.. autosummary::
-   :toctree: generated/
 
-   pyMMF.Modes.fromFile
-   pyMMF.Modes.load
-   pyMMF.Modes.save
-   pyMMF.Modes.sort
-   pyMMF.Modes.getModeMatrix
-   pyMMF.Modes.getEvolutionOperator
-   pyMMF.Modes.getPropagationMatrix
-   pyMMF.Modes.getCurvedModes
-   pyMMF.Modes.getNearDegenerate
-   pyMMF.Modes.getNearDegenerateMask
+.. automethod:: pyMMF.Modes.fromFile
+.. automethod:: pyMMF.Modes.load
+.. automethod:: pyMMF.Modes.save
+.. automethod:: pyMMF.Modes.sort
+.. automethod:: pyMMF.Modes.getModeMatrix
+.. automethod:: pyMMF.Modes.getEvolutionOperator
+.. automethod:: pyMMF.Modes.getPropagationMatrix
+.. automethod:: pyMMF.Modes.getCurvedModes
+.. automethod:: pyMMF.Modes.getNearDegenerate
+.. automethod:: pyMMF.Modes.getNearDegenerateMask
 ```
 
-<!-- ```eval_rst
+## `propagationModeSolver` class
+
+```eval_rst
+Methods
+-------
 .. autosummary::
    :toctree: generated/
 
-.. autoclass:: pyMMF.modes.Modes
-    :members:
-    :show-inheritance:
-``` -->
-
+   pyMMF.propagationModeSolver.setIndexProfile
+   pyMMF.propagationModeSolver.setWL
+   pyMMF.propagationModeSolver.setPoisson
+   pyMMF.propagationModeSolver.solve
+```
+ -->

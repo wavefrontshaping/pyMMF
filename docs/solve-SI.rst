@@ -1,6 +1,6 @@
 .. _pyMMF.solve-SI:
 
-solve(solver='eig')
+solve(solver='SI')
 ---------------------------------------------
 
 .. solve:function:: pyMMF.propagationModeSolver.solve

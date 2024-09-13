@@ -1,6 +1,6 @@
 .. _pyMMF.solve-WKB:
 
-solve(solver='eig')
+solve(solver='WKB')
 ---------------------------------------------
 
 .. solve:function:: pyMMF.propagationModeSolver.solve
