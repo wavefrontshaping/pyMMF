@@ -1,0 +1,13 @@
+/* Change color of objects (methods, attributes, etc.) 
+Without that, we do not see where the new sections start */
+dl dt.sig-object { 
+    font-weight: bold; 
+    color: #002f61;
+}
+
+/* Make the output of jupyter cells scrollable if too long */
+.output_area {
+    margin-left: 0;
+    overflow: auto;
+    max-height: 600px;
+}

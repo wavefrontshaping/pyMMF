@@ -27,7 +27,7 @@ from .solvers import (
 
 class AssertionError(Exception):
     def __init__(self):
-        self.msg = "Invalid combunation of index profile type and solver."
+        self.msg = "Invalid combination of index profile type and solver."
         logger.error(self.msg)
         super().__init__(self.msg)
 
@@ -40,76 +40,29 @@ sys.excepthook = lambda excType, excValue, traceback: handleException(
 # %%
 
 
-# https://docs.scipy.org/doc/numpy-1.13.0/user/basics.subclassing.html
-class TransmissionMatrix(np.ndarray):
-    def __new__(cls, input_array, npola=1):
-        # Input array is an already formed ndarray instance
-        # We first cast to be our class type
-        obj = np.asarray(input_array).view(cls)
-        # add the new attribute to the created instance
-        obj.npola = npola
-        # Finally, we must return the newly created object:
-        return obj
-
-    def __array_finalize__(self, obj):
-        # see InfoArray.__array_finalize__ for comments
-        if obj is None:
-            return
-        self.npola = getattr(obj, "npola", 1)
-
-    def polarization_rotation(self, angle):
-        if self.npola == 1:
-            return self
-        N = self.shape[0]
-        Pola1 = self.view()[:, : N // 2]
-        Pola2 = self.view()[:, N // 2 : N]
-
-        self.view()[:, : N // 2] = Pola1 * np.cos(angle) + Pola2 * np.sin(angle)
-        self.view()[:, N // 2 : N] = Pola2 * np.cos(angle) - Pola1 * np.sin(angle)
-        return self
-
-
-def randomGroupCoupling(groups):
-    """
-    Create a unitary matrix accounting for random mode coupling only into given groups of modes.
-    """
-    size = np.max([np.max(g) for g in groups]) + 1
-    H = np.zeros([size] * 2, dtype=np.complex128)
-
-    for g in groups:
-        # generate random unitary matrix
-        g_size = len(g)
-        u, _, __ = np.linalg.svd(
-            np.random.randn(g_size, g_size)
-            + complex(0, 1) * np.random.randn(g_size, g_size)
-        )
-        H[np.ix_(g, g)] = u
-
-    return H
-
-
 def estimateNumModesGRIN(wl, a, NA, pola=1):
     """
-        Returns a rough estimation of the number of propagating modes of a GRIN fiber.
+    Returns a rough estimation of the number of propagating modes of a GRIN fiber.
     See https://www.rp-photonics.com/v_number.html for more details.
 
-        Parameters
-        ----------
+    Parameters
+    ----------
 
-        wl : float
-                Wavelength (in microns)
-        a :  float
-                Radius of the fiber (in microns)
+    wl : float
+        Wavelength (in microns)
+    a :  float
+        Radius of the fiber (in microns)
     NA : float
-                Numerical aperture of the fiber
+        Numerical aperture of the fiber
     pola : int (1 or 2)
         Number of polarizations
 
-        Returns
-        -------
+    Returns
+    -------
 
-        N : integer
-                Estimation of the number of propagating modes
+    N : integer
+        Estimation of the number of propagating modes
+
     """
     k0 = 2.0 * np.pi / wl
     V = k0 * a * NA
@@ -118,7 +71,7 @@ def estimateNumModesGRIN(wl, a, NA, pola=1):
 
 def estimateNumModesSI(wl, a, NA, pola=1):
     """
-        Returns a rough estimation of the number of propagating modes of a step index fiber.
+    Returns a rough estimation of the number of propagating modes of a step index fiber.
     See https://www.rp-photonics.com/v_number.html for more details.
 
     Parameters
@@ -127,15 +80,16 @@ def estimateNumModesSI(wl, a, NA, pola=1):
                  Wavelength (in microns)
         a :  float
                  Radius of the fiber (in microns)
-    NA : float
-                 Numerical aperture of the fiber
-    pola : int (1 or 2)
-        Number of polarizations
+        NA : float
+                    Numerical aperture of the fiber
+        pola : int (1 or 2)
+            Number of polarizations
 
     Returns
     -------
         N : integer
-                Estimation of the number of propagating modes
+            Estimation of the number of propagating modes
+
     """
     k0 = 2.0 * np.pi / wl
     V = k0 * a * NA
@@ -146,6 +100,10 @@ def estimateNumModesSI(wl, a, NA, pola=1):
 
 
 class propagationModeSolver:
+    """
+    Class for solving the scalar wave equation in multimode fiber.
+    """
+
     def __init__(self):
         self.betas = []
         self.modes = None
@@ -161,6 +119,17 @@ class propagationModeSolver:
         logger.debug("Debug mode ON.")
 
     def setIndexProfile(self, indexProfile):
+        """
+        Set the index profile for the MMF.
+
+        Parameters
+        ----------
+            indexProfile : IndexProfile
+                The index profile object representing the fiber section geometry.
+
+        Returns:
+        None
+        """
         self.indexProfile = indexProfile
 
     def setWL(self, wl):
@@ -171,6 +140,7 @@ class propagationModeSolver:
         ----------
             wl : float
              Wavelength in microns.
+
         """
         self.wl = wl
 
@@ -182,39 +152,70 @@ class propagationModeSolver:
         ----------
             poisson : float
                   Poisson coefficient of the fiber material.
+
         """
         self.poisson = poisson
 
-    def solve(self, mode="default", curvature=None, storeData=True, **options):
+    def solve(
+        self,
+        solver: str = "default",
+        curvature: bool = None,
+        storeData: bool = True,
+        options: dict = {},
+    ):
         """
         Find the propagation constants and mode profile of a multimode fiber.
         For an arbitrary index profile, it finds the solution of the eigenvalue problem of the scalar wave equation in a discretized space [1].
 
         Parameters
         ----------
-        storeData: bool
-            Stores data in the propagationModeSolver object is set to True
-            defaults to True
-        curvature: float
-            Curvature of the fiber in meters
-            defaults to None
-        mode: string ('default','eig' or 'SI')
-            solver to be used.
-            'eig' solves the eigenvalue problem in the discretized space.
-            'SI' solves numerically the analytical dispersion relation and approximate modes to LP modes.
-            'default' use the best appropriate solver.
-            detauls to 'default'
-        **options: dict
-            specific options for the solver
+
+            storeData: bool
+                Stores data in the propagationModeSolver object is set to True
+                defaults to True
+
+            curvature: float
+                Curvature of the fiber in meters
+                defaults to None
+
+            solver: string ('default', 'radial', 'eig', 'SI', or 'WKB')
+                solver to be used.Type of solver.  Should be one of
+
+                    - 'radial' solves the 1D radial wave equation for axisymmetric profiles.
+                      It requires the profile to be defined by a radial function
+                      with the :meth:`initFromRadialFunction<pyMMF.IndexProfile.initFromRadialFunction>` method.
+
+                      :ref:`(more info  and additional options here) <pyMMF.solve-radial>`
+
+                    - 'eig' solves the eigenvalue problem in the discretized space.
+                      Slower and less precise, but allows for non-axisymmetric profiles and bend curvature.
+
+                      :ref:`(more info  and additional options here) <pyMMF.solve-eig>`
+
+                    - 'SI' solves numerically the analytical dispersion relation for step index fibers
+                      and approximate modes to LP modes.
+
+                      :ref:`(more info  and additional options here) <pyMMF.solve-SI>`
+
+                    - 'WKB' uses the WKB approximation for GRIN profiles.
+
+                      :ref:`(more info  and additional options here) <pyMMF.solve-WKB>`
+
+                    - 'default' tries to find the optimal solver for the given index profile.
+
+                Default is 'default' ;)
+
+            options: dict
+                A dictionary of solver options.
+                They are specific to the solver used,
+                read the documentation of the solver for more information.
 
         Returns
         -------
-        modes : Modes
-                    Modes object containing all the mode information.
 
-        See Also
-        --------
-            solve_eig()
+            modes : Modes
+                Modes object containing all the mode information.
+
 
         """
         assert self.indexProfile
@@ -233,10 +234,10 @@ class propagationModeSolver:
             logger.error("Wrong type of data for curvature.")
             raise (ValueError("Wrong type of data for curvature."))
 
-        if mode == "default":
-            mode = self.get_optimal_solver(curvature)
+        if solver == "default":
+            solver = self.indexProfile.getOptimalSolver(curvature)
 
-        if mode == "SI":
+        if solver == "SI":
             if not (self.indexProfile.type == "SI"):
                 logger.error("SI solver only available for step-index profiles")
                 raise AssertionError
@@ -246,7 +247,7 @@ class propagationModeSolver:
                 )
                 raise AssertionError
             modes = solve_SI(self.indexProfile, self.wl, **options)
-        elif mode == "radial":
+        elif solver == "radial":
             if self.indexProfile.radialFunc is None:
                 logger.error(
                     "radial solver only available for axisymmetric profiles defined by a radial function"
@@ -254,7 +255,7 @@ class propagationModeSolver:
                 raise AssertionError
             modes = solve_radial(self.indexProfile, self.wl, **options)
 
-        elif mode == "radial_legacy":
+        elif solver == "radial_legacy":
             if self.indexProfile.radialFunc is None:
                 logger.error(
                     "radial solver only available for axisymmetric profiles defined by a radial function (legacy)"
@@ -262,14 +263,14 @@ class propagationModeSolver:
                 raise AssertionError
             modes = solve_radial_test(self.indexProfile, self.wl, **options)
 
-        elif mode == "eig":
+        elif solver == "eig":
             modes = solve_eig(
                 indexProfile=self.indexProfile,
                 wl=self.wl,
                 curvature=curvature,
-                **options
+                **options,
             )
-        elif mode == "WKB":
+        elif solver == "WKB":
             if self.indexProfile.type != "GRIN":
                 logger.error("WKB solver only available for parabolic GRIN profiles")
                 raise AssertionError
@@ -287,32 +288,3 @@ class propagationModeSolver:
         modes.curvature = curvature
 
         return modes
-
-    def get_optimal_solver(self, curvature):
-        if self.indexProfile.type == "SI" and not curvature:
-            logger.info("Selectinf step-index solver")
-            return "SI"
-        elif self.indexProfile.radialFunc is not None:
-            logger.info("Selectinf axisymmetric radial solver")
-            return "radial"
-        else:
-            return "eig"
-
-    def saveData(self, outfile, saveArea=None):
-        assert self.modes
-        if not saveArea:
-            pass
-        betas = self.modes.betas
-        mode_profiles = self.modes.profiles[1]
-        index_profile = self.indexProfile.n
-        X = self.indexProfile.X
-        Y = self.indexProfile.Y
-        np.savez(
-            outfile,
-            betas=betas,
-            mode_profiles=mode_profiles,
-            index_profile=index_profile,
-            X=X,
-            Y=Y,
-        )
-        logger.info("Data saved to %s." % outfile)

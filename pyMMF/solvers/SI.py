@@ -16,9 +16,56 @@ logger = get_logger(__name__)
 from joblib import Parallel, delayed
 
 
-def solve_SI(indexProfile, wl, **options):
-    degenerate_mode = options.get("degenerate_mode", "sin")
-    n_jobs = options.get("n_jobs", -2)
+def solve_SI(indexProfile, wl, tol=1e-9, degenerate_mode="sin", n_jobs=-2):
+    """
+    Find the propagation constants of a step index fiber by numerically finding the solution of the
+    scalar dispersion relation
+    then associate the analytic formulation for the mode profiles [#]_ [#]_.
+    The `IndexProfile` must be
+    initialized with the :meth:`initStepIndex
+    <pyMMF.IndexProfile.initStepIndex>` method.
+
+
+
+
+    Options
+    -------
+
+        tol : float, optional
+            tolerance on the propagation constant.
+            Default is 1e-9
+
+        degenerate_mode : string ('exp', or 'sin'), optional
+            Choice for degenerate subspaces.
+
+            - 'exp' return the orbital angular momentum modes,
+              for an azimuthal index m>0,
+              the azimuthal function is exp(i*-m*theta) and exp(i*m*theta)
+
+            - 'sin' return the linear polarized modes,
+              they have real values of the field
+              with an azimuthal function of sin(m*theta) and cos(m*theta) for m>0.
+
+            Default is 'exp'.
+
+        n_jobs : int, optional
+            number of parallel jobs to run.
+            Default is -2, which means using all processors.
+
+    Notes
+    -----
+
+    .. [#]  K. Okamoto, "Fundamentals of optical waveguides"
+            Academic Press,
+            2006
+
+    .. [#]  S. M. Popoff, "Modes of step index multimode fibers"
+            http://wavefrontshaping.net/index.php/component/content/article/68-community/tutorials/multimode-fibers/118-modes-of-step-index-multimode-fibers
+
+    """
+
+    # degenerate_mode = options.get("degenerate_mode", "sin")
+    # n_jobs = options.get("n_jobs", -2)
     modes = findPropagationConstants(wl, indexProfile)
     modes = associateLPModeProfiles(
         modes, indexProfile, degenerate_mode=degenerate_mode, n_jobs=n_jobs
@@ -29,21 +76,27 @@ def solve_SI(indexProfile, wl, **options):
 def findPropagationConstants(wl, indexProfile, tol=1e-9):
     """
     Find the propagation constants of a step index fiber by numerically finding the solution of the
-    scalar dispersion relation [1]_ [2]_.
+    scalar dispersion relation [#]_ [#]_.
 
 
 
 
     Parameters
     ----------
-    wl : float
-                wavelength in microns.
 
-    indexProfile: IndexProfile object
-        object that contains data about the transverse index profile.
+        wl : float
+            wavelength in microns.
+
+        indexProfile: IndexProfile object
+            object that contains data about the transverse index profile.
+
+        tol : float, optional
+            tolerance on the propagation constant.
+            Default is 1e-9
 
     Returns
     -------
+
     modes : Modes object
         Object containing data about the modes.
         Note that it does not fill the transverse profiles, only the data about the propagation constants
@@ -51,16 +104,17 @@ def findPropagationConstants(wl, indexProfile, tol=1e-9):
 
     See Also
     --------
+
         associateLPModeProfiles()
 
     Notes
     -----
 
-    .. [1]  K. Okamoto, "Fundamentals of optical waveguides"
+    .. [#]  K. Okamoto, "Fundamentals of optical waveguides"
             Academic Press,
             2006
 
-    .. [2]  S. M. Popoff, "Modes of step index multimode fibers"
+    .. [#]  S. M. Popoff, "Modes of step index multimode fibers"
             http://wavefrontshaping.net/index.php/component/content/article/68-community/tutorials/multimode-fibers/118-modes-of-step-index-multimode-fibers
 
     """
@@ -86,10 +140,14 @@ def findPropagationConstants(wl, indexProfile, tol=1e-9):
     while len(roots):
 
         def root_func(u):
+            if v**2 < u**2:
+                return np.nan
             w = np.sqrt(v**2 - u**2)
+
             return jv(m, u) / (u * jv(m - 1, u)) + kn(m, w) / (w * kn(m - 1, w))
 
-        guesses = np.argwhere(np.abs(np.diff(np.sign(root_func(interval)))))
+        test_values = [root_func(u) for u in interval]
+        guesses = np.argwhere(np.abs(np.diff(np.sign(test_values))))
         froot = lambda x0: root(root_func, x0, tol=tol)
         sols = map(froot, interval[guesses])
         roots = [s.x for s in sols if s.success]

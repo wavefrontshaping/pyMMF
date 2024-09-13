@@ -1,2 +1,17 @@
-from .core import propagationModeSolver, estimateNumModesSI, estimateNumModesGRIN, TransmissionMatrix, randomGroupCoupling
-from .index_profile import IndexProfile 
+from .core import (
+    propagationModeSolver,
+    estimateNumModesSI,
+    estimateNumModesGRIN,
+)
+from .index_profile import IndexProfile
+from .modes import Modes
+from .TM import TransmissionMatrix
+
+__all__ = [
+    "propagationModeSolver",
+    "estimateNumModesSI",
+    "estimateNumModesGRIN",
+    "IndexProfile",
+    "Modes",
+    "TransmissionMatrix",
+]
