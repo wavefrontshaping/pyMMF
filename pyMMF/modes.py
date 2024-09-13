@@ -7,15 +7,28 @@ Created on Mon Feb  4 12:02:57 2019
 """
 
 import numpy as np
+import pickle
 from scipy.linalg import expm
 from scipy.ndimage import rotate as scipy_rotate
 from scipy.ndimage import shift as scipy_shift
 from .logger import get_logger, handleException
+import itertools
 
 logger = get_logger(__name__)
 
 
 class Modes:
+    """
+    Class to store the modes of a multimode fiber,
+    typically returned by the solver
+
+    See Also
+    --------
+    pyMMF.propagationModeSolver
+
+
+    """
+
     def __init__(self):
         self.betas = []
         self.propag = []
@@ -35,31 +48,24 @@ class Modes:
 
     def getModeMatrix(self, npola=1, shift=None, angle=None):
         """
-            Returns the matrix containing the mode profiles.
+        Returns the matrix containing the mode profiles.
         Note that while you can set two polarizations, the modes profiles are obtained under a scalar apporoximation.
 
-            Parameters
-            ----------
-
-            npola : int (1 or 2)
-                    number of polarizations considered. For npola = 2, the mode matrix will be a block diagonal matrix.
-
+        Parameters
+        ----------
+        npola : int
+            Number of polarizations considered. For npola = 2, the mode matrix will be a block diagonal matrix.
         shift : list or None
-            (slow) value of a coordinate offset, allows to return the mode matrix for a fiber with the center shifted with regard
-            to the center of the observation window.
-            defaults to None
+            (slow) Value of a coordinate offset, allows to return the mode matrix for a fiber with the center shifted with regard
+            to the center of the observation window. Defaults to None.
+        angle : float or None
+            (slow) Angle in radians, allows to rotate the mode matrix with an arbitrary angle.
+            Note that the rotation is applied BEFORE the transverse shift. Defaults to None.
 
-        angle: float or None
-            (slow) angle in radians, allows to rotate the mode matrix with an arbitrary angle.
-            Note that the rotation is applied BEFORE the transverse shift.
-            defaults to None
-
-
-            Returns
-            -------
-
-            M : numpy array
-            the matrix representing the basis of the propagating modes.
+        Returns
+        -------
+        M : numpy.ndarray
+            The matrix representing the basis of the propagating modes.
         """
         assert self.profiles
         if shift is not None:
@@ -74,9 +80,9 @@ class Modes:
             for ind, modeProfile in enumerate(self.profiles):
 
                 if shift is None and angle is None:
-                    M[
-                        pol * N : (pol + 1) * N, pol * self.number + ind
-                    ] = modeProfile  # .reshape(1,self._npoints**2)
+                    M[pol * N : (pol + 1) * N, pol * self.number + ind] = (
+                        modeProfile  # .reshape(1,self._npoints**2)
+                    )
                 else:
                     mode2D = modeProfile.reshape([self.indexProfile.npoints] * 2)
 
@@ -92,16 +98,88 @@ class Modes:
                             0, 1
                         ) * scipy_shift(input=mode2D.imag, shift=shift)
 
-                    M[
-                        pol * N : (pol + 1) * N, pol * self.number + ind
-                    ] = mode2D.flatten()
+                    M[pol * N : (pol + 1) * N, pol * self.number + ind] = (
+                        mode2D.flatten()
+                    )
 
         self.modeMatrix = M
 
         return M
 
-    def sort(self):
-        idx = np.flip(np.argsort(self.betas), axis=0)
+    def sort(self, fn=None):
+        """
+        Sorts the modes based on the provided function `fn`.
+        If none provided, sort by the values of `self.betas` in descending order.
+
+        Rearranges the elements of `self.betas` and other associated lists
+        (such as `self.u`, `self.w`, `self.m`, `self.l`, `self.profiles`, `self.modesList`, and `self.data`)
+        based on the sorted order of `self.betas` in descending order.
+        Data is sorted in place.
+
+        Parameters
+        ----------
+        fn : function or None, optional
+            The function used to sort the modes. Default is None.
+
+        Returns
+        -------
+        idx: list
+            The indices of the sorted modes, in case the user wants to keep track of the sorting order.
+
+        Examples
+        --------
+        >>> # sort the modes based on the imaginary part of the propagation constant
+        >>> modes.sort()
+
+        >>> # sort the modes by inscreasing order of m, and for the same m, by increasing order of l
+        >>> idx = modes.sort(lambda x: x.m + np.sign(x.m) * 1e-2 * x.l)
+
+        """
+
+        class mode:
+            m: int
+            l: int
+            beta: float
+            profile: np.array
+            index: int
+
+            def __init__(self, index, m, l, beta, profile):
+                self.m = m
+                self.l = l
+                self.beta = beta
+                self.profile = profile
+                self.index = index
+
+        class modes_iterable:
+            def __init__(self, modes):
+                self.modes = modes
+                self.idx = 0
+                self.M0 = modes.getModeMatrix()
+
+            def __iter__(self):
+                return self
+
+            def __next__(self):
+                if self.idx < self.modes.number:
+                    self.idx += 1
+                    return mode(
+                        self.idx - 1,
+                        self.modes.m[self.idx - 1],
+                        self.modes.l[self.idx - 1],
+                        self.modes.betas[self.idx - 1],
+                        self.M0[:, self.idx - 1],
+                    )
+
+                else:
+                    raise StopIteration
+
+        if fn is not None:
+            it = modes_iterable(self)
+
+            idx = [m.index for m in sorted(it, key=fn)]
+        else:
+            idx = np.flip(np.argsort(self.betas), axis=0)
+
         self.betas = [self.betas[i] for i in idx]
         if self.u:
             self.u = [self.u[i] for i in idx]
@@ -118,10 +196,32 @@ class Modes:
         if self.data:
             self.data = [self.data[i] for i in idx]
 
-    def getNearDegenerate(self, tol=1e-2, sort=False):
+        return idx
+
+    def getNearDegenerate(self, tol=1e-2):
         """
-        Find the groups of near degenerate modes with a given tolerence.
-        Optionnaly sort the modes (not implemented).
+        Find the groups of near degenerate modes
+        with a given tolerence `tol` given in term of propagation constant expressed in 1/micrometer unit.
+
+        Parameters
+        ----------
+        tol : float
+            Tolerance value for determining near-degeneracy.
+
+        Returns
+        -------
+        groups : List[List[int]]
+            List of groups of near-degenerate modes, each represented as a list of indices.
+
+        See Also
+        --------
+        getNearDegenerateMask
+
+        Examples
+        --------
+        >>> groups = getNearDegenerate(tol=1e-5)
+        >>> print(groups)
+        [[1], [2, 3], [4, 5, 6], [7, 8, 9, 10], [11, 12, 13, 14, 15]]
         """
         copy_betas = {i: b for i, b in enumerate(self.betas)}
         groups = []
@@ -140,6 +240,43 @@ class Modes:
 
         return groups
 
+    def getNearDegenerateMask(self, tol=1e-2):
+        """
+        Generates a mask for near-degenerate modes based on a given tolerance value
+        in term of propagation constant expressed in 1/micrometer unit.
+        It first identifies groups of near-degenerate modes using the `getNearDegenerate` method.
+        Then, it creates a square matrix of size `nmodes x nmodes`, where `nmodes` is the number of modes.
+        The elements of the matrix are initialized to zero.
+        For each group of near-degenerate modes, the corresponding submatrix in the mask is set to one.
+        The resulting mask is returned as a complex-valued ndarray.
+
+        Parameters
+        ----------
+        tol : float
+            Tolerance value for determining near-degeneracy.
+
+        Returns
+        -------
+        mask_near_degenerate : ndarray
+            Mask for near-degenerate modes.
+
+        See Also
+        --------
+        getNearDegenerate
+
+        Examples
+        --------
+        >>> mask = getNearDegenerateMask(tol=1e-5)
+        """
+        degenerate_groups = self.getNearDegenerate(tol=tol)
+        nmodes = self.number
+        mask_near_degenerate = np.zeros([nmodes, nmodes], dtype=complex)
+
+        for g in degenerate_groups:
+            for combination in itertools.product(g, g):
+                mask_near_degenerate[combination] = 1
+        return mask_near_degenerate
+
     def getEvolutionOperator(self, npola=1, curvature=None):
         """
         Returns the evolution operator B of the fiber.
@@ -150,37 +287,39 @@ class Modes:
 
         One can add the effect of curvature to a system solved for a straight fiber.
         It returns then the evolution operator in the basis of the straight fiber modes.
-        The calculation is different from directly solving the system for a bent fiber [1]_ [2]_.
+        The calculation is different from directly solving the system for a bent fiber [#]_ [#]_.
 
 
 
         Parameters
         ----------
-        npola : int (1 or 2)
-                        number of polarizations considered.
-            defaults to 1
-
-        curvature: float (optional)
-            curvature (in microns)
-            defaults to None
+        npola : int, optional
+            Number of polarizations. Default is 1.
+        curvature : float or None, optional
+            The curvature of the fiber. Default is None.
 
         Returns
         -------
-        B : numpy array
-            The propagation operator
+        B : numpy.ndarray
+            The propagation operator.
+
 
         See Also
         --------
-            getPropagationMatrix()
+        getPropagationMatrix
 
-        Notes
-        -----
+        References
+        ----------
 
-        .. [1]  M. Plöschner, T. Tyc and T. Čižmár, "Seeing through chaos in multimode fibres"
+        .. _PEP 484:
+           https://www.python.org/dev/peps/pep-0484/
+
+        .. [#]  M. Plöschner, T. Tyc and T. Čižmár, "Seeing through chaos in multimode fibres"
                 Nature Photonics, vol. 9,
                 pp. 529–535, 2015.
+                https://doi.org/10.1038/nphoton.2015.112
 
-        .. [2]  S. M. Popoff, "Numerical Estimation of Multimode Fiber Modes and Propagation Constants: Part 2, Bent Fibers"
+        .. [#]  S. M. Popoff, "Numerical Estimation of Multimode Fiber Modes and Propagation Constants: Part 2, Bent Fibers"
                 http://wavefrontshaping.net/index.php/component/content/article/68-community/tutorials/multimode-fibers/149-multimode-fiber-modes-part-2
 
         """
@@ -229,7 +368,21 @@ class Modes:
         return B
 
     def getCurvedModes(self, curvature, npola=1):
-        """ """
+        """
+        Calculates the curved modes of the fiber.
+
+        Parameters
+        ----------
+        curvature : float
+            The curvature of the fiber.
+        npola : int, optional
+            Number of polarizations. Default is 1.
+
+        Returns
+        -------
+        tuple
+            A tuple containing the eigenvalues (new_betas) and the transposed modes (new_modes).
+        """
 
         assert self.wl
         assert self.indexProfile
@@ -237,7 +390,7 @@ class Modes:
             assert self.curvature == None
         except:
             logger.error(
-                "Adding curvature to the propagation operator requires the system to be solved for a straight fiber!"
+                "Adding curvature to the propagation operator requires the system to be first solved for a straight fiber!"
             )
             return
         if self.modeMatrix is None:
@@ -273,37 +426,118 @@ class Modes:
 
         One can add the effect of curvature to a system solved for a straight fiber.
         It returns then the evolution operator in the basis of the straight fiber modes.
-        The calculation is different from directly solving the system for a bent fiber [1]_.
+        The calculation is different from directly solving the system for a bent fiber [#]_.
+
+        If **B** is the evolution operator of the fiber,
+        the transmission matrix (in the mode basis) **T** for a fiber length **l**
+        is computed using::
+        T = np.exp(1j * B * l)
 
         Parameters
         ----------
-
         distance : float
-                        size of the fiber segment (in microns)
-
-        npola : int (1 or 2)
-                        number of polarizations considered. For npola = 2, the mode matrix will be a block diagonal matrix.
-
+            Size of the fiber segment (in microns).
+        npola : int
+            Number of polarizations considered. For npola = 2, the mode matrix will be a block diagonal matrix.
         curvature : float
-            curvature of the fiber segment (in microns)
+            Curvature of the fiber segment (in microns).
 
         Returns
         -------
-
-                T : numpy array
-                        The transmission matrix of the fiber.
+        T : numpy.ndarray
+            The transmission matrix of the fiber.
 
         See Also
         --------
-            getEvolutionOperator()
+        getEvolutionOperator
 
         Notes
         -----
+        .. [#]  M. Plöschner, T. Tyc and T. Čižmár, "Seeing through chaos in multimode fibres"
+            Nature Photonics, vol. 9, pp. 529–535, 2015.
 
-        .. [1]  M. Plöschner, T. Tyc and T. Čižmár, "Seeing through chaos in multimode fibres"
-                Nature Photonics, vol. 9,
-                pp. 529–535, 2015.
         """
         B = self.getEvolutionOperator(npola, curvature)
 
-        return expm(complex(0, 1) * B * distance)
+        return expm(1j * B * distance)
+
+    def save(self, filename: str, save_indes_profile=False):
+        """
+        Save the object to a file using pickle.
+
+        Parameters
+        ----------
+        filename : str
+            The name of the file to save the object to.
+        save_indes_profile : bool, optional
+            If True, the index profile will be saved. Default is False.
+
+        Returns
+        -------
+        None
+
+        Examples
+        --------
+        >>> modes = Modes()
+        >>> ...
+        >>> modes.save("modes.pkl")
+        """
+        dict_to_save = self.__dict__.copy()
+        if not save_indes_profile:
+            dict_to_save.pop("indexProfile")
+        else:
+            dict_to_save["indexProfile"] = self.indexProfile.to_dict()
+        # dict_to_save.pop("indexProfile")
+        with open(filename, "wb") as f:
+            pickle.dump(dict_to_save, f)
+
+    def load(self, filename: str):
+        """
+        Load the object from a file using pickle.
+
+        Parameters
+        ----------
+        filename : str
+            The name of the file to load the object from.
+
+        Returns
+        -------
+        None
+
+        Examples
+        --------
+        >>> modes = Modes()
+        >>> modes.load("modes.pkl")
+        """
+        with open(filename, "rb") as f:
+            data = pickle.load(f)
+
+        if data.get("indexProfile"):
+            from .index_profile import IndexProfile
+
+            self.indexProfile = IndexProfile(npoints=0, areaSize=0)
+            self.indexProfile.load(data["indexProfile"])
+        self.__dict__.update(data)
+
+    @classmethod
+    def fromFile(cls, filename: str):
+        """
+        Load the object from a file using pickle.
+
+        Parameters
+        ----------
+        filename : str
+            The name of the file to load the object from.
+
+        Returns
+        -------
+        Modes
+            The object loaded from the file.
+
+        Examples
+        --------
+        >>> modes = Modes.fromFile("modes.pkl")
+        """
+        obj = cls()
+        obj.load(filename)
+        return obj

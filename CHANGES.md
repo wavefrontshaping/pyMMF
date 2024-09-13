@@ -1,5 +1,22 @@
 # Release notes
 
+## 0.7
+
+### New features 
+
+- Add documentation
+- Add unit tests 
+- Add `save` and `load` methods to `Mode` classe
+- Add `plot`, `save` and `load` methods to `IndexProfile`  classe
+- Add `beta_min` option for radial solver to return non-propagating or missing modes
+  
+
+
+### Changes
+- `propagationModeSolver.solve` now take solver specific options as a `options` dictionnary.
+**Warning**: this breaks code retrocompability.
+
+
 ## 0.6
 
 ### Bug correction
@@ -34,3 +51,7 @@ plt.imshow(np.real(R*TH))
 - Semi-analytical solver performance improvements (Pavel Gostev)
 - Improved documentation
 - Add Jupyter notebook examples
+
+## 0.1 
+
+First public version

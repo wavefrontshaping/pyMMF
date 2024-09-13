@@ -7,6 +7,7 @@ Riccati's equations.
 
 import numpy as np
 from scipy.interpolate import interp1d
+from functools import partial
 from numba import jit, double
 import time
 from scipy.optimize import bisect
@@ -23,8 +24,13 @@ MIN_RADIUS_BC_DEFAULT = 0.5
 CHANGE_BC_RADIUS_STEP_DEFAULT = 0.9
 N_BETA_COARSE_DEFAULT = int(1e3)
 
+
 # choice for degenerate subspaces
-EXP_PHASE_FUNCS = [lambda x: np.exp(1j * x), lambda x: np.exp(-1j * x)]
+def _expi(x, s=1):
+    return np.exp(s * 1j * x)
+
+
+EXP_PHASE_FUNCS = [partial(_expi, s=1), partial(_expi, s=-1)]
 SIN_PHASE_FUNCS = [np.sin, np.cos]
 
 
@@ -107,12 +113,12 @@ def _get_field_fast(m, dh, r, nr, beta, k0, radius):
 def get_field_fast(m, dh, r, nr, beta, k0, radius):
     """
     Get the field calulcated using the recursive scheme for the quadratic Ricatti
-    equation as [1].
+    equation as [#]_.
 
     Be careful that numba does not allow float128, which limits the precision
     and can lead to stagnation of the recursive iterations.
 
-    .. [1] Lakshman S. Tamil, S. S. Mitra, R. Dutta, and J. M. T. Pereira,
+    .. [#] Lakshman S. Tamil, S. S. Mitra, R. Dutta, and J. M. T. Pereira,
        "Finite difference solution for graded-index cylindrical dielectric waveguides:
        a scalar wave approximation" Applied Optics, vol. 30,
        pp. 1113-1116, 1991.
@@ -232,7 +238,7 @@ def solve_radial_legacy(indexProfile, wl, **options):
                 n_search = nr[r <= r_max]
 
                 try:
-                    #'Searching for beta value that satisfies the zero condition at r={r_max/radius:.3f}a'
+                    # 'Searching for beta value that satisfies the zero condition at r={r_max/radius:.3f}a'
                     def func_fast(beta):
                         f = get_field_fast(m, dh, r_search, n_search, beta, k0, radius)
                         return f[-1] / np.max(np.abs(f))
