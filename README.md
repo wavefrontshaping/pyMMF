@@ -186,5 +186,5 @@ plt.imshow(np.imag(modes.profiles[m]).reshape([npoints]*2))
 
 ### Other examples
 
-Other examples are provided as notebooks in the [docs/examples](docs/examples) folder.
+Other examples are provided as notebooks in the [docs/examples](docs/examples/) folder.
 
