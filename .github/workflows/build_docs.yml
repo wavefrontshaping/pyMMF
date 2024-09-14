@@ -29,7 +29,7 @@ jobs:
           make help
           pandoc --version
           make html
-          ls ./docs
+          ls ./_build/html
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
