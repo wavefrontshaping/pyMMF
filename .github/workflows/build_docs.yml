@@ -3,7 +3,7 @@ name: Build and Deploy Sphinx Docs on GH Pages
 on:
   push:
     branches:
-      - main # or your default branch name
+      - master
 
 jobs:
   build-and-deploy:
