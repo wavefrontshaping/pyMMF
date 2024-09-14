@@ -25,6 +25,7 @@ jobs:
         run: |
           cd docs
           ls -la
+          make help
           make html
 
       - name: Deploy to GitHub Pages
