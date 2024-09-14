@@ -1,5 +1,7 @@
 # pyMMF
 
+[![documentation](https://github.com/wavefrontshaping/pyMMF/actions/workflows/build_docs.yml/badge.svg)](https://github.com/wavefrontshaping/pyMMF/actions/workflows/build_docs.yml)
+
 Simple module to find numerically the propagation modes and their corresponding propagation constants
 of multimode fibers of arbitrary index profiles.
 
