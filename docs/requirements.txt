@@ -1,14 +1,13 @@
 docutils==0.20.1
 numpydoc==1.8.0
-recommonmark==0.7.1
-scipy==1.9.1
+recommonmark
+scipy
 Sphinx==8.0.2
 sphinx_material==0.0.36
 sphinx_pyproject==0.3.0
 sphinx-copybutton
 sphinx-togglebutton
 pydata-sphinx-theme
-recommonmark
 nbsphinx
 myst-parser
 joblib
