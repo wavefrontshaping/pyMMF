@@ -27,6 +27,10 @@ Download the file and execute the following command.
 python setup.py install
 ```
 
+## Documentation
+
+Read the full documentation [here](https://wavefrontshaping.github.io/pyMMF/)
+
 ## Contributions
 
 This code is written and maintained by S. M. Popoff
@@ -86,7 +90,7 @@ This approximation leads to inaccurate results for modes close to the cutoff,
 which can be a significant proportion of the modes for typical fibers.
 It is provided only for comparison.
 
-## Examples
+## Simple examples
 
 ### Example 1: Finding the modes of a graded index fiber (GRIN)
 
