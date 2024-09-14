@@ -13,5 +13,4 @@ myst-parser
 joblib
 numba
 matplotlib
-pandoc
 

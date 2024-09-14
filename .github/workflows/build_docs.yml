@@ -20,12 +20,14 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r docs/requirements.txt
+          sudo apt-get install pandoc
 
       - name: Build HTML
         run: |
           cd docs
           ls -la
           make help
+          pandoc --version
           make html
 
       - name: Deploy to GitHub Pages
