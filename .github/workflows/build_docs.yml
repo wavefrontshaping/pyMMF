@@ -1,4 +1,4 @@
-name: Build and Deploy Sphinx Docs
+name: Build and Deploy Sphinx Docs on GH Pages
 
 on:
   push:
