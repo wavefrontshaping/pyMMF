@@ -1,6 +1,0 @@
-﻿pyMMF.Modes.getCurvedModes
-==========================
-
-.. currentmodule:: pyMMF
-
-.. automethod:: Modes.getCurvedModes

@@ -1,6 +1,0 @@
-﻿pyMMF.Modes.getPropagationMatrix
-================================
-
-.. currentmodule:: pyMMF
-
-.. automethod:: Modes.getPropagationMatrix

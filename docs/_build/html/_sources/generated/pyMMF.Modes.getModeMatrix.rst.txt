@@ -1,6 +1,0 @@
-﻿pyMMF.Modes.getModeMatrix
-=========================
-
-.. currentmodule:: pyMMF
-
-.. automethod:: Modes.getModeMatrix

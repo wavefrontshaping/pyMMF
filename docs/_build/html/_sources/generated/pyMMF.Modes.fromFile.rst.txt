@@ -1,6 +1,0 @@
-﻿pyMMF.Modes.fromFile
-====================
-
-.. currentmodule:: pyMMF
-
-.. automethod:: Modes.fromFile
