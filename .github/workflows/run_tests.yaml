@@ -1,6 +1,5 @@
-name: Tests
+name: Python Tests
 
-# Trigger the workflow on pushes and pull requests to the 'master' branch
 on:
   push:
     branches:
@@ -9,21 +8,17 @@ on:
     branches:
       - master
 
-# Define the jobs
 jobs:
   test:
-    # Run the job on the latest Ubuntu environment
     runs-on: ubuntu-latest
 
-    # Set up Python and install dependencies
     steps:
-      # Check out the code from the repository
+      # Use the latest version of actions
       - name: Check out code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      # Set up Python environment
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: "3.x" # Specify the version you want to use (e.g., 3.8, 3.9)
 
@@ -37,12 +32,12 @@ jobs:
       - name: Run pytest
         run: |
           pip install pytest  # Install pytest if not already in requirements
-          pytest ./test  # Specify the folder where the tests are located
+          pytest ./test --junitxml=test-results.xml  # Generate test results as XML
 
-      # Optionally, upload test results if you want to see them in the Actions tab
+      # Upload test results
       - name: Upload test results
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: test-results
-          path: ./test-results.xml
+          path: test-results.xml # Upload the test results XML file
