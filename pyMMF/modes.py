@@ -541,3 +541,43 @@ class Modes:
         obj = cls()
         obj.load(filename)
         return obj
+
+    def __getitem__(self, mask):
+        """
+        Allows selection of a subset of modes using a boolean mask.
+
+        Parameters
+        ----------
+        mask : array-like
+            A boolean array of size `self.number` indicating which modes to select.
+
+        Returns
+        -------
+        Modes
+            A new Modes instance containing only the selected modes.
+        """
+        if len(mask) != self.number:
+            raise ValueError("Mask size must match the number of modes.")
+
+        # Create a new Modes instance
+        new_modes = Modes()
+
+        # Copy the selected elements to the new instance
+        new_modes.betas = [b for b, m in zip(self.betas, mask) if m]
+        new_modes.u = [u for u, m in zip(self.u, mask) if m]
+        new_modes.w = [w for w, m in zip(self.w, mask) if m]
+        new_modes.m = [m for m, msk in zip(self.m, mask) if msk]
+        new_modes.l = [l for l, msk in zip(self.l, mask) if msk]
+        new_modes.profiles = [p for p, m in zip(self.profiles, mask) if m]
+        new_modes.modesList = [ml for ml, m in zip(self.modesList, mask) if m]
+        new_modes.data = [d for d, m in zip(self.data, mask) if m]
+
+        # Copy other attributes
+        new_modes.number = sum(mask)
+        new_modes.indexProfile = self.indexProfile
+        new_modes.modeMatrix = self.modeMatrix
+        new_modes.wl = self.wl
+        new_modes.curvature = self.curvature
+        new_modes.poisson = self.poisson
+
+        return new_modes
