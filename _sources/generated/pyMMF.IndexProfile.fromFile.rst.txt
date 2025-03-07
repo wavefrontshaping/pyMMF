@@ -1,0 +1,6 @@
+﻿pyMMF.IndexProfile.fromFile
+===========================
+
+.. currentmodule:: pyMMF
+
+.. automethod:: IndexProfile.fromFile

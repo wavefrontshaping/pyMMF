@@ -1,6 +1,0 @@
-﻿pyMMF.Modes.save
-================
-
-.. currentmodule:: pyMMF
-
-.. automethod:: Modes.save

@@ -1,0 +1,1460 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>pyMMF vs FDTD simulations (Comsol) for GRIN &#8212; pyMMF v0.7</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=407ae711" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="../_static/_static/scipy-mathjax/MathJax.js?config=scipy-mathjax"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'examples/benchmark_GRIN_comsol';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="API Reference" href="../api.html" />
+    <link rel="prev" title="Square fiber using the 2D Eigen-problem solver" href="Square_fiber.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.7" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">pyMMF v0.7</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../readme_link.html">
+    pyMMF
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../examples.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../changes_link.html">
+    Release notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/wavefrontshaping/pymmf" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/WFShaping" title="X" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-twitter fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">X</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://wavefrontshaping.net" title="wavefrontshaping.net" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-link fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">wavefrontshaping.net</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../readme_link.html">
+    pyMMF
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../examples.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../changes_link.html">
+    Release notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/wavefrontshaping/pymmf" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/WFShaping" title="X" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-twitter fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">X</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://wavefrontshaping.net" title="wavefrontshaping.net" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-link fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">wavefrontshaping.net</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Example 1:  Solving the modes of a GRIN index fiber using the `radial` solver.</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="RadialSolverGRIN.html">Graded index fiber using the radial solver</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Example 2: Solving the modes of a step index fiber and comparing the results of the `radial` solver to the semi-analytical (`SI` solver) solution of the wave equation.</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="Benchmark_SI.html">Straight step index fibers</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Example 3: Solving the modes of a square-core fiber using the `eig2D` solver.</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="Square_fiber.html">Square fiber using the 2D Eigen-problem solver</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Example 4: Comparing the results from the different solvers with the results from FDTD simulations for a graded index fiber.</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">pyMMF vs FDTD simulations (Comsol) for GRIN</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../examples.html" class="nav-link">Examples</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">pyMMF vs FDTD simulations (Comsol) for GRIN</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="pyMMF-vs-FDTD-simulations-(Comsol)-for-GRIN">
+<h1>pyMMF vs FDTD simulations (Comsol) for GRIN<a class="headerlink" href="#pyMMF-vs-FDTD-simulations-(Comsol)-for-GRIN" title="Link to this heading">#</a></h1>
+<p>For a parabolic graded index fiber, we compare here the results of pyMMF with the solvers <code class="docutils literal notranslate"><span class="pre">radial</span></code>, <code class="docutils literal notranslate"><span class="pre">eig</span></code>, and <code class="docutils literal notranslate"><span class="pre">WKB</span></code> with FDTD simulations using COMSOL.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import matplotlib.pyplot as plt
+import numpy as np
+
+import sys
+import pyMMF
+
+
+SMALL_SIZE = 14
+MEDIUM_SIZE = 16
+BIGGER_SIZE = 18
+
+plt.rcParams.update({&#39;font.size&#39;: MEDIUM_SIZE})
+plt.rc(&#39;font&#39;, size=SMALL_SIZE)          # controls default text sizes
+plt.rc(&#39;axes&#39;, titlesize=MEDIUM_SIZE)     # fontsize of the axes title
+plt.rc(&#39;axes&#39;, labelsize=MEDIUM_SIZE)    # fontsize of the x and y labels
+plt.rc(&#39;xtick&#39;, labelsize=SMALL_SIZE)    # fontsize of the tick labels
+plt.rc(&#39;ytick&#39;, labelsize=SMALL_SIZE)    # fontsize of the tick labels
+plt.rc(&#39;legend&#39;, fontsize=SMALL_SIZE)    # legend fontsize
+plt.rc(&#39;figure&#39;, titlesize=BIGGER_SIZE)  # fontsize of the figure title
+</pre></div>
+</div>
+</div>
+<section id="1.-Parameters-of-the-fiber">
+<h2>1. Parameters of the fiber<a class="headerlink" href="#1.-Parameters-of-the-fiber" title="Link to this heading">#</a></h2>
+<p>Comsol simulation were done using those same parameters</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>NA = 0.2
+radius = 25 # in microns
+areaSize = 2.4*radius # calculate the field on an area larger than the diameter of the fiber
+npoints = 2**7 # resolution of the window
+n1 = 1.45
+wl = 1.55 # wavelength in microns
+curvature = None
+k0 = 2.*np.pi/wl
+
+r_max = 3.2*radius
+npoints_search = 2**8
+dh = 2*radius/npoints_search
+</pre></div>
+</div>
+</div>
+</section>
+<section id="2.-Compute-transverse-modes-using-pyMMF's-axisymmetric-solver">
+<h2>2. Compute transverse modes using pyMMF’s axisymmetric solver<a class="headerlink" href="#2.-Compute-transverse-modes-using-pyMMF's-axisymmetric-solver" title="Link to this heading">#</a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>profile = pyMMF.IndexProfile(npoints = npoints, areaSize = areaSize)
+profile.initParabolicGRIN(n1=n1,a=radius,NA=NA)
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[31]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>plt.figure()
+plt.imshow(profile.n.reshape([npoints]*2))
+plt.title(r&#39;Index porfile&#39;)
+plt.axis(&#39;off&#39;)
+plt.colorbar()
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[31]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;matplotlib.colorbar.Colorbar at 0x788a975ac230&gt;
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_benchmark_GRIN_comsol_6_1.png" src="../_images/examples_benchmark_GRIN_comsol_6_1.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>solver = pyMMF.propagationModeSolver()
+solver.setIndexProfile(profile)
+solver.setWL(wl)
+
+solver_options = {
+    &#39;r_max&#39;: r_max,     # max radius to calculate (and first try for large radial boundary condition)
+    &#39;dh&#39; : dh,          # radial resolution during the computation
+    &#39;N_beta_coarse&#39; : 1_000,    # number of steps of the initial coarse scan
+}
+
+modes = solver.solve(
+        solver=&#39;radial&#39;,
+        curvature = None,
+        options = solver_options
+        )
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+2024-09-13 16:11:30,654 - pyMMF.core [DEBUG  ]  Debug mode ON.
+2024-09-13 16:11:30,655 - pyMMF.solv [INFO   ]  Searching for modes with beta_min=5.821637357564584, beta_max=5.877818513168
+2024-09-13 16:11:30,666 - pyMMF.solv [INFO   ]  Found 5 radial mode(s) for m=0
+2024-09-13 16:11:30,666 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 1
+2024-09-13 16:11:30,668 - pyMMF.solv [ERROR  ]  Field limit 1.0 at the founded beta=0.05066217542815342 is greater than field_limit_tol=0.001
+2024-09-13 16:11:30,669 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2024-09-13 16:11:30,669 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.88a
+2024-09-13 16:11:30,670 - pyMMF.solv [ERROR  ]  Field limit 1.0 at the founded beta=0.05066217542815342 is greater than field_limit_tol=0.001
+2024-09-13 16:11:30,671 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2024-09-13 16:11:30,671 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.59a
+2024-09-13 16:11:30,672 - pyMMF.solv [ERROR  ]  Field limit 1.0 at the founded beta=0.05066217542815342 is greater than field_limit_tol=0.001
+2024-09-13 16:11:30,672 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2024-09-13 16:11:30,672 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.33a
+2024-09-13 16:11:30,673 - pyMMF.solv [ERROR  ]  Field limit 1.0 at the founded beta=0.05066217542815342 is greater than field_limit_tol=0.001
+2024-09-13 16:11:30,674 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2024-09-13 16:11:30,675 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.10a
+2024-09-13 16:11:30,675 - pyMMF.solv [ERROR  ]  Field limit 0.012755129839120789 at the founded beta=0.050662175428153364 is greater than field_limit_tol=0.001
+2024-09-13 16:11:30,676 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2024-09-13 16:11:30,676 - pyMMF.solv [WARNING]  Retrying by changing r_max to 1.89a
+2024-09-13 16:11:30,678 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 2
+2024-09-13 16:11:30,679 - pyMMF.solv [ERROR  ]  Field limit -1.0 at the founded beta=0.03961031292887776 is greater than field_limit_tol=0.001
+2024-09-13 16:11:30,680 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2024-09-13 16:11:30,680 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.88a
+2024-09-13 16:11:30,681 - pyMMF.solv [ERROR  ]  Field limit -1.0 at the founded beta=0.03961031292887776 is greater than field_limit_tol=0.001
+2024-09-13 16:11:30,681 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2024-09-13 16:11:30,682 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.59a
+2024-09-13 16:11:30,683 - pyMMF.solv [ERROR  ]  Field limit 0.056019302460125854 at the founded beta=0.03961031292887755 is greater than field_limit_tol=0.001
+2024-09-13 16:11:30,683 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2024-09-13 16:11:30,684 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.33a
+2024-09-13 16:11:30,686 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 3
+2024-09-13 16:11:30,688 - pyMMF.solv [ERROR  ]  Field limit 1.0 at the founded beta=0.028541272457537663 is greater than field_limit_tol=0.001
+2024-09-13 16:11:30,688 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2024-09-13 16:11:30,688 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.88a
+2024-09-13 16:11:30,690 - pyMMF.solv [ERROR  ]  Field limit -0.05253356524115814 at the founded beta=0.028541272457537507 is greater than field_limit_tol=0.001
+2024-09-13 16:11:30,691 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2024-09-13 16:11:30,691 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.59a
+2024-09-13 16:11:30,693 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 4
+2024-09-13 16:11:30,696 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 5
+2024-09-13 16:11:30,709 - pyMMF.solv [INFO   ]  Found 5 radial mode(s) for m=1
+2024-09-13 16:11:30,710 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 1
+2024-09-13 16:11:30,711 - pyMMF.solv [ERROR  ]  Field limit -1.0 at the founded beta=0.04513477880645375 is greater than field_limit_tol=0.001
+2024-09-13 16:11:30,711 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2024-09-13 16:11:30,712 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.88a
+2024-09-13 16:11:30,713 - pyMMF.solv [ERROR  ]  Field limit -1.0 at the founded beta=0.04513477880645375 is greater than field_limit_tol=0.001
+2024-09-13 16:11:30,713 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2024-09-13 16:11:30,714 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.59a
+2024-09-13 16:11:30,715 - pyMMF.solv [ERROR  ]  Field limit -1.0 at the founded beta=0.04513477880645375 is greater than field_limit_tol=0.001
+2024-09-13 16:11:30,716 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2024-09-13 16:11:30,716 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.33a
+2024-09-13 16:11:30,717 - pyMMF.solv [ERROR  ]  Field limit 0.14218744703877784 at the founded beta=0.045134778806453925 is greater than field_limit_tol=0.001
+2024-09-13 16:11:30,717 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2024-09-13 16:11:30,717 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.10a
+2024-09-13 16:11:30,718 - pyMMF.solv [ERROR  ]  Field limit 0.0021314917971200368 at the founded beta=0.045134778806453925 is greater than field_limit_tol=0.001
+2024-09-13 16:11:30,719 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2024-09-13 16:11:30,719 - pyMMF.solv [WARNING]  Retrying by changing r_max to 1.89a
+2024-09-13 16:11:30,722 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 2
+2024-09-13 16:11:30,723 - pyMMF.solv [ERROR  ]  Field limit 1.0 at the founded beta=0.034070167189183195 is greater than field_limit_tol=0.001
+2024-09-13 16:11:30,723 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2024-09-13 16:11:30,724 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.88a
+2024-09-13 16:11:30,725 - pyMMF.solv [ERROR  ]  Field limit 1.0 at the founded beta=0.034070167189183195 is greater than field_limit_tol=0.001
+2024-09-13 16:11:30,726 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2024-09-13 16:11:30,727 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.59a
+2024-09-13 16:11:30,728 - pyMMF.solv [ERROR  ]  Field limit 0.04819796399196991 at the founded beta=0.03407016718918313 is greater than field_limit_tol=0.001
+2024-09-13 16:11:30,729 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2024-09-13 16:11:30,730 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.33a
+2024-09-13 16:11:30,735 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 3
+2024-09-13 16:11:30,736 - pyMMF.solv [ERROR  ]  Field limit -0.19714650798060052 at the founded beta=0.02298945455284462 is greater than field_limit_tol=0.001
+2024-09-13 16:11:30,737 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2024-09-13 16:11:30,738 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.88a
+2024-09-13 16:11:30,739 - pyMMF.solv [ERROR  ]  Field limit -0.003288172064295251 at the founded beta=0.02298945455284459 is greater than field_limit_tol=0.001
+2024-09-13 16:11:30,739 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2024-09-13 16:11:30,739 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.59a
+2024-09-13 16:11:30,743 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 4
+2024-09-13 16:11:30,745 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 5
+2024-09-13 16:11:30,757 - pyMMF.solv [INFO   ]  Found 4 radial mode(s) for m=2
+2024-09-13 16:11:30,758 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 1
+2024-09-13 16:11:30,763 - pyMMF.solv [ERROR  ]  Field limit -1.0 at the founded beta=0.039606896670381544 is greater than field_limit_tol=0.001
+2024-09-13 16:11:30,763 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2024-09-13 16:11:30,764 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.88a
+2024-09-13 16:11:30,766 - pyMMF.solv [ERROR  ]  Field limit -1.0 at the founded beta=0.039606896670381544 is greater than field_limit_tol=0.001
+2024-09-13 16:11:30,766 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2024-09-13 16:11:30,767 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.59a
+2024-09-13 16:11:30,768 - pyMMF.solv [ERROR  ]  Field limit -0.1675003460169947 at the founded beta=0.039606896670381475 is greater than field_limit_tol=0.001
+2024-09-13 16:11:30,768 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2024-09-13 16:11:30,768 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.33a
+2024-09-13 16:11:30,769 - pyMMF.solv [ERROR  ]  Field limit -0.0021978546918678364 at the founded beta=0.039606896670381524 is greater than field_limit_tol=0.001
+2024-09-13 16:11:30,770 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2024-09-13 16:11:30,771 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.10a
+2024-09-13 16:11:30,773 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 2
+2024-09-13 16:11:30,774 - pyMMF.solv [ERROR  ]  Field limit 1.0 at the founded beta=0.02853435051797808 is greater than field_limit_tol=0.001
+2024-09-13 16:11:30,774 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2024-09-13 16:11:30,775 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.88a
+2024-09-13 16:11:30,776 - pyMMF.solv [ERROR  ]  Field limit -0.12817439525521637 at the founded beta=0.028534350517978212 is greater than field_limit_tol=0.001
+2024-09-13 16:11:30,776 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2024-09-13 16:11:30,776 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.59a
+2024-09-13 16:11:30,777 - pyMMF.solv [ERROR  ]  Field limit -0.0020810532272158865 at the founded beta=0.028534350517978292 is greater than field_limit_tol=0.001
+2024-09-13 16:11:30,777 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2024-09-13 16:11:30,778 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.33a
+2024-09-13 16:11:30,781 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 3
+2024-09-13 16:11:30,782 - pyMMF.solv [ERROR  ]  Field limit -0.005271842278740631 at the founded beta=0.017450798239859608 is greater than field_limit_tol=0.001
+2024-09-13 16:11:30,782 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2024-09-13 16:11:30,783 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.88a
+2024-09-13 16:11:30,785 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 4
+2024-09-13 16:11:30,796 - pyMMF.solv [INFO   ]  Found 4 radial mode(s) for m=3
+2024-09-13 16:11:30,797 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 1
+2024-09-13 16:11:30,798 - pyMMF.solv [ERROR  ]  Field limit 1.0 at the founded beta=0.034071439795895594 is greater than field_limit_tol=0.001
+2024-09-13 16:11:30,798 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2024-09-13 16:11:30,799 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.88a
+2024-09-13 16:11:30,799 - pyMMF.solv [ERROR  ]  Field limit 1.0 at the founded beta=0.034071439795895594 is greater than field_limit_tol=0.001
+2024-09-13 16:11:30,800 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2024-09-13 16:11:30,800 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.59a
+2024-09-13 16:11:30,801 - pyMMF.solv [ERROR  ]  Field limit -0.06289455472788127 at the founded beta=0.03407143979589552 is greater than field_limit_tol=0.001
+2024-09-13 16:11:30,801 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2024-09-13 16:11:30,801 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.33a
+2024-09-13 16:11:30,803 - pyMMF.solv [ERROR  ]  Field limit -0.0011262124056772855 at the founded beta=0.034071439795895476 is greater than field_limit_tol=0.001
+2024-09-13 16:11:30,803 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2024-09-13 16:11:30,803 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.10a
+2024-09-13 16:11:30,807 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 2
+2024-09-13 16:11:30,809 - pyMMF.solv [ERROR  ]  Field limit 0.5055215288595848 at the founded beta=0.02298910620795198 is greater than field_limit_tol=0.001
+2024-09-13 16:11:30,809 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2024-09-13 16:11:30,810 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.88a
+2024-09-13 16:11:30,811 - pyMMF.solv [ERROR  ]  Field limit 0.00833954404674791 at the founded beta=0.022989106207951988 is greater than field_limit_tol=0.001
+2024-09-13 16:11:30,812 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2024-09-13 16:11:30,812 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.59a
+2024-09-13 16:11:30,815 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 3
+2024-09-13 16:11:30,818 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 4
+2024-09-13 16:11:30,834 - pyMMF.solv [INFO   ]  Found 3 radial mode(s) for m=4
+2024-09-13 16:11:30,835 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 1
+2024-09-13 16:11:30,836 - pyMMF.solv [ERROR  ]  Field limit -1.0 at the founded beta=0.028530789290099768 is greater than field_limit_tol=0.001
+2024-09-13 16:11:30,836 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2024-09-13 16:11:30,836 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.88a
+2024-09-13 16:11:30,837 - pyMMF.solv [ERROR  ]  Field limit 0.3411508905024992 at the founded beta=0.028530789290099973 is greater than field_limit_tol=0.001
+2024-09-13 16:11:30,837 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2024-09-13 16:11:30,837 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.59a
+2024-09-13 16:11:30,838 - pyMMF.solv [ERROR  ]  Field limit 0.005449900686374114 at the founded beta=0.028530789290099997 is greater than field_limit_tol=0.001
+2024-09-13 16:11:30,838 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2024-09-13 16:11:30,839 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.33a
+2024-09-13 16:11:30,841 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 2
+2024-09-13 16:11:30,842 - pyMMF.solv [ERROR  ]  Field limit 0.003117664564555346 at the founded beta=0.01744070049566171 is greater than field_limit_tol=0.001
+2024-09-13 16:11:30,842 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2024-09-13 16:11:30,842 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.88a
+2024-09-13 16:11:30,845 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 3
+2024-09-13 16:11:30,857 - pyMMF.solv [INFO   ]  Found 3 radial mode(s) for m=5
+2024-09-13 16:11:30,857 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 1
+2024-09-13 16:11:30,859 - pyMMF.solv [ERROR  ]  Field limit 0.8563321063878859 at the founded beta=0.022985043200470234 is greater than field_limit_tol=0.001
+2024-09-13 16:11:30,859 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2024-09-13 16:11:30,860 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.88a
+2024-09-13 16:11:30,861 - pyMMF.solv [ERROR  ]  Field limit 0.013825790229949975 at the founded beta=0.02298504320047025 is greater than field_limit_tol=0.001
+2024-09-13 16:11:30,862 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2024-09-13 16:11:30,862 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.59a
+2024-09-13 16:11:30,865 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 2
+2024-09-13 16:11:30,867 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 3
+2024-09-13 16:11:30,890 - pyMMF.solv [INFO   ]  Found 2 radial mode(s) for m=6
+2024-09-13 16:11:30,891 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 1
+2024-09-13 16:11:30,894 - pyMMF.solv [ERROR  ]  Field limit -0.02120303092848433 at the founded beta=0.017434568053403994 is greater than field_limit_tol=0.001
+2024-09-13 16:11:30,896 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2024-09-13 16:11:30,896 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.88a
+2024-09-13 16:11:30,901 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 2
+2024-09-13 16:11:30,925 - pyMMF.solv [INFO   ]  Found 2 radial mode(s) for m=7
+2024-09-13 16:11:30,926 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 1
+2024-09-13 16:11:30,928 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 2
+2024-09-13 16:11:30,939 - pyMMF.solv [INFO   ]  Found 1 radial mode(s) for m=8
+2024-09-13 16:11:30,940 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 1
+2024-09-13 16:11:30,951 - pyMMF.solv [INFO   ]  Found 1 radial mode(s) for m=9
+2024-09-13 16:11:30,952 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 1
+2024-09-13 16:11:30,967 - pyMMF.solv [INFO   ]  Found 0 radial mode(s) for m=10
+2024-09-13 16:11:30,967 - pyMMF.solv [INFO   ]  Solver found 55 modes is 0.31 seconds.
+2024-09-13 16:11:30,967 - pyMMF.core [DEBUG  ]  Mode data stored in memory.
+</pre></div></div>
+</div>
+<section id="Get-the-mode-matrix-and-rearrange-to-mode-order">
+<h3>Get the mode matrix and rearrange to mode order<a class="headerlink" href="#Get-the-mode-matrix-and-rearrange-to-mode-order" title="Link to this heading">#</a></h3>
+<p>(to fit with comsol data later on)</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[33]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>M0_rad = modes.getModeMatrix(npola = 2)
+Nmodes = modes.number
+new_ind = [i//2 if i%2 == 0 else (i-1)//2+Nmodes for i in range(2*Nmodes)]
+M0_rad = M0_rad[:,new_ind]
+betas_as = np.sort(np.concatenate([modes.betas]*2))[::-1]
+M = modes.m
+L = modes.l
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+<section id="3.-Compute-transverse-modes-using-pyMMF's-2D-finite-difference-eigenvalue-solver">
+<h2>3. Compute transverse modes using pyMMF’s 2D finite difference eigenvalue solver<a class="headerlink" href="#3.-Compute-transverse-modes-using-pyMMF's-2D-finite-difference-eigenvalue-solver" title="Link to this heading">#</a></h2>
+<p>See wavefrontshapin.net tutorial on <a class="reference external" href="https://www.wavefrontshaping.net/post/id/3">solving the Helmholtz discretized equation</a> and on <a class="reference external" href="https://www.wavefrontshaping.net/post/id/6">pyMMF implementation</a>.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[34]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>modes = solver.solve(
+        solver=&#39;eig&#39;,
+        options = {&#39;nmodesMax&#39; : Nmodes}
+        )
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+2024-09-13 16:11:31,079 - pyMMF.solv [INFO   ]  Solving the spatial eigenvalue problem for mode finding.
+2024-09-13 16:11:31,081 - pyMMF.solv [INFO   ]  Use close boundary condition.
+2024-09-13 16:11:37,034 - pyMMF.solv [INFO   ]  Solver found 55 modes is 5.95 seconds.
+2024-09-13 16:11:37,034 - pyMMF.solv [WARNING]  The solver reached the maximum number of modes set.
+2024-09-13 16:11:37,035 - pyMMF.solv [WARNING]  Some propagating modes may be missing.
+2024-09-13 16:11:37,035 - pyMMF.core [DEBUG  ]  Mode data stored in memory.
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[35]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>M0_eig = modes.getModeMatrix(npola = 2)
+M0_eig = M0_eig[:,new_ind]
+# dupliate the propagation constants for the two polarizations
+betas_eig = np.abs(np.sort(np.concatenate([modes.betas]*2))[::-1])
+</pre></div>
+</div>
+</div>
+</section>
+<section id="4.-WKB-approximation">
+<h2>4. WKB approximation<a class="headerlink" href="#4.-WKB-approximation" title="Link to this heading">#</a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[36]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>b = radius*n1/NA
+f_parabolic = lambda r: np.sqrt(n1**2*(1.-(r/b)**2))
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[37]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>r_vec = np.linspace(0, 0.7*areaSize, 150)
+real_profile = [profile.radialFunc(r) for r in r_vec]
+infinite_GRIN_profile = [f_parabolic(r) for r in r_vec]
+plt.figure()
+plt.plot(r_vec,real_profile)
+plt.plot(r_vec,infinite_GRIN_profile, &#39;--&#39;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[37]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[&lt;matplotlib.lines.Line2D at 0x788a9759bdd0&gt;]
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_benchmark_GRIN_comsol_15_1.png" src="../_images/examples_benchmark_GRIN_comsol_15_1.png" />
+</div>
+</div>
+</section>
+<section id="propagation-constants-under-WKB-approximation">
+<h2>propagation constants under WKB approximation<a class="headerlink" href="#propagation-constants-under-WKB-approximation" title="Link to this heading">#</a></h2>
+<p><span class="math notranslate nohighlight">\(\beta_{l,m} = \sqrt{k_o^2 n_1^2-2\alpha \left( |l|+2m+1\right)}\)</span></p>
+<p><span class="math notranslate nohighlight">\(\alpha = k_o n_1/b\)</span></p>
+<p>and</p>
+<p><span class="math notranslate nohighlight">\(b = \frac{radius \times n_1}{NA}\)</span></p>
+<section id="Mode-profile-under-WKB-approximation">
+<h3>Mode profile under WKB approximation<a class="headerlink" href="#Mode-profile-under-WKB-approximation" title="Link to this heading">#</a></h3>
+<p>$:nbsphinx-math:<cite>psi</cite>_{l,m}(r, <span class="math">\phi</span>) = A e^{- <span class="math">\frac{\alpha r^2}{2}</span>} (<span class="math">\alpha `r\ :sup:`2)</span>{|m|/2} L_l<sup>{|m|}(:nbsphinx-math:</sup>alpha <cite>r</cite>2)e^{<a class="reference external" href="im:nbsphinx-math">im:nbsphinx-math</a>:<cite>phi</cite>} $</p>
+<p><span class="math notranslate nohighlight">\(L_l^{|m|}\)</span> Laguerre polynomial</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[38]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>modes = solver.solve(
+        solver=&#39;WKB&#39;,
+        options = {&#39;degenerate_mode&#39; : &quot;sin&quot;}
+        )
+M0_wkb = modes.getModeMatrix(npola = 2)
+betas_wkb = np.concatenate([modes.betas]*2)
+new_ind = np.argsort(betas_wkb)[::-1]
+betas_wkb = betas_wkb[new_ind]
+M0_wkb = M0_wkb[:,new_ind]
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+2024-09-13 16:11:37,186 - pyMMF.solv [INFO   ]  Finding analytical LP mode profiles associated to the propagation constants.
+2024-09-13 16:11:37,186 - pyMMF.solv [INFO   ]  modes = 55
+2024-09-13 16:11:37,225 - pyMMF.solv [INFO   ]  Found 55 LP mode profiles in 0.0 minutes.
+2024-09-13 16:11:37,225 - pyMMF.core [DEBUG  ]  Mode data stored in memory.
+</pre></div></div>
+</div>
+</section>
+</section>
+<section id="5.-Load-Comsol-data">
+<h2>5. Load Comsol data<a class="headerlink" href="#5.-Load-Comsol-data" title="Link to this heading">#</a></h2>
+<p>We used the same paramters as for pyMMF calculations. Simulation are full vectorial FDTD simulation, so we do have a (small) longitudinal component of the optical field.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[45]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>data_Ex = np.load(&#39;data/modes_transverse_comsol_128_Ex.npz&#39;)[&#39;Ex&#39;]
+data_Ey = np.load(&#39;data/modes_transverse_comsol_128_Ey.npz&#39;)[&#39;Ey&#39;]
+data_Ez = np.load(&#39;data/modes_transverse_comsol_128_Ez.npz&#39;)[&#39;Ez&#39;]
+
+# matrix of mode profiles
+M0_cs = np.concatenate([data_Ex,data_Ey,data_Ez],axis=0)
+# propagation constats
+betas_cs = np.load(&#39;data/modes_transverse_comsol_128_betas.npz&#39;)[&#39;betas&#39;]
+</pre></div>
+</div>
+</div>
+<section id="Show-one-mode">
+<h3>Show one mode<a class="headerlink" href="#Show-one-mode" title="Link to this heading">#</a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[40]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ind = 45
+
+Ex = M0_cs[:npoints**2,ind].reshape([npoints]*2)
+Ey = M0_cs[npoints**2:2*npoints**2,ind].reshape([npoints]*2)
+Ez = M0_cs[2*npoints**2:,ind].reshape([npoints]*2)
+
+max_E = np.max([np.max(np.abs(E)) for E in [Ex,Ey]])
+
+plt.figure(figsize=[12,5])
+plt.subplot(131)
+plt.imshow(np.abs(Ex), vmax = max_E)
+plt.axis(&#39;off&#39;)
+plt.title(r&#39;$|E_x|$&#39;)
+plt.subplot(132)
+plt.imshow(np.abs(Ey), vmax = max_E)
+plt.axis(&#39;off&#39;)
+plt.title(r&#39;$|E_y|$&#39;)
+plt.subplot(133)
+plt.imshow(np.abs(Ez), vmax = max_E)
+plt.axis(&#39;off&#39;)
+plt.title(r&#39;$|E_z|$&#39;)
+plt.suptitle(f&#39;Full vectorial FDTD (Comsol)\n Mode {ind}&#39;)
+
+plt.figure(figsize=[8,5])
+plt.subplot(121)
+plt.imshow(np.sqrt(np.abs(Ex)**2+np.abs(Ey)**2), vmax = max_E)
+plt.axis(&#39;off&#39;)
+plt.title(r&#39;$|E_t|=\sqrt{|E_x|^2+|E_y|^2}$&#39;)
+plt.subplot(122)
+plt.imshow(np.abs(Ey), vmax = max_E)
+plt.axis(&#39;off&#39;)
+plt.title(r&#39;$|E_y|$&#39;)
+plt.suptitle(f&#39;Full vectorial FDTD (Comsol)\n Mode {ind}&#39;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[40]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Text(0.5, 0.98, &#39;Full vectorial FDTD (Comsol)\n Mode 45&#39;)
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_benchmark_GRIN_comsol_22_1.png" src="../_images/examples_benchmark_GRIN_comsol_22_1.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_benchmark_GRIN_comsol_22_2.png" src="../_images/examples_benchmark_GRIN_comsol_22_2.png" />
+</div>
+</div>
+</section>
+</section>
+<section id="6.-Compare-propagation-constants">
+<h2>6. Compare propagation constants<a class="headerlink" href="#6.-Compare-propagation-constants" title="Link to this heading">#</a></h2>
+<section id="6.1-Whole-range">
+<h3>6.1 Whole range<a class="headerlink" href="#6.1-Whole-range" title="Link to this heading">#</a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>msize = 10
+beta_max = k0*n1
+beta_min = k0*np.min(profile.n)
+plt.figure(figsize = (10,6))
+plt.plot(np.abs(betas_cs[:110]),&#39;b+&#39;, label = &#39;Comsol&#39;, markersize = msize, markeredgewidth=2)
+plt.plot(betas_as,&#39;r*&#39;, label = &#39;pyMMF axisymmetric solver&#39;, markersize = msize, markeredgewidth=2)
+plt.plot(betas_eig,&#39;gx&#39;, label = &#39;pyMMF 2D eigenvalue solver&#39;, markersize = msize, markeredgewidth=2)
+plt.plot(betas_wkb,&#39;k.&#39;, label = &#39;WKB&#39;, markersize = msize,markeredgewidth=2)
+plt.axhline(beta_min, color=&#39;g&#39;)
+plt.axhline(beta_max, color=&#39;g&#39;)
+plt.xlabel(&#39;Modes&#39;)
+plt.ylabel(&#39;Propagation constant&#39;)
+plt.ylim([5.81,5.88])
+plt.legend(fontsize=16, loc = &#39;upper right&#39;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;matplotlib.legend.Legend at 0x788a96b835f0&gt;
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_benchmark_GRIN_comsol_25_1.png" src="../_images/examples_benchmark_GRIN_comsol_25_1.png" />
+</div>
+</div>
+</section>
+<section id="6.2-Zoom-on-lower-order-modes">
+<h3>6.2 Zoom on lower order modes<a class="headerlink" href="#6.2-Zoom-on-lower-order-modes" title="Link to this heading">#</a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>msize = 14
+xlim = [0,10]
+ylim = [5.86,5.875]
+beta_max = k0*n1
+beta_min = k0*np.min(profile.n)
+plt.figure(figsize = (10,6))
+plt.plot(np.abs(betas_cs[:110]),&#39;b+&#39;, label = &#39;Comsol&#39;, markersize = 1.5*msize, markeredgewidth=2)
+plt.plot(betas_as,&#39;r*&#39;, label = &#39;pyMMF axisymmetric solver&#39;, markersize = msize, markeredgewidth=2)
+plt.plot(betas_eig,&#39;gx&#39;, label = &#39;pyMMF 2D eigenvalue solver&#39;, markersize = msize, markeredgewidth=2)
+plt.plot(betas_wkb,&#39;k.&#39;, label = &#39;WKB&#39;, markersize = msize,)
+plt.axhline(beta_min, color=&#39;g&#39;)
+plt.axhline(beta_max, color=&#39;g&#39;)
+plt.xlabel(&#39;Modes&#39;)
+plt.ylabel(&#39;Propagation constant&#39;)
+plt.xlim(xlim)
+plt.ylim(ylim)
+plt.legend(fontsize=16, loc = &#39;upper right&#39;)
+plt.title(&#39;Low order modes&#39;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Text(0.5, 1.0, &#39;Low order modes&#39;)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_benchmark_GRIN_comsol_27_1.png" src="../_images/examples_benchmark_GRIN_comsol_27_1.png" />
+</div>
+</div>
+</section>
+<section id="6.3-Zoom-on-higher-order-modes">
+<h3>6.3 Zoom on higher order modes<a class="headerlink" href="#6.3-Zoom-on-higher-order-modes" title="Link to this heading">#</a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>xlim = [89,110]
+ylim = [5.8215,5.824]
+beta_max = k0*n1
+beta_min = k0*np.min(profile.n)
+plt.figure(figsize = (10,6))
+plt.plot(np.abs(betas_cs[:110]),&#39;b+&#39;, label = &#39;Comsol&#39;, markersize = 1.5*msize, markeredgewidth=2)
+plt.plot(betas_as,&#39;r*&#39;, label = &#39;pyMMF axisymmetric solver&#39;, markersize = msize, markeredgewidth=2)
+plt.plot(betas_eig,&#39;gx&#39;, label = &#39;pyMMF 2D eigenvalue solver&#39;, markersize = msize, markeredgewidth=2)
+plt.plot(betas_wkb,&#39;k.&#39;, label = &#39;WKB&#39;, markersize = msize,)
+plt.axhline(beta_min, color=&#39;g&#39;)
+plt.axhline(beta_max, color=&#39;g&#39;)
+plt.xlabel(&#39;Modes&#39;)
+plt.ylabel(&#39;Propagation constant&#39;)
+plt.xlim(xlim)
+plt.ylim(ylim)
+plt.legend(fontsize=16, loc = &#39;upper right&#39;)
+plt.title(&#39;High order modes&#39;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Text(0.5, 1.0, &#39;High order modes&#39;)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_benchmark_GRIN_comsol_29_1.png" src="../_images/examples_benchmark_GRIN_comsol_29_1.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>i = 4
+ex = M0_cs[:npoints**2,i].reshape([npoints]*2)
+ey = M0_cs[npoints**2:2*npoints**2,i].reshape([npoints]*2)
+ex2 = M0_rad[:npoints**2,i].reshape([npoints]*2)
+ey2 = M0_rad[npoints**2:,i].reshape([npoints]*2)
+
+m = np.max([np.max(np.abs(ex)),np.max(np.abs(ey))])
+m2 = np.max([np.max(np.abs(ex2)),np.max(np.abs(ey2))])
+plt.figure(figsize=(9,9))
+plt.subplot(221)
+plt.imshow(np.abs(ex), vmax = m)
+plt.axis(&#39;off&#39;)
+plt.title(r&#39;$|E_x|$&#39;)
+plt.subplot(222)
+plt.imshow(np.abs(ey), vmax = m)
+plt.axis(&#39;off&#39;)
+plt.title(r&#39;$|E_y|$&#39;)
+plt.subplot(223)
+plt.imshow(np.abs(ex2), vmax = m2)
+plt.axis(&#39;off&#39;)
+plt.subplot(224)
+plt.imshow(np.abs(ey2), vmax = m2)
+plt.axis(&#39;off&#39;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+(-0.5, 127.5, 127.5, -0.5)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_benchmark_GRIN_comsol_30_1.png" src="../_images/examples_benchmark_GRIN_comsol_30_1.png" />
+</div>
+</div>
+</section>
+</section>
+<section id="7.-Projection-of-one-basis-onto-the-other-one">
+<h2>7. Projection of one basis onto the other one<a class="headerlink" href="#7.-Projection-of-one-basis-onto-the-other-one" title="Link to this heading">#</a></h2>
+<p>The order <strong>inside</strong> each degenerate group is not exacty the same, but it is normal as they are (quasi) degenerate.</p>
+<section id="First-compute-the-mask-corresponding-to-groups-of-degenerate-modes">
+<h3>First compute the mask corresponding to groups of degenerate modes<a class="headerlink" href="#First-compute-the-mask-corresponding-to-groups-of-degenerate-modes" title="Link to this heading">#</a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ind_degenerate = modes.getNearDegenerate(tol = 1e-3)
+mask_degenerate = np.zeros(shape = [Nmodes*2]*2, dtype = float)
+
+for ind in ind_degenerate:
+    mask_degenerate[2*min(ind):2*max(ind)+2,2*min(ind):2*max(ind)+2] = 1
+
+# mask_degenerate = np.kron(np.eye(2),mask_degenerate)
+plt.close(&#39;all&#39;)
+plt.figure()
+plt.imshow(mask_degenerate)
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;matplotlib.image.AxesImage at 0x788a92101cd0&gt;
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_benchmark_GRIN_comsol_33_1.png" src="../_images/examples_benchmark_GRIN_comsol_33_1.png" />
+</div>
+</div>
+</section>
+<section id="7.1-Display-conversion-matrices">
+<h3>7.1 Display conversion matrices<a class="headerlink" href="#7.1-Display-conversion-matrices" title="Link to this heading">#</a></h3>
+<p>We project the mode matrices obtained with the different solver onto the modes profiles from FDTD simulations. Ideally, all energy is conserved and we have non-zero values only inside the degenerate block. Note that this matrix is not purely diagonal as modes are degenerate inside each block.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># only keep transverse field and the propagating modes
+M0_cs_trans = M0_cs[:2*npoints**2,:110]
+
+A_as = M0_cs_trans.transpose().conjugate()@M0_rad
+A_eig = M0_cs_trans.transpose().conjugate()@M0_eig
+A_wkb = M0_cs_trans.transpose().conjugate()@M0_wkb
+</pre></div>
+</div>
+</div>
+<p>We define a loss term as the ratio energy of the conversion matrix that is out of the degenerate blocks.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>energy_loss_as = 1-np.linalg.norm(A_as*mask_degenerate)/np.linalg.norm(A_as)
+energy_loss_eig = 1-np.linalg.norm(A_eig*mask_degenerate)/np.linalg.norm(A_eig)
+energy_loss_wkb = 1-np.linalg.norm(A_wkb*mask_degenerate)/np.linalg.norm(A_wkb)
+
+plt.figure(figsize = (10,4))
+plt.subplot(131)
+plt.imshow(np.abs(A_as), interpolation = &#39;None&#39;)
+plt.axis(&#39;off&#39;)
+plt.title(f&#39;radial solver\n loss = {100*energy_loss_as:.2e}%&#39;)
+plt.subplot(132)
+plt.imshow(np.abs(A_eig), interpolation = &#39;None&#39;)
+plt.axis(&#39;off&#39;)
+plt.title(f&#39;2D eigenvalue solver\n loss = {100*energy_loss_eig:.2e}%&#39;)
+plt.subplot(133)
+plt.imshow(np.abs(A_wkb), interpolation = &#39;None&#39;)
+plt.axis(&#39;off&#39;)
+plt.title(f&#39;WKB\n loss = {100*energy_loss_wkb:.2e}%&#39;)
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Text(0.5, 1.0, &#39;WKB\n loss = 1.59e-03%&#39;)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_benchmark_GRIN_comsol_37_1.png" src="../_images/examples_benchmark_GRIN_comsol_37_1.png" />
+</div>
+</div>
+</section>
+<section id="7.2-Conversion-efficiency-per-mode">
+<h3>7.2 Conversion efficiency per mode<a class="headerlink" href="#7.2-Conversion-efficiency-per-mode" title="Link to this heading">#</a></h3>
+<p>For each input mode found using the different technique, compute the energy that couples to the corresponding group of degenerate modes found using Comsol.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>Proj_as = np.sqrt(np.sum( np.abs(A_as*mask_degenerate)**2, axis = 1))
+Proj_eig = np.sqrt(np.sum( np.abs(A_eig*mask_degenerate)**2, axis = 1))
+Proj_wkb = np.sqrt(np.sum( np.abs(A_wkb*mask_degenerate)**2, axis = 1))
+
+plt.figure()
+plt.plot(100*Proj_as, label = &#39;Radial solver&#39;)
+plt.plot(100*Proj_eig, label = &#39;2D eigenvalue solver&#39;)
+plt.plot(100*Proj_wkb, label = &#39;WKB&#39;)
+plt.ylabel(&#39;Conversion efficiency&#39;)
+plt.xlabel(&#39;Modes&#39;)
+plt.legend()
+yticks = np.linspace(95,100,6)
+# plt.yticks(yticks, [f&#39;{y:g}%&#39; for y in yticks])
+plt.title(&#39;Conversion efficiency onto the mode\n basis computed with Comsol&#39;)
+plt.tight_layout()
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_benchmark_GRIN_comsol_40_0.png" src="../_images/examples_benchmark_GRIN_comsol_40_0.png" />
+</div>
+</div>
+</section>
+<section id="7.3-Global-conversion-losses">
+<h3>7.3 Global conversion losses<a class="headerlink" href="#7.3-Global-conversion-losses" title="Link to this heading">#</a></h3>
+<p>We compute the singular value decomposition of the conversion matrix between the modes found using Comsol and using the pyMMF solvers <span class="math notranslate nohighlight">\(M_\text{cs}^\dagger . M_\text{pyMMF}\)</span>. Ideally, if two bases represent the same subspace, the conversion matrix has to be unitary, i.e. all its singular values are equal to one.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>_,s_as,_ = np.linalg.svd(A_as)
+_,s_eig,_ = np.linalg.svd(A_eig)
+_,s_wkb,_ = np.linalg.svd(A_wkb)
+plt.figure(figsize = (10,6))
+plt.plot(np.sort(np.abs(s_as)), label = &#39;axisymmetric solver&#39;)
+plt.plot(np.sort(np.abs(s_eig)), label = &#39;2D eigenvalue solver&#39;)
+plt.plot(np.sort(np.abs(s_wkb)), label = &#39;WKB&#39;)
+plt.ylim([0.9, 1.1])
+plt.legend()
+plt.title(&#39;Singular values of conversion matrices&#39;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Text(0.5, 1.0, &#39;Singular values of conversion matrices&#39;)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_benchmark_GRIN_comsol_43_1.png" src="../_images/examples_benchmark_GRIN_comsol_43_1.png" />
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="Square_fiber.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Square fiber using the 2D Eigen-problem solver</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../api.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">API Reference</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#1.-Parameters-of-the-fiber">1. Parameters of the fiber</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.-Compute-transverse-modes-using-pyMMF's-axisymmetric-solver">2. Compute transverse modes using pyMMF’s axisymmetric solver</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Get-the-mode-matrix-and-rearrange-to-mode-order">Get the mode matrix and rearrange to mode order</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#3.-Compute-transverse-modes-using-pyMMF's-2D-finite-difference-eigenvalue-solver">3. Compute transverse modes using pyMMF’s 2D finite difference eigenvalue solver</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#4.-WKB-approximation">4. WKB approximation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#propagation-constants-under-WKB-approximation">propagation constants under WKB approximation</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Mode-profile-under-WKB-approximation">Mode profile under WKB approximation</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#5.-Load-Comsol-data">5. Load Comsol data</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Show-one-mode">Show one mode</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#6.-Compare-propagation-constants">6. Compare propagation constants</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#6.1-Whole-range">6.1 Whole range</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#6.2-Zoom-on-lower-order-modes">6.2 Zoom on lower order modes</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#6.3-Zoom-on-higher-order-modes">6.3 Zoom on higher order modes</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#7.-Projection-of-one-basis-onto-the-other-one">7. Projection of one basis onto the other one</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#First-compute-the-mask-corresponding-to-groups-of-degenerate-modes">First compute the mask corresponding to groups of degenerate modes</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#7.1-Display-conversion-matrices">7.1 Display conversion matrices</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#7.2-Conversion-efficiency-per-mode">7.2 Conversion efficiency per mode</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#7.3-Global-conversion-losses">7.3 Global conversion losses</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/examples/benchmark_GRIN_comsol.ipynb.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, Sebastien M. Popoff and Pavel Gostev.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.0.2.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

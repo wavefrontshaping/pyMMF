@@ -1,0 +1,6 @@
+﻿pyMMF.IndexProfile.getOptimalSolver
+===================================
+
+.. currentmodule:: pyMMF
+
+.. automethod:: IndexProfile.getOptimalSolver

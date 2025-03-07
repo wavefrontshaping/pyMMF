@@ -1,6 +1,0 @@
-﻿pyMMF.Modes.getNearDegenerateMask
-=================================
-
-.. currentmodule:: pyMMF
-
-.. automethod:: Modes.getNearDegenerateMask

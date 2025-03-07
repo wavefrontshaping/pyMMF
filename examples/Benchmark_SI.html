@@ -1,0 +1,896 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Straight step index fibers &#8212; pyMMF v0.7</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=407ae711" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="../_static/_static/scipy-mathjax/MathJax.js?config=scipy-mathjax"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'examples/Benchmark_SI';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Square fiber using the 2D Eigen-problem solver" href="Square_fiber.html" />
+    <link rel="prev" title="Graded index fiber using the radial solver" href="RadialSolverGRIN.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.7" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">pyMMF v0.7</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../readme_link.html">
+    pyMMF
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../examples.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../changes_link.html">
+    Release notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/wavefrontshaping/pymmf" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/WFShaping" title="X" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-twitter fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">X</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://wavefrontshaping.net" title="wavefrontshaping.net" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-link fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">wavefrontshaping.net</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../readme_link.html">
+    pyMMF
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../examples.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../changes_link.html">
+    Release notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/wavefrontshaping/pymmf" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/WFShaping" title="X" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-twitter fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">X</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://wavefrontshaping.net" title="wavefrontshaping.net" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-link fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">wavefrontshaping.net</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Example 1:  Solving the modes of a GRIN index fiber using the `radial` solver.</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="RadialSolverGRIN.html">Graded index fiber using the radial solver</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Example 2: Solving the modes of a step index fiber and comparing the results of the `radial` solver to the semi-analytical (`SI` solver) solution of the wave equation.</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Straight step index fibers</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Example 3: Solving the modes of a square-core fiber using the `eig2D` solver.</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="Square_fiber.html">Square fiber using the 2D Eigen-problem solver</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Example 4: Comparing the results from the different solvers with the results from FDTD simulations for a graded index fiber.</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="benchmark_GRIN_comsol.html">pyMMF vs FDTD simulations (Comsol) for GRIN</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../examples.html" class="nav-link">Examples</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Straight step index fibers</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="Straight-step-index-fibers">
+<h1>Straight step index fibers<a class="headerlink" href="#Straight-step-index-fibers" title="Link to this heading">#</a></h1>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import pyMMF
+import numpy as np
+import matplotlib.pyplot as plt
+%matplotlib inline
+from matplotlib import rc
+rc(&#39;figure&#39;, figsize=(18,9))
+rc(&#39;text&#39;, usetex=True)
+from IPython.display import display, Math
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&#39;/home/spopoff/dev/pyMMF/pyMMF/__init__.py&#39;
+</pre></div></div>
+</div>
+<section id="1.-Fiber-parameters">
+<h2>1. Fiber parameters<a class="headerlink" href="#1.-Fiber-parameters" title="Link to this heading">#</a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>## Parameters
+NA = 0.15
+radius = 10. # in microns
+areaSize = 3.5*radius # calculate the field on an area larger than the diameter of the fiber
+npoints = 2**8 # resolution of the window
+n1 = 1.45
+wl = 0.6328 # wavelength in microns
+</pre></div>
+</div>
+</div>
+</section>
+<section id="2.-Compute-the-mode-with-three-different-solvers">
+<h2>2. Compute the mode with three different solvers<a class="headerlink" href="#2.-Compute-the-mode-with-three-different-solvers" title="Link to this heading">#</a></h2>
+<section id="2.1-Index-profile">
+<h3>2.1 Index profile<a class="headerlink" href="#2.1-Index-profile" title="Link to this heading">#</a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Create the fiber object
+profile = pyMMF.IndexProfile(npoints = npoints, areaSize = areaSize)
+
+# Initialize the index profile
+profile.initStepIndex(n1=n1,a=radius,NA=NA)
+
+# Instantiate the solver
+solver = pyMMF.propagationModeSolver()
+
+# Set the profile to the solver
+solver.setIndexProfile(profile)
+
+# Set the wavelength
+solver.setWL(wl)
+
+# Estimate the number of modes for a graded index fiber
+Nmodes_estim = pyMMF.estimateNumModesSI(wl,radius,NA,pola=1)
+
+print(f&quot;Estimated number of modes using the V number = {Nmodes_estim}&quot;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+2024-09-10 13:03:17,590 - pyMMF.core [DEBUG  ]  Debug mode ON.
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;function IndexProfile.initStepIndex.&lt;locals&gt;.radialFunc at 0x7d436acd9c60&gt;
+Estimated number of modes using the V number = 56
+</pre></div></div>
+</div>
+</section>
+<section id="2.2-Semi-analytical-solution:-SI-solver">
+<h3>2.2 Semi-analytical solution: <code class="docutils literal notranslate"><span class="pre">SI</span></code> solver<a class="headerlink" href="#2.2-Semi-analytical-solution:-SI-solver" title="Link to this heading">#</a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>modes_semianalytical = solver.solve(solver = &#39;SI&#39;, curvature = None)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+2024-09-10 13:03:17,599 - pyMMF.solv [INFO   ]  Finding the propagation constant of step index fiber by numerically solving the dispersion relation.
+2024-09-10 13:03:18,330 - pyMMF.solv [INFO   ]  Found 59 modes in 0.73 seconds.
+2024-09-10 13:03:18,330 - pyMMF.solv [INFO   ]  Finding analytical LP mode profiles associated to the propagation constants.
+2024-09-10 13:03:21,794 - pyMMF.solv [INFO   ]  Found 59 LP mode profiles in 0.1 minutes.
+2024-09-10 13:03:21,796 - pyMMF.core [DEBUG  ]  Mode data stored in memory.
+</pre></div></div>
+</div>
+</section>
+<section id="2.3-Solving-the-2d-Eigenvalue-solver:-eig-solver-(slow)">
+<h3>2.3 Solving the 2d Eigenvalue solver: <code class="docutils literal notranslate"><span class="pre">eig</span></code> solver (slow)<a class="headerlink" href="#2.3-Solving-the-2d-Eigenvalue-solver:-eig-solver-(slow)" title="Link to this heading">#</a></h3>
+<p>See the <a class="reference external" href="https://www.wavefrontshaping.net/post/id/3">tutorial</a> for more information.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>eig_solver_options = {
+    &#39;boundary&#39; : &#39;close&#39;,
+    &#39;nmodesMax&#39; :Nmodes_estim+10,
+    &#39;propag_only&#39; : True,
+}
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>modes_eig = solver.solve(
+    solver = &#39;eig&#39;,
+    curvature = None,
+    options = eig_solver_options
+    )
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+2024-09-10 13:03:21,809 - pyMMF.solv [INFO   ]  Solving the spatial eigenvalue problem for mode finding.
+2024-09-10 13:03:21,811 - pyMMF.solv [INFO   ]  Use close boundary condition.
+2024-09-10 13:04:34,155 - pyMMF.solv [INFO   ]  Solver found 59 modes is 72.35 seconds.
+2024-09-10 13:04:34,161 - pyMMF.core [DEBUG  ]  Mode data stored in memory.
+</pre></div></div>
+</div>
+</section>
+<section id="2.4-Finding-the-1d-radial-solution:-radial-solver-(fast,-more-precise)">
+<h3>2.4 Finding the 1d radial solution: <code class="docutils literal notranslate"><span class="pre">radial</span></code> solver (fast, more precise)<a class="headerlink" href="#2.4-Finding-the-1d-radial-solution:-radial-solver-(fast,-more-precise)" title="Link to this heading">#</a></h3>
+<p>See the <a class="reference external" href="https://www.wavefrontshaping.net/post/id/66">tutorial</a> and the article <a class="reference external" href="https://arxiv.org/abs/2010.14813">Learning and avoiding disorder in multimode fibers</a> for more information.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>radial_solver_options = {
+    &#39;N_beta_coarse&#39; : 1_000,
+}
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>modes_radial = solver.solve(solver = &#39;radial&#39;,
+                         options = radial_solver_options)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+2024-09-10 13:04:34,177 - pyMMF.solv [INFO   ]  Searching for modes with beta_min=14.320067508393146, beta_max=14.397311465566371
+2024-09-10 13:04:34,197 - pyMMF.solv [INFO   ]  Found 5 radial mode(s) for m=0
+2024-09-10 13:04:34,198 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 1
+2024-09-10 13:04:34,203 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 2
+2024-09-10 13:04:34,207 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 3
+2024-09-10 13:04:34,211 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 4
+2024-09-10 13:04:34,215 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 5
+2024-09-10 13:04:34,223 - pyMMF.solv [INFO   ]  Found 4 radial mode(s) for m=1
+2024-09-10 13:04:34,224 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 1
+2024-09-10 13:04:34,230 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 2
+2024-09-10 13:04:34,235 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 3
+2024-09-10 13:04:34,239 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 4
+2024-09-10 13:04:34,250 - pyMMF.solv [INFO   ]  Found 4 radial mode(s) for m=2
+2024-09-10 13:04:34,251 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 1
+2024-09-10 13:04:34,256 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 2
+2024-09-10 13:04:34,260 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 3
+2024-09-10 13:04:34,265 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 4
+2024-09-10 13:04:34,276 - pyMMF.solv [INFO   ]  Found 4 radial mode(s) for m=3
+2024-09-10 13:04:34,276 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 1
+2024-09-10 13:04:34,281 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 2
+2024-09-10 13:04:34,286 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 3
+2024-09-10 13:04:34,291 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 4
+2024-09-10 13:04:34,303 - pyMMF.solv [INFO   ]  Found 3 radial mode(s) for m=4
+2024-09-10 13:04:34,303 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 1
+2024-09-10 13:04:34,309 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 2
+2024-09-10 13:04:34,314 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 3
+2024-09-10 13:04:34,325 - pyMMF.solv [INFO   ]  Found 3 radial mode(s) for m=5
+2024-09-10 13:04:34,326 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 1
+2024-09-10 13:04:34,331 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 2
+2024-09-10 13:04:34,336 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 3
+2024-09-10 13:04:34,347 - pyMMF.solv [INFO   ]  Found 2 radial mode(s) for m=6
+2024-09-10 13:04:34,348 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 1
+2024-09-10 13:04:34,353 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 2
+2024-09-10 13:04:34,365 - pyMMF.solv [INFO   ]  Found 2 radial mode(s) for m=7
+2024-09-10 13:04:34,365 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 1
+2024-09-10 13:04:34,371 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 2
+2024-09-10 13:04:34,381 - pyMMF.solv [INFO   ]  Found 2 radial mode(s) for m=8
+2024-09-10 13:04:34,382 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 1
+2024-09-10 13:04:34,387 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 2
+2024-09-10 13:04:34,397 - pyMMF.solv [INFO   ]  Found 1 radial mode(s) for m=9
+2024-09-10 13:04:34,398 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 1
+2024-09-10 13:04:34,409 - pyMMF.solv [INFO   ]  Found 1 radial mode(s) for m=10
+2024-09-10 13:04:34,409 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 1
+2024-09-10 13:04:34,421 - pyMMF.solv [INFO   ]  Found 1 radial mode(s) for m=11
+2024-09-10 13:04:34,421 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 1
+2024-09-10 13:04:34,433 - pyMMF.solv [INFO   ]  Found 0 radial mode(s) for m=12
+2024-09-10 13:04:34,433 - pyMMF.solv [INFO   ]  Solver found 59 modes is 0.26 seconds.
+2024-09-10 13:04:34,434 - pyMMF.core [DEBUG  ]  Mode data stored in memory.
+</pre></div></div>
+</div>
+</section>
+</section>
+<section id="3.-Comparing-results">
+<h2>3. Comparing results<a class="headerlink" href="#3.-Comparing-results" title="Link to this heading">#</a></h2>
+<section id="3.1-Dispersion">
+<h3>3.1 Dispersion<a class="headerlink" href="#3.1-Dispersion" title="Link to this heading">#</a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Sort the modes
+modes_eig.sort()
+modes_semianalytical.sort()
+modes_radial.sort()
+
+modes = {}
+modes[&#39;SA&#39;] = {&#39;betas&#39;:np.array(modes_semianalytical.betas),&#39;profiles&#39;:modes_semianalytical.profiles}
+modes[&#39;eig&#39;] = {&#39;betas&#39;:np.array(modes_eig.betas),&#39;profiles&#39;:modes_eig.profiles}
+modes[&#39;radial&#39;] = {&#39;betas&#39;:np.array(modes_radial.betas),&#39;profiles&#39;:modes_radial.profiles}
+
+
+plt.figure();
+plt.plot(np.real(modes_eig.betas),
+         label=&#39;Numerical simulations (eigenvalue solver)&#39;,
+         linewidth=2.)
+plt.plot(np.real(modes_semianalytical.betas),
+         &#39;r--&#39;,
+         label=&#39;Semi-analytical&#39;,
+         linewidth=2.)
+plt.plot(np.real(modes_radial.betas),
+         &#39;go&#39;,
+         label=&#39;Numerical simulations (radial solver)&#39;,
+         linewidth=2.)
+
+plt.xticks(fontsize = 20)
+plt.yticks(fontsize = 20)
+plt.title(r&#39;Semi-analytical VS numerical simulations&#39; ,fontsize = 30)
+plt.ylabel(r&#39;Propagation constant $\beta$ (in $\mu$m$^{-1}$)&#39;, fontsize = 25)
+plt.xlabel(r&#39;Mode index&#39;, fontsize = 25)
+plt.legend(fontsize = 22,loc=&#39;upper right&#39;)
+plt.show()
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_Benchmark_SI_17_0.png" src="../_images/examples_Benchmark_SI_17_0.png" />
+</div>
+</div>
+</section>
+<section id="2.2-Comparing-numerical-solutions-to-LP-modes">
+<h3>2.2 Comparing numerical solutions to LP modes<a class="headerlink" href="#2.2-Comparing-numerical-solutions-to-LP-modes" title="Link to this heading">#</a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>imode = 15
+plt.figure()
+plt.subplot(131)
+plt.imshow(np.abs(modes[&#39;SA&#39;][&#39;profiles&#39;][imode].reshape([npoints]*2)))
+plt.gca().set_title(&quot;Ideal LP mode (SI solver)&quot;,fontsize=25)
+plt.axis(&#39;off&#39;)
+plt.subplot(132)
+plt.imshow(np.abs(modes[&#39;eig&#39;][&#39;profiles&#39;][imode].reshape([npoints]*2)))
+plt.gca().set_title(&quot;Eig solver solution&quot;,fontsize=25)
+plt.axis(&#39;off&#39;)
+plt.subplot(133)
+plt.imshow(np.abs(modes[&#39;radial&#39;][&#39;profiles&#39;][imode].reshape([npoints]*2)))
+plt.gca().set_title(&quot;Radial solver solution&quot;,fontsize=25)
+plt.axis(&#39;off&#39;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_Benchmark_SI_19_0.png" src="../_images/examples_Benchmark_SI_19_0.png" />
+</div>
+</div>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="RadialSolverGRIN.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Graded index fiber using the radial solver</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="Square_fiber.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Square fiber using the 2D Eigen-problem solver</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#1.-Fiber-parameters">1. Fiber parameters</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.-Compute-the-mode-with-three-different-solvers">2. Compute the mode with three different solvers</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.1-Index-profile">2.1 Index profile</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.2-Semi-analytical-solution:-SI-solver">2.2 Semi-analytical solution: <code class="docutils literal notranslate"><span class="pre">SI</span></code> solver</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.3-Solving-the-2d-Eigenvalue-solver:-eig-solver-(slow)">2.3 Solving the 2d Eigenvalue solver: <code class="docutils literal notranslate"><span class="pre">eig</span></code> solver (slow)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.4-Finding-the-1d-radial-solution:-radial-solver-(fast,-more-precise)">2.4 Finding the 1d radial solution: <code class="docutils literal notranslate"><span class="pre">radial</span></code> solver (fast, more precise)</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#3.-Comparing-results">3. Comparing results</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#3.1-Dispersion">3.1 Dispersion</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.2-Comparing-numerical-solutions-to-LP-modes">2.2 Comparing numerical solutions to LP modes</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/examples/Benchmark_SI.ipynb.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, Sebastien M. Popoff and Pavel Gostev.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.0.2.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

@@ -1,0 +1,6 @@
+﻿pyMMF.IndexProfile.load
+=======================
+
+.. currentmodule:: pyMMF
+
+.. automethod:: IndexProfile.load

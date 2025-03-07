@@ -1,6 +1,0 @@
-﻿pyMMF.Modes.load
-================
-
-.. currentmodule:: pyMMF
-
-.. automethod:: Modes.load
