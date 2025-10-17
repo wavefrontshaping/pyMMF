@@ -149,16 +149,20 @@ class AberrationOptimization:
                 )
 
         # store the final modes and TM in mode basis
-        new_modes_in = self.pt_best_modes_in.detach().cpu().numpy()
-        new_modes_in = new_modes_in.reshape(self.nmodes, -1).transpose()
-        new_modes_out = self.pt_best_modes_out.detach().cpu().numpy()
-        new_modes_out = new_modes_out.reshape(self.nmodes, -1).transpose()
+        new_modes_in = (
+            self.pt_best_modes_in.detach().cpu().reshape((-1, self.n_in**2)).numpy()
+        )
+
+        new_modes_out = (
+            self.pt_best_modes_out.detach().cpu().reshape((-1, self.n_out**2)).numpy()
+        )
 
         TM_modes_after = (
-            new_modes_out.conj().transpose()
-            @ self.TM_pix.detach().cpu().numpy()
-            @ new_modes_in
-        )
+            new_modes_out @ self.TM_pix.detach().cpu().numpy()
+        ) @ new_modes_in.conj().transpose()
+
+        new_modes_in = new_modes_in.transpose().conj()
+        new_modes_out = new_modes_out.transpose().conj()
 
         evol_data = {
             "cost": evol_cost,
