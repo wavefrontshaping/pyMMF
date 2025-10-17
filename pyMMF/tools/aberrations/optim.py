@@ -67,7 +67,7 @@ class AberrationOptimization:
         self.n_out = n_out
         self.n_in = n_in
 
-        self.nmodes = modes_out.shape[0]
+        self.nmodes = modes_out.shape[1]
 
         # convert the TM and the modes to pytorch tensors
         self.TM_pix = Variable(torch.from_numpy(TM_pix), requires_grad=False).to(device)
@@ -110,6 +110,7 @@ class AberrationOptimization:
             self.n_in,
         )
 
+        best_cost = 1e10
         evol_cost = [cost.item()]
         evol_conversion = [1 / cost.item()]
 
@@ -131,6 +132,11 @@ class AberrationOptimization:
                 self.n_in,
             )
 
+            if cost.item() < best_cost:
+                best_cost = cost.item()
+                self.pt_best_modes_in = new_modes_in.detach()
+                self.pt_best_modes_out = new_modes_out.detach()
+
             cost.backward()
             self.optimizer.step()
 
@@ -143,16 +149,16 @@ class AberrationOptimization:
                 )
 
         # store the final modes and TM in mode basis
-        self.pt_new_modes_in = new_modes_in.detach()
-        self.pt_new_modes_out = new_modes_out.detach()
-        self.TM_modes_after = (
-            new_modes_out.conj().transpose(-2, -1) @ self.TM_pix @ new_modes_in
-        ).detach()
+        new_modes_in = self.pt_best_modes_in.detach().cpu().numpy()
+        new_modes_in = new_modes_in.reshape(self.nmodes, -1).transpose()
+        new_modes_out = self.pt_best_modes_out.detach().cpu().numpy()
+        new_modes_out = new_modes_out.reshape(self.nmodes, -1).transpose()
 
-        # convert back to numpy arrays
-        new_modes_in = self.pt_new_modes_in.cpu().numpy().reshape(self.nmodes, -1)
-        new_modes_out = self.pt_new_modes_out.cpu().numpy().reshape(self.nmodes, -1)
-        TM_modes_after = self.TM_modes_after.cpu().numpy()
+        TM_modes_after = (
+            new_modes_out.conj().transpose()
+            @ self.TM_pix.detach().cpu().numpy()
+            @ new_modes_in
+        )
 
         evol_data = {
             "cost": evol_cost,
