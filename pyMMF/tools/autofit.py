@@ -118,13 +118,13 @@ class Autofit:
         self._prefilter = prefilter
 
         # Output side
-        self.N_data = None
+        self.n_out = None
         self._s_out = None
         self._c_modes_out = None
         self._c_data = None
 
         # Input side
-        self.N_in = None
+        self.n_in = None
         self._s_in = None
         self._c_modes_in = None
         self._c_in_data = None
@@ -220,17 +220,15 @@ class Autofit:
         self._c_data = (float(cdy), float(cdx))
 
     def _fit_input_side(self, TM, threshold):
-        M, P = TM.shape
-        N_in = int(round(np.sqrt(P)))
-        if N_in * N_in != P:
-            raise ValueError("P must be a perfect square (P=N_in^2).")
-        mean_I_in_data = np.mean(np.abs(TM) ** 2, axis=0).reshape((N_in, N_in))
+
+        mean_I_in_data = np.mean(np.abs(TM) ** 2, axis=0).reshape(
+            (self.n_in, self.n_in)
+        )
 
         (ciny, cinx), r_in = self._centroid_rms_thresh(mean_I_in_data, threshold)
         (cmy, cmx), r_mods = self._centroid_rms_thresh(self.mean_I_modes, threshold)
         s_in = 1.0 if r_mods <= 1e-12 else (r_in / r_mods)
 
-        self.N_in = N_in
         self._s_in = float(s_in)
         self._c_modes_in = (float(cmy), float(cmx))
         self._c_in_data = (float(ciny), float(cinx))
@@ -257,9 +255,9 @@ class Autofit:
             c_tgt = ((self.N_data - 1) / 2.0, (self.N_data - 1) / 2.0)
             s0 = self._s_out if init is None else float(init)
         else:
-            N_tgt = self.N_in
+            N_tgt = self.n_in
             c_src = self._c_modes_in
-            c_tgt = ((self.N_in - 1) / 2.0, (self.N_in - 1) / 2.0)
+            c_tgt = ((self.n_in - 1) / 2.0, (self.n_in - 1) / 2.0)
             s0 = self._s_in if init is None else float(init)
 
         target = target_map.astype(np.float64)
@@ -304,19 +302,26 @@ class Autofit:
         new_modes_out : (N_data^2, K)   (normalized)
         new_modes_in  : (N_in^2,   K)   (normalized)
         """
+
         if params is None:
             params = {}
         threshold = params.get("threshold", 0.5)
+        polarizations = params.get("polarizations", (1, 1))
         if not (0.0 < threshold < 1.0):
             raise ValueError("`threshold` must be in (0, 1).")
 
-        M, P = TM.shape
-        N_data = int(round(np.sqrt(M)))
-        if N_data * N_data != M:
-            raise ValueError("TM must be shaped (N_data^2, P).")
+        N_out, N_in = TM.shape
+        n_out = int(round(np.sqrt(N_out) / polarizations[1]))
+        n_in = int(round(np.sqrt(N_in) / polarizations[0]))
+        if n_out * n_out != N_out or n_in * n_in != N_in:
+            raise ValueError(
+                "TM must be shaped (n_out^2 * polarizations[1], n_in^2 * polarizations[0])."
+            )
+        self.n_out = n_out
+        self.n_in = n_in
 
         # --- FIT OUTPUT SIDE ---
-        mean_I_out = np.mean(np.abs(TM) ** 2, axis=1).reshape((N_data, N_data))
+        mean_I_out = np.mean(np.abs(TM) ** 2, axis=1).reshape((n_out, n_out))
         self._fit_output_side(mean_I_out, threshold)
 
         # Recenter TM on output side (shift columns/images)
@@ -325,20 +330,20 @@ class Autofit:
         A_out, b_out = self._affine_pure_shift(shift_out)
 
         def _shift_output_col(colvec):
-            img = colvec.reshape(self.N_data, self.N_data)
+            img = colvec.reshape(self.n_out, self.n_out)
             out = self._apply_affine_single(
-                img, A_out, b_out, (self.N_data, self.N_data), zero_pad=True
+                img, A_out, b_out, (self.n_out, self.n_out), zero_pad=True
             )
-            return out.reshape(self.N_data * self.N_data, 1)
+            return out.reshape(self.n_out * self.n_out, 1)
 
         if n_jobs and n_jobs != 0:
             cols = Parallel(n_jobs=n_jobs, prefer="threads")(
-                delayed(_shift_output_col)(TM[:, j]) for j in range(P)
+                delayed(_shift_output_col)(TM[:, j]) for j in range(N_in)
             )
             TM_out = np.hstack(cols).astype(TM.dtype, copy=False)
         else:
             TM_out = np.empty_like(TM)
-            for j in range(P):
+            for j in range(N_in):
                 TM_out[:, j] = _shift_output_col(TM[:, j]).ravel()
 
         # Fine-tune output zoom against the recentered output mean
@@ -352,37 +357,37 @@ class Autofit:
         self._fit_input_side(TM_out, threshold)
 
         # Recenter TM on input side (shift rows/vectors of length P=N_in^2)
-        p_in = ((self.N_in - 1) / 2.0, (self.N_in - 1) / 2.0)
+        p_in = ((self.n_in - 1) / 2.0, (self.n_in - 1) / 2.0)
         shift_in = (p_in[0] - self._c_in_data[0], p_in[1] - self._c_in_data[1])
         A_in, b_in = self._affine_pure_shift(shift_in)
 
         def _shift_input_row(rowvec):
-            img = rowvec.reshape(self.N_in, self.N_in)
+            img = rowvec.reshape(self.n_in, self.n_in)
             out = self._apply_affine_single(
-                img, A_in, b_in, (self.N_in, self.N_in), zero_pad=True
+                img, A_in, b_in, (self.n_in, self.n_in), zero_pad=True
             )
             return out.ravel()
 
         if n_jobs and n_jobs != 0:
             rows = Parallel(n_jobs=n_jobs, prefer="threads")(
-                delayed(_shift_input_row)(TM_out[i, :]) for i in range(M)
+                delayed(_shift_input_row)(TM_out[i, :]) for i in range(N_out)
             )
             TM_recentered = np.vstack(rows).astype(TM.dtype, copy=False)
         else:
             TM_recentered = np.empty_like(TM_out)
-            for i in range(M):
+            for i in range(N_out):
                 TM_recentered[i, :] = _shift_input_row(TM_out[i, :])
 
         # Fine-tune input zoom against the recentered input mean
         if do_fine_tune:
             mean_I_in_centered = np.mean(np.abs(TM_recentered) ** 2, axis=0).reshape(
-                (self.N_in, self.N_in)
+                (self.n_in, self.n_in)
             )
             self._s_in = self.fine_tune_zoom(mean_I_in_centered, side="in")
 
         # --- RESAMPLE MODES WITH FINAL SCALES ---
         new_modes_out = self._resample_modes_matrix(
-            target_N=self.N_data,
+            target_N=self.n_out,
             s=self._s_out,
             c_src=self._c_modes_out,
             c_tgt=(
@@ -392,10 +397,10 @@ class Autofit:
             n_jobs=n_jobs,
         )
         new_modes_in = self._resample_modes_matrix(
-            target_N=self.N_in,
+            target_N=self.n_in,
             s=self._s_in,
             c_src=self._c_modes_in,
-            c_tgt=((self.N_in - 1) / 2.0, (self.N_in - 1) / 2.0),
+            c_tgt=((self.n_in - 1) / 2.0, (self.n_in - 1) / 2.0),
             n_jobs=n_jobs,
         )
 
