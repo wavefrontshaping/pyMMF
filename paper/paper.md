@@ -15,7 +15,7 @@ affiliations:
  - name: Institut Langevin, ESPCI Paris, PSL University, CNRS, France
    index: 1
 
-date: 2024
+date: 2025
 bibliography: paper.bib
 ---
 
