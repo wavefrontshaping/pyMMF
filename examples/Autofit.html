@@ -1,0 +1,1059 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Autofit tool for aligning data with the modes &#8212; pyMMF v0.7</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=407ae711" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=55c26ed414f5f8a31ebb"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
+
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=b8b12719"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="../_static/_static/scipy-mathjax/MathJax.js?config=scipy-mathjax"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'examples/Autofit';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.7" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">pyMMF v0.7</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../readme_link.html">
+    pyMMF
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../examples.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../changes_link.html">
+    Release notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/wavefrontshaping/pymmf" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/WFShaping" title="X" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-twitter fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">X</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://wavefrontshaping.net" title="wavefrontshaping.net" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-link fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">wavefrontshaping.net</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../readme_link.html">
+    pyMMF
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../examples.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../changes_link.html">
+    Release notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/wavefrontshaping/pymmf" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/WFShaping" title="X" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-twitter fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">X</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://wavefrontshaping.net" title="wavefrontshaping.net" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-link fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">wavefrontshaping.net</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Autofit tool for aligning data with the modes</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="Autofit-tool-for-aligning-data-with-the-modes">
+<h1>Autofit tool for aligning data with the modes<a class="headerlink" href="#Autofit-tool-for-aligning-data-with-the-modes" title="Link to this heading">#</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">pyMMF.tools.autofit</span></code> allows for finding the transformation to center the fiber axis and the zoom to fit the simulated modes.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import matplotlib.pyplot as plt
+import numpy as np
+
+
+
+import os, sys
+print(os.path.abspath(&#39;../..&#39;))
+os.chdir(os.path.abspath(&#39;../..&#39;))
+# sys.path.insert(0, os.path.abspath(&#39;..&#39;))
+
+
+import pyMMF
+print(pyMMF.__path__)
+from pyMMF.functions import colorize
+from pyMMF.tools.autofit import Autofit
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+/home/spopoff/mycore/dev/pyMMF
+[&#39;/home/spopoff/mycore/dev/pyMMF/pyMMF&#39;]
+</pre></div></div>
+</div>
+<section id="1.-Fiber-parameters">
+<h2>1. Fiber parameters<a class="headerlink" href="#1.-Fiber-parameters" title="Link to this heading">#</a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>NA = 0.2
+radius = 25 # in microns
+areaSize = 3.*radius # calculate the field on an area larger than the diameter of the fiber
+n_points_modes = 48 # resolution of the window2
+n1 = 1.45 # index of refraction at r=0 (maximum)
+wl = 1.55 # wavelength in microns
+curvature = None
+k0 = 2.*np.pi/wl
+
+r_max = 3.2*radius
+npoints_search = 2**8
+dh = 2*radius/npoints_search
+
+# solver parameters
+solver_options = {
+    &#39;degenerate_mode&#39;: &#39;exp&#39;, # &#39;eig&#39; or &#39;prop&#39;
+    &#39;min_radius_bc&#39;: 1.5,   # min large radial boundary condition
+    &#39;N_beta_coarse&#39;: 1_000, # number of steps of the initial coarse scan
+    &#39;change_bc_radius_step&#39;: 0.95, #change of the large radial boundary condition if fails
+    &#39;dh&#39;: dh,               # radial resolution during the computation
+    &#39;r_max&#39;: r_max,         # max radius to calculate (and first try for large radial boundary condition)
+}
+</pre></div>
+</div>
+</div>
+</section>
+<section id="2.-Compute-the-mode-with-radial-solver">
+<h2>2. Compute the mode with radial solver<a class="headerlink" href="#2.-Compute-the-mode-with-radial-solver" title="Link to this heading">#</a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>profile = pyMMF.IndexProfile(
+    npoints = n_points_modes,
+    areaSize = areaSize
+)
+profile.initParabolicGRIN(n1=n1, a=radius, NA=NA)
+
+solver = pyMMF.propagationModeSolver()
+solver.setIndexProfile(profile)
+solver.setWL(wl)
+
+
+modes = solver.solve(solver=&#39;radial&#39;,
+                    curvature = curvature,
+                    options = solver_options
+                    )
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+2026-04-22 11:52:54,049 - pyMMF.core [DEBUG  ]  Debug mode ON.
+2026-04-22 11:52:54,052 - pyMMF.solv [INFO   ]  Searching for modes with beta_min=5.821637357564584, beta_max=5.877818513168
+2026-04-22 11:52:54,079 - pyMMF.solv [INFO   ]  Found 5 radial mode(s) for m=0
+2026-04-22 11:52:54,080 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 1
+2026-04-22 11:52:54,082 - pyMMF.solv [ERROR  ]  Field limit 1.0 at the founded beta=0.05066217542815342 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,083 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,084 - pyMMF.solv [WARNING]  Retrying by changing r_max to 3.04a
+2026-04-22 11:52:54,086 - pyMMF.solv [ERROR  ]  Field limit 1.0 at the founded beta=0.05066217542815342 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,086 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,087 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.89a
+2026-04-22 11:52:54,089 - pyMMF.solv [ERROR  ]  Field limit 1.0 at the founded beta=0.05066217542815342 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,090 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,090 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.74a
+2026-04-22 11:52:54,093 - pyMMF.solv [ERROR  ]  Field limit 1.0 at the founded beta=0.05066217542815342 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,094 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,095 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.61a
+2026-04-22 11:52:54,097 - pyMMF.solv [ERROR  ]  Field limit 1.0 at the founded beta=0.05066217542815342 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,098 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,100 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.48a
+2026-04-22 11:52:54,103 - pyMMF.solv [ERROR  ]  Field limit 1.0 at the founded beta=0.05066217542815342 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,104 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,105 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.35a
+2026-04-22 11:52:54,108 - pyMMF.solv [ERROR  ]  Field limit 1.0 at the founded beta=0.05066217542815342 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,109 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,110 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.23a
+2026-04-22 11:52:54,113 - pyMMF.solv [ERROR  ]  Field limit 0.15890344703001363 at the founded beta=0.05066217542815336 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,114 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,115 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.12a
+2026-04-22 11:52:54,117 - pyMMF.solv [ERROR  ]  Field limit 0.019903905112596845 at the founded beta=0.05066217542815337 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,118 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,119 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.02a
+2026-04-22 11:52:54,122 - pyMMF.solv [ERROR  ]  Field limit 0.002496484384560775 at the founded beta=0.05066217542815341 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,123 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,123 - pyMMF.solv [WARNING]  Retrying by changing r_max to 1.92a
+2026-04-22 11:52:54,136 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 2
+2026-04-22 11:52:54,139 - pyMMF.solv [ERROR  ]  Field limit -1.0 at the founded beta=0.03961031292887776 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,140 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,140 - pyMMF.solv [WARNING]  Retrying by changing r_max to 3.04a
+2026-04-22 11:52:54,143 - pyMMF.solv [ERROR  ]  Field limit -1.0 at the founded beta=0.03961031292887776 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,144 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,145 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.89a
+2026-04-22 11:52:54,147 - pyMMF.solv [ERROR  ]  Field limit -1.0 at the founded beta=0.03961031292887776 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,148 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,149 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.74a
+2026-04-22 11:52:54,152 - pyMMF.solv [ERROR  ]  Field limit 0.6787453967570178 at the founded beta=0.03961031292887755 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,154 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,155 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.61a
+2026-04-22 11:52:54,158 - pyMMF.solv [ERROR  ]  Field limit 0.07283564229338893 at the founded beta=0.03961031292887755 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,159 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,160 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.48a
+2026-04-22 11:52:54,163 - pyMMF.solv [ERROR  ]  Field limit 0.007826230476869131 at the founded beta=0.03961031292887762 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,164 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,165 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.35a
+2026-04-22 11:52:54,169 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 3
+2026-04-22 11:52:54,171 - pyMMF.solv [ERROR  ]  Field limit 1.0 at the founded beta=0.028541272457537663 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,172 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,172 - pyMMF.solv [WARNING]  Retrying by changing r_max to 3.04a
+2026-04-22 11:52:54,175 - pyMMF.solv [ERROR  ]  Field limit -0.48699642863673637 at the founded beta=0.028541272457537452 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,176 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,177 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.89a
+2026-04-22 11:52:54,180 - pyMMF.solv [ERROR  ]  Field limit -0.05871870966179392 at the founded beta=0.028541272457537393 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,180 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,181 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.74a
+2026-04-22 11:52:54,184 - pyMMF.solv [ERROR  ]  Field limit -0.00708939795496355 at the founded beta=0.02854127245753754 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,186 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,187 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.61a
+2026-04-22 11:52:54,190 - pyMMF.solv [ERROR  ]  Field limit -0.0010706266399648353 at the founded beta=0.028541272457537417 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,192 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,193 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.48a
+2026-04-22 11:52:54,198 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 4
+2026-04-22 11:52:54,201 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 5
+2026-04-22 11:52:54,220 - pyMMF.solv [INFO   ]  Found 5 radial mode(s) for m=1
+2026-04-22 11:52:54,220 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 1
+2026-04-22 11:52:54,222 - pyMMF.solv [ERROR  ]  Field limit -1.0 at the founded beta=0.04513477880645375 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,223 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,223 - pyMMF.solv [WARNING]  Retrying by changing r_max to 3.04a
+2026-04-22 11:52:54,226 - pyMMF.solv [ERROR  ]  Field limit -1.0 at the founded beta=0.04513477880645375 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,226 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,228 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.89a
+2026-04-22 11:52:54,230 - pyMMF.solv [ERROR  ]  Field limit -1.0 at the founded beta=0.04513477880645375 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,231 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,232 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.74a
+2026-04-22 11:52:54,234 - pyMMF.solv [ERROR  ]  Field limit -1.0 at the founded beta=0.04513477880645375 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,235 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,236 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.61a
+2026-04-22 11:52:54,238 - pyMMF.solv [ERROR  ]  Field limit -1.0 at the founded beta=0.04513477880645375 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,239 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,239 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.48a
+2026-04-22 11:52:54,241 - pyMMF.solv [ERROR  ]  Field limit -1.0 at the founded beta=0.04513477880645375 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,243 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,244 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.35a
+2026-04-22 11:52:54,245 - pyMMF.solv [ERROR  ]  Field limit 0.18817122393070848 at the founded beta=0.04513477880645395 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,246 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,248 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.23a
+2026-04-22 11:52:54,251 - pyMMF.solv [ERROR  ]  Field limit 0.023019622332721736 at the founded beta=0.04513477880645401 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,252 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,253 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.12a
+2026-04-22 11:52:54,255 - pyMMF.solv [ERROR  ]  Field limit 0.003243344452230191 at the founded beta=0.04513477880645405 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,256 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,257 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.02a
+2026-04-22 11:52:54,263 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 2
+2026-04-22 11:52:54,266 - pyMMF.solv [ERROR  ]  Field limit 1.0 at the founded beta=0.034070167189183195 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,268 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,269 - pyMMF.solv [WARNING]  Retrying by changing r_max to 3.04a
+2026-04-22 11:52:54,273 - pyMMF.solv [ERROR  ]  Field limit 1.0 at the founded beta=0.034070167189183195 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,274 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,275 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.89a
+2026-04-22 11:52:54,278 - pyMMF.solv [ERROR  ]  Field limit 1.0 at the founded beta=0.034070167189183195 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,279 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,279 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.74a
+2026-04-22 11:52:54,281 - pyMMF.solv [ERROR  ]  Field limit 0.4864652645862911 at the founded beta=0.034070167189183216 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,281 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,282 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.61a
+2026-04-22 11:52:54,284 - pyMMF.solv [ERROR  ]  Field limit 0.061472985543913165 at the founded beta=0.034070167189183154 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,285 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,287 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.48a
+2026-04-22 11:52:54,289 - pyMMF.solv [ERROR  ]  Field limit 0.007777864800806037 at the founded beta=0.034070167189183265 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,290 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,291 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.35a
+2026-04-22 11:52:54,293 - pyMMF.solv [ERROR  ]  Field limit 0.0011127528043539908 at the founded beta=0.034070167189183195 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,295 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,296 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.23a
+2026-04-22 11:52:54,300 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 3
+2026-04-22 11:52:54,302 - pyMMF.solv [ERROR  ]  Field limit -0.19714650798060052 at the founded beta=0.02298945455284462 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,303 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,304 - pyMMF.solv [WARNING]  Retrying by changing r_max to 3.04a
+2026-04-22 11:52:54,306 - pyMMF.solv [ERROR  ]  Field limit -0.024204763117747496 at the founded beta=0.022989454552844683 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,307 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,308 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.89a
+2026-04-22 11:52:54,310 - pyMMF.solv [ERROR  ]  Field limit -0.003633187523010476 at the founded beta=0.02298945455284461 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,310 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,311 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.74a
+2026-04-22 11:52:54,314 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 4
+2026-04-22 11:52:54,318 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 5
+2026-04-22 11:52:54,335 - pyMMF.solv [INFO   ]  Found 4 radial mode(s) for m=2
+2026-04-22 11:52:54,336 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 1
+2026-04-22 11:52:54,337 - pyMMF.solv [ERROR  ]  Field limit -1.0 at the founded beta=0.039606896670381544 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,338 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,338 - pyMMF.solv [WARNING]  Retrying by changing r_max to 3.04a
+2026-04-22 11:52:54,340 - pyMMF.solv [ERROR  ]  Field limit -1.0 at the founded beta=0.039606896670381544 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,340 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,340 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.89a
+2026-04-22 11:52:54,341 - pyMMF.solv [ERROR  ]  Field limit -1.0 at the founded beta=0.039606896670381544 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,342 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,343 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.74a
+2026-04-22 11:52:54,344 - pyMMF.solv [ERROR  ]  Field limit -1.0 at the founded beta=0.039606896670381544 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,344 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,344 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.61a
+2026-04-22 11:52:54,345 - pyMMF.solv [ERROR  ]  Field limit -0.21784004542161747 at the founded beta=0.039606896670381475 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,346 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,347 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.48a
+2026-04-22 11:52:54,349 - pyMMF.solv [ERROR  ]  Field limit -0.023351419030349846 at the founded beta=0.0396068966703815 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,350 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,350 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.35a
+2026-04-22 11:52:54,352 - pyMMF.solv [ERROR  ]  Field limit -0.0028576150347095954 at the founded beta=0.03960689667038151 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,353 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,354 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.23a
+2026-04-22 11:52:54,359 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 2
+2026-04-22 11:52:54,361 - pyMMF.solv [ERROR  ]  Field limit 1.0 at the founded beta=0.02853435051797808 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,361 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,362 - pyMMF.solv [WARNING]  Retrying by changing r_max to 3.04a
+2026-04-22 11:52:54,363 - pyMMF.solv [ERROR  ]  Field limit 1.0 at the founded beta=0.02853435051797808 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,364 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,365 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.89a
+2026-04-22 11:52:54,366 - pyMMF.solv [ERROR  ]  Field limit -0.14328240174371953 at the founded beta=0.028534350517978226 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,367 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,367 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.74a
+2026-04-22 11:52:54,369 - pyMMF.solv [ERROR  ]  Field limit -0.017257643323014805 at the founded beta=0.028534350517978226 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,369 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,370 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.61a
+2026-04-22 11:52:54,372 - pyMMF.solv [ERROR  ]  Field limit -0.0025999357835914546 at the founded beta=0.028534350517978244 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,375 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,375 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.48a
+2026-04-22 11:52:54,380 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 3
+2026-04-22 11:52:54,382 - pyMMF.solv [ERROR  ]  Field limit -0.005271842278740631 at the founded beta=0.017450798239859608 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,383 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,384 - pyMMF.solv [WARNING]  Retrying by changing r_max to 3.04a
+2026-04-22 11:52:54,388 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 4
+2026-04-22 11:52:54,407 - pyMMF.solv [INFO   ]  Found 4 radial mode(s) for m=3
+2026-04-22 11:52:54,408 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 1
+2026-04-22 11:52:54,411 - pyMMF.solv [ERROR  ]  Field limit 1.0 at the founded beta=0.034071439795895594 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,412 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,413 - pyMMF.solv [WARNING]  Retrying by changing r_max to 3.04a
+2026-04-22 11:52:54,415 - pyMMF.solv [ERROR  ]  Field limit 1.0 at the founded beta=0.034071439795895594 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,416 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,417 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.89a
+2026-04-22 11:52:54,419 - pyMMF.solv [ERROR  ]  Field limit 1.0 at the founded beta=0.034071439795895594 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,420 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,420 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.74a
+2026-04-22 11:52:54,422 - pyMMF.solv [ERROR  ]  Field limit -0.6382788237347834 at the founded beta=0.03407143979589551 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,423 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,423 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.61a
+2026-04-22 11:52:54,425 - pyMMF.solv [ERROR  ]  Field limit -0.08026595200906429 at the founded beta=0.0340714397958955 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,427 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,428 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.48a
+2026-04-22 11:52:54,431 - pyMMF.solv [ERROR  ]  Field limit -0.01010108939325953 at the founded beta=0.034071439795895546 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,432 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,433 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.35a
+2026-04-22 11:52:54,435 - pyMMF.solv [ERROR  ]  Field limit -0.001437016916671921 at the founded beta=0.0340714397958955 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,437 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,437 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.23a
+2026-04-22 11:52:54,442 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 2
+2026-04-22 11:52:54,446 - pyMMF.solv [ERROR  ]  Field limit 0.5055215288595848 at the founded beta=0.02298910620795198 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,447 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,448 - pyMMF.solv [WARNING]  Retrying by changing r_max to 3.04a
+2026-04-22 11:52:54,451 - pyMMF.solv [ERROR  ]  Field limit 0.06173612202557878 at the founded beta=0.02298910620795209 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,453 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,454 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.89a
+2026-04-22 11:52:54,456 - pyMMF.solv [ERROR  ]  Field limit 0.009217316879060666 at the founded beta=0.022989106207952005 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,458 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,459 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.74a
+2026-04-22 11:52:54,461 - pyMMF.solv [ERROR  ]  Field limit 0.00137709822713516 at the founded beta=0.022989106207951974 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,462 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,463 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.61a
+2026-04-22 11:52:54,467 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 3
+2026-04-22 11:52:54,472 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 4
+2026-04-22 11:52:54,493 - pyMMF.solv [INFO   ]  Found 3 radial mode(s) for m=4
+2026-04-22 11:52:54,494 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 1
+2026-04-22 11:52:54,495 - pyMMF.solv [ERROR  ]  Field limit -1.0 at the founded beta=0.028530789290099768 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,496 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,496 - pyMMF.solv [WARNING]  Retrying by changing r_max to 3.04a
+2026-04-22 11:52:54,497 - pyMMF.solv [ERROR  ]  Field limit -1.0 at the founded beta=0.028530789290099768 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,498 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,499 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.89a
+2026-04-22 11:52:54,500 - pyMMF.solv [ERROR  ]  Field limit 0.38151206914347563 at the founded beta=0.028530789290099973 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,500 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,501 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.74a
+2026-04-22 11:52:54,501 - pyMMF.solv [ERROR  ]  Field limit 0.045592398372013246 at the founded beta=0.028530789290100042 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,502 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,503 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.61a
+2026-04-22 11:52:54,503 - pyMMF.solv [ERROR  ]  Field limit 0.006815371754656746 at the founded beta=0.028530789290099952 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,504 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,504 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.48a
+2026-04-22 11:52:54,505 - pyMMF.solv [ERROR  ]  Field limit 0.001018969733084437 at the founded beta=0.028530789290100066 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,505 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,506 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.35a
+2026-04-22 11:52:54,508 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 2
+2026-04-22 11:52:54,509 - pyMMF.solv [ERROR  ]  Field limit 0.003117664564555346 at the founded beta=0.01744070049566171 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,510 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,510 - pyMMF.solv [WARNING]  Retrying by changing r_max to 3.04a
+2026-04-22 11:52:54,513 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 3
+2026-04-22 11:52:54,522 - pyMMF.solv [INFO   ]  Found 3 radial mode(s) for m=5
+2026-04-22 11:52:54,523 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 1
+2026-04-22 11:52:54,525 - pyMMF.solv [ERROR  ]  Field limit 0.8563321063878859 at the founded beta=0.022985043200470234 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,525 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,525 - pyMMF.solv [WARNING]  Retrying by changing r_max to 3.04a
+2026-04-22 11:52:54,527 - pyMMF.solv [ERROR  ]  Field limit 0.10349112388070496 at the founded beta=0.02298504320047015 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,527 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,528 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.89a
+2026-04-22 11:52:54,531 - pyMMF.solv [ERROR  ]  Field limit 0.015289935638936287 at the founded beta=0.02298504320047014 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,532 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,533 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.74a
+2026-04-22 11:52:54,535 - pyMMF.solv [ERROR  ]  Field limit 0.0022578589952616675 at the founded beta=0.022985043200470227 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,536 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,537 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.61a
+2026-04-22 11:52:54,541 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 2
+2026-04-22 11:52:54,545 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 3
+2026-04-22 11:52:54,566 - pyMMF.solv [INFO   ]  Found 2 radial mode(s) for m=6
+2026-04-22 11:52:54,567 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 1
+2026-04-22 11:52:54,571 - pyMMF.solv [ERROR  ]  Field limit -0.02120303092848433 at the founded beta=0.017434568053403994 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,572 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,573 - pyMMF.solv [WARNING]  Retrying by changing r_max to 3.04a
+2026-04-22 11:52:54,575 - pyMMF.solv [ERROR  ]  Field limit -0.003334655006447873 at the founded beta=0.017434568053403897 is greater than field_limit_tol=0.001
+2026-04-22 11:52:54,576 - pyMMF.solv [WARNING]  Boundary condition could not be met.
+2026-04-22 11:52:54,577 - pyMMF.solv [WARNING]  Retrying by changing r_max to 2.89a
+2026-04-22 11:52:54,581 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 2
+2026-04-22 11:52:54,607 - pyMMF.solv [INFO   ]  Found 2 radial mode(s) for m=7
+2026-04-22 11:52:54,608 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 1
+2026-04-22 11:52:54,611 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 2
+2026-04-22 11:52:54,628 - pyMMF.solv [INFO   ]  Found 1 radial mode(s) for m=8
+2026-04-22 11:52:54,630 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 1
+2026-04-22 11:52:54,662 - pyMMF.solv [INFO   ]  Found 1 radial mode(s) for m=9
+2026-04-22 11:52:54,664 - pyMMF.solv [INFO   ]  Searching propagation constant for |l| = 1
+2026-04-22 11:52:54,681 - pyMMF.solv [INFO   ]  Found 0 radial mode(s) for m=10
+2026-04-22 11:52:54,684 - pyMMF.solv [INFO   ]  Solver found 55 modes is 0.63 seconds.
+2026-04-22 11:52:54,685 - pyMMF.core [DEBUG  ]  Mode data stored in memory.
+</pre></div></div>
+</div>
+</section>
+<section id="3.-Simulating-the-shift/zoom-of-the-data-by-applying-a-transformation-of-the-modes">
+<h2>3. Simulating the shift/zoom of the data by applying a transformation of the modes<a class="headerlink" href="#3.-Simulating-the-shift/zoom-of-the-data-by-applying-a-transformation-of-the-modes" title="Link to this heading">#</a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>from scipy.ndimage import zoom as nd_zoom
+
+# Resample the modes onto distinct output and input grids, to emulate the
+# typical experimental case where the camera (output) and SLM (input)
+# sample the field at different resolutions.
+#   M0_out has shape (n_out**2, n_modes)
+#   M0_in  has shape (n_in**2,  n_modes)
+# The resulting TM_0 is therefore non-square: (n_out**2, n_in**2).
+n_out = 48
+n_in = 32
+
+M0_hr = modes.getModeMatrix()
+N_hr = modes.indexProfile.npoints
+n_modes = M0_hr.shape[1]
+
+def _resample_modes(M_hr, target_N):
+    factor = target_N / N_hr
+    out = np.empty((target_N * target_N, M_hr.shape[1]), dtype=M_hr.dtype)
+    for k in range(M_hr.shape[1]):
+        img = M_hr[:, k].reshape(N_hr, N_hr)
+        real = nd_zoom(img.real, factor, order=3)
+        imag = nd_zoom(img.imag, factor, order=3)
+        out[:, k] = (real + 1j * imag).ravel()
+    return out
+
+M0_out = _resample_modes(M0_hr, n_out)
+M0_in = _resample_modes(M0_hr, n_in)
+
+af = Autofit(modes)
+
+TM_mode_basis = modes.getPropagationMatrix(1e4)  # propagation of 1 cm
+
+# Non-square TM: (n_out**2, n_in**2)
+TM_0 = M0_out @ TM_mode_basis @ M0_in.conj().T
+
+# Asymmetric misalignment: different zoom and shift on output and input sides.
+# params = [zoom, shift_out, shift_in] with zoom = (s_out, s_in).
+params = [(1.15, 0.9), (2., 3.), (-4., 3.)]
+TM_misaligned = af.transform(TM_0, params=params)
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># compute average output intensity
+mean_I0 = np.mean(np.abs(TM_0)**2, axis=1).reshape((n_out, n_out))
+mean_I1 = np.mean(np.abs(TM_misaligned)**2, axis=1).reshape((n_out, n_out))
+
+plt.figure(figsize=(12,7))
+plt.subplot(1,2,1)
+plt.imshow(mean_I0, cmap=&#39;hot&#39;, interpolation=&#39;nearest&#39;)
+plt.axis(&#39;off&#39;)
+plt.title(&#39;Mean Intensity of computed modes&#39;)
+plt.subplot(1,2,2)
+plt.imshow(mean_I1, cmap=&#39;hot&#39;, interpolation=&#39;nearest&#39;)
+plt.axis(&#39;off&#39;)
+plt.title(&#39;Mean Intensity of simulated data&#39;)
+plt.show()
+</pre></div>
+</div>
+</div>
+</section>
+<section id="4.-Autofit-to-find-the-transformation-to-recenter/rezoom-the-data">
+<h2>4. Autofit to find the transformation to recenter/rezoom the data<a class="headerlink" href="#4.-Autofit-to-find-the-transformation-to-recenter/rezoom-the-data" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">realign_TM</span></code> splits the alignment between the TM and the modes:</p>
+<ul class="simple">
+<li><p><strong>The TM is only recentered</strong> — pure translations are applied on the output and input sides so that the mean intensity is centered on the grid. <strong>No zoom is applied to the TM.</strong></p></li>
+<li><p><strong>The zoom is applied to the modes.</strong> The scale factors are estimated from the TM (from the RMS size of <code class="docutils literal notranslate"><span class="pre">|TM|²</span></code> compared to the modes intensity, then optionally fine-tuned by correlation) and used to resample the high-resolution modes onto the output and input TM grids. The returned <code class="docutils literal notranslate"><span class="pre">new_modes_out_af</span></code> / <code class="docutils literal notranslate"><span class="pre">new_modes_in_af</span></code> are the resampled, globally-normalized mode matrices.</p></li>
+</ul>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>af = Autofit(modes)
+TM_realigned, new_modes_out_af, new_modes_in_af = af.realign_TM(
+    TM_misaligned,
+    params={&#39;threshold&#39;: 0.5},
+)
+
+# Output-side: average along inputs (axis=1), reshape to (n_out, n_out)
+I_mean_tm_out_af = (np.abs(TM_realigned) ** 2).sum(axis=1).reshape([n_out] * 2)
+I_modes_out_af = (np.abs(new_modes_out_af) ** 2).sum(axis=1).reshape([n_out] * 2)
+
+# Input-side: average along outputs (axis=0), reshape to (n_in, n_in)
+I_mean_tm_in_af = (np.abs(TM_realigned) ** 2).sum(axis=0).reshape([n_in] * 2)
+I_modes_in_af = (np.abs(new_modes_in_af) ** 2).sum(axis=1).reshape([n_in] * 2)
+
+fig, axes = plt.subplots(2, 2, figsize=(10, 10))
+axes[0, 0].imshow(I_mean_tm_out_af, cmap=&#39;hot&#39;)
+axes[0, 0].set_title(&#39;TM mean I (output)&#39;)
+axes[0, 0].axis(&#39;off&#39;)
+axes[0, 1].imshow(I_modes_out_af, cmap=&#39;hot&#39;)
+axes[0, 1].set_title(&#39;Resampled modes mean I (output)&#39;)
+axes[0, 1].axis(&#39;off&#39;)
+axes[1, 0].imshow(I_mean_tm_in_af, cmap=&#39;hot&#39;)
+axes[1, 0].set_title(&#39;TM mean I (input)&#39;)
+axes[1, 0].axis(&#39;off&#39;)
+axes[1, 1].imshow(I_modes_in_af, cmap=&#39;hot&#39;)
+axes[1, 1].set_title(&#39;Resampled modes mean I (input)&#39;)
+axes[1, 1].axis(&#39;off&#39;)
+plt.tight_layout()
+plt.show()
+
+# Projection of the realigned TM onto the resampled mode basis.
+# realign_TM returns modes with a global Frobenius normalization; for the
+# conversion-efficiency metric we re-normalize each mode column so the
+# basis is (approximately) orthonormal.
+new_modes_out_col = new_modes_out_af / np.linalg.norm(
+    new_modes_out_af, axis=0, keepdims=True
+)
+new_modes_in_col = new_modes_in_af / np.linalg.norm(
+    new_modes_in_af, axis=0, keepdims=True
+)
+new_TM_modes_af = new_modes_out_col.conj().T @ TM_realigned @ new_modes_in_col
+print(
+    f&quot;Energy ratio after projection: &quot;
+    f&quot;{np.linalg.norm(new_TM_modes_af) / np.linalg.norm(TM_realigned):.6f}&quot;
+)
+</pre></div>
+</div>
+</div>
+<p>Computation effiency of the projection of the TM onto the mode basis</p>
+<p>We compute the ratio of the energy of the TM after projection in the mode basis with the one of the initial TM. If we have the right modes, and the zoom/shift is compensated for, it should be equal to 1.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>conversion_efficiency_before =  np.linalg.norm(M0.conj().T @ TM_misaligned @ M0)/np.linalg.norm(TM_misaligned)
+conversion_efficiency_after =  np.linalg.norm(M0.conj().T @ TM_realigned @ M0)/np.linalg.norm(TM_realigned)
+
+print(f&quot;Conversion efficiency before: {conversion_efficiency_before:.6f}, after: {conversion_efficiency_after:.6f}&quot;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Conversion efficiency before: 0.811440, after: 0.997533
+</pre></div></div>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#1.-Fiber-parameters">1. Fiber parameters</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.-Compute-the-mode-with-radial-solver">2. Compute the mode with radial solver</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#3.-Simulating-the-shift/zoom-of-the-data-by-applying-a-transformation-of-the-modes">3. Simulating the shift/zoom of the data by applying a transformation of the modes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#4.-Autofit-to-find-the-transformation-to-recenter/rezoom-the-data">4. Autofit to find the transformation to recenter/rezoom the data</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../_sources/examples/Autofit.ipynb.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, Sebastien M. Popoff and Pavel Gostev.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.0.2.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.17.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
