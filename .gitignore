@@ -8,11 +8,11 @@ build/
 dist/
 .vscode/
 **/temp/
-
+.claude/
 
 
 bckp_polar/
-test*
+test_*
 pyMMF/solvers/.ipynb_checkpoints/
 docs/venv/
 docs_sphinx/
@@ -26,3 +26,4 @@ pyMMF.egg-info/
 *.png
 *.nbc
 *.nbi
+/*.npz
